@@ -113,7 +113,7 @@ function displaySearchResults(users) {
 
 async function addCompetitor(competitorId, button) {
     button.disabled = true;
-    button.textContent = "Adding...";
+    button.textContent = "...";
 
     try {
         const response = await fetch(`${window.API_URL}/api/competition/add`, {
@@ -136,7 +136,7 @@ async function addCompetitor(competitorId, button) {
             return;
         }
 
-        button.textContent = "Added";
+        button.textContent = "-";
         await loadCompetition();
     } catch (error) {
         console.error("Add competitor error:", error);

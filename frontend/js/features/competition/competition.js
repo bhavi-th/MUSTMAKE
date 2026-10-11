@@ -238,7 +238,7 @@ async function loadCompetition() {
                     </a>
                     <button type="button" class="main-button remove-competitor-button" data-user-id="${encodeURIComponent(competitor.id)}" aria-label="Remove competitor" title="Remove competitor">−</button>
                 </div>
-                <h4>Today's workouts</h4>
+                
                 <div class="today-workouts">${workoutsMarkup}</div>
             `;
 

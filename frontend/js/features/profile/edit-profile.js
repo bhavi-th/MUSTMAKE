@@ -42,7 +42,7 @@ function validateDateOfBirth(reportValidity = false) {
     if (!dateOfBirthInput.value) {
         dateOfBirthInput.setCustomValidity("");
         if (dateOfBirthError) dateOfBirthError.hidden = true;
-        return false;
+        return true;
     }
 
     const isOldEnough = isAtLeastFiveYearsOld(dateOfBirthInput.value);

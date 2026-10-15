@@ -36,19 +36,19 @@
 
                 <form id="profileForm" class="setup-form">
                     <div class="setup-field">
-                        <label for="dateOfBirth">Date of birth <span class="required-mark" aria-hidden="true">*</span></label>
+                        <label for="dateOfBirth">Date of birth </label>
                         <input
                             type="date"
                             id="dateOfBirth"
                             autocomplete="bday"
                             aria-describedby="dateOfBirthHint dateOfBirthError"
                             
-                            required
+     
                             onkeydown="return false"
                         onpaste="return false"
                         placeholder="Click the Calender"
                         >
-                        <small id="dateOfBirthHint" class="field-hint">You must be at least 5 years old to create an account. Your age can be shown on your profile; your full birth date is not displayed.</small>
+                        <small id="dateOfBirthHint" class="field-hint">Your age can be shown on your profile; your full birth date is not displayed.</small>
                         <small id="dateOfBirthError" class="field-hint age-validation-message" role="alert" hidden>You must be at least 5 years old to create an account.</small>
                     </div>
 
@@ -108,7 +108,7 @@
                     </details>
 
                     <button type="submit" class="main-button save-button">
-                        Save profile and continue
+                        Continue
                         <svg class="save-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                             <path d="M4 10h11m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>

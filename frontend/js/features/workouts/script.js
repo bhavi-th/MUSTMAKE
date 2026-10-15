@@ -117,8 +117,8 @@ async function loadToday() {
     // The exercise library is public. Only the personalized workout dashboard
     // depends on authentication, so visitors are never redirected just to browse.
     if (!user || !token) {
-        personalDashboard.hidden = true;
-        if (guestCta) guestCta.hidden = false;
+    
+        window.location.replace("/exercises");
         return;
     }
 

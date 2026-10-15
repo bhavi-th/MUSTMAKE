@@ -57,6 +57,7 @@ const frontendRoot = path.resolve(__dirname, "../frontend");
 if (fs.existsSync(frontendRoot)) {
     const frontendPages = {
         "/today": "index.html",
+        "/exercises": "exercises.html",
         "/history": "history.html",
         "/login": "login.html",
         "/signup": "signup.html",

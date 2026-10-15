@@ -2,6 +2,7 @@ function getCurrentPage() {
     const path = window.location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
     const legacyRoutes = {
         "/pages/index": "/today",
+        "/pages/exercises": "/exercises",
         "/pages/competition": "/competition",
         "/pages/profile": "/profile"
     };
@@ -15,36 +16,26 @@ function navLink(href, label, currentPage) {
 }
 
 const currentPage = getCurrentPage();
+let isAuthenticated = false;
+try {
+    isAuthenticated = Boolean(localStorage.getItem("token") && JSON.parse(localStorage.getItem("user") || "null"));
+} catch {
+    isAuthenticated = false;
+}
 
 const navbarHTML = `
 <header class="topbar">
-    <div class="logo">MUSTMAKE</div>
-    <nav>
-        ${navLink("/today", "Today", currentPage)}
-        ${navLink("/competition", "Others", currentPage)}
-        ${navLink("/profile", "Profile", currentPage)}
+    <a class="logo" href="/exercises" aria-label="MUSTMAKE home">MUSTMAKE</a>
+    <nav aria-label="Main navigation">
+        ${isAuthenticated
+            ? `${navLink("/exercises", "Exercises", currentPage)}
+               ${navLink("/today", "Today", currentPage)}
+               ${navLink("/competition", "Others", currentPage)}
+               ${navLink("/profile", "Profile", currentPage)}`
+            : `${navLink("/exercises", "Exercises", currentPage)}
+               ${navLink("/login", "Sign in", currentPage)}
+               ${navLink("/signup", "Create account", currentPage)}`}
     </nav>
-    <div class="topbar-actions">
-        <button
-            class="theme-toggle"
-            id="themeToggle"
-            type="button"
-            aria-label="Switch to dark mode"
-            aria-pressed="false"
-        >
-            <span class="theme-toggle-track" aria-hidden="true">
-                <span class="theme-toggle-thumb">
-                    <svg class="theme-sun" viewBox="0 0 24 24" focusable="false">
-                        <circle cx="12" cy="12" r="3.5"></circle>
-                        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
-                    </svg>
-                    <svg class="theme-moon" viewBox="0 0 24 24" focusable="false">
-                        <path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"></path>
-                    </svg>
-                </span>
-            </span>
-        </button>
-    </div>
 </header>
 `;
 
@@ -54,8 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (container) {
         container.innerHTML = navbarHTML;
     }
-
-    window.JustDoItTheme?.syncToggle();
 
     const logoutBtn = document.getElementById("logoutButton");
 

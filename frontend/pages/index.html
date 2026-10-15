@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/js/core/change_backend_url.js"></script>
-        <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
-
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
     <title>Today | MUSTMAKE</title>
     <script src="/js/shared/theme.js"></script>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-
 <body class="app-page">
-
     <div id="navbar"></div>
 
     <main class="container">
-
-        <section class="hero">
-            <h1 id="todayDate">Loading...</h1>
-           
+        <section id="guestCta" class="today-guest" hidden>
+            <section class="hero">
+                <h1>Today</h1>
+                <p class="subtitle">Sign in to see your workouts and daily streak.</p>
+            </section>
+            <p class="auth-footer"><a href="/login">Sign in</a> · <a href="/signup">Create account</a></p>
         </section>
 
-       
-                    <div>
-                        <h2 id="userName">Loading...</h2>
-                  
-                    </div>
+        <section id="personalDashboard" hidden>
+            <section class="hero">
+                <h1 id="todayDate">Loading...</h1>
+            </section>
 
-                    <div class="streak">
-                        <strong id="userStreak">0</strong>
-                        <small>day streak</small>
-                    </div>
+            <div class="person-top">
+                <div>
+                    <h2 id="userName">Loading...</h2>
+                </div>
+                <div class="streak">
+                    <strong id="userStreak">0</strong>
+                    <small>day streak</small>
+                </div>
+            </div>
 
-                    <p>What you made today</p>
-                    <div id="userWorkouts" class="workouts">Loading...</div>
-           
-      
+            <section class="workout-section">
+                <h3>What you made today</h3>
+                <div id="userWorkouts" class="workouts">Loading workouts...</div>
+            </section>
 
-        <section class="actions">
-            <a href="/add-workout" class="main-button">+ Add Workout</a>
-            <a href="/history" class="secondary-button">View History</a>
+            <section class="actions">
+                <a href="/add-workout" class="main-button">+ Add Workout</a>
+                <a href="/history" class="secondary-button">View History</a>
+            </section>
         </section>
-
     </main>
 
     <script src="/js/shared/navbar.js"></script>
     <script src="/js/features/workouts/script.js"></script>
-
 </body>
-
 </html>

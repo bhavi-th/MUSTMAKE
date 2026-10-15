@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
+    <title>Exercise Library | MUSTMAKE</title>
+    <script src="/js/shared/theme.js"></script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-page">
+    <div id="navbar"></div>
+
+    <main class="container exercise-library-page">
+     
+
+        <section class="exercise-library" aria-labelledby="browseExercisesTitle">
+            <div class="library-heading">
+              
+                <p id="exerciseCount" class="exercise-count" aria-live="polite">Loading exercises…</p>
+            </div>
+
+            <div class="library-controls" role="search">
+                <div class="library-field">
+                    <label for="exerciseSearch">Search exercises</label>
+                    <input id="exerciseSearch" type="search" placeholder="Try push-ups, legs, dumbbells…" autocomplete="off">
+                </div>
+                <div class="library-field">
+                    <label for="exerciseCategory">Category</label>
+                    <select id="exerciseCategory">
+                        <option value="all">All categories</option>
+                        <option value="Chest">Chest</option>
+                        <option value="Back">Back</option>
+                        <option value="Shoulders">Shoulders</option>
+                        <option value="Arms">Arms</option>
+                        <option value="Legs">Legs</option>
+                        <option value="Core">Core</option>
+                        <option value="Cardio">Cardio</option>
+                        <option value="Full body">Full body</option>
+                    </select>
+                </div>
+                <div class="library-field">
+                    <label for="exerciseDifficulty">Level</label>
+                    <select id="exerciseDifficulty">
+                        <option value="all">All levels</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="exerciseGrid" class="exercise-grid" aria-live="polite">
+                <p class="library-empty">Loading the exercise library…</p>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="/js/shared/navbar.js"></script>
+    <script src="/js/features/exercises/exercise-library.js"></script>
+</body>
+</html>

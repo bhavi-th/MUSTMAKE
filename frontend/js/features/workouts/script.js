@@ -107,51 +107,60 @@ function workoutDetails(workout) {
 
 async function loadToday() {
     const userContainer = document.getElementById("userWorkouts");
-    if (!userContainer) return;
+    const personalDashboard = document.getElementById("personalDashboard");
+    const guestCta = document.getElementById("guestCta");
+    if (!userContainer || !personalDashboard) return;
 
     const user = getCurrentUser();
-    if (!user) {
-        window.location.href = "/login";
+    const token = getToken();
+
+    // The exercise library is public. Only the personalized workout dashboard
+    // depends on authentication, so visitors are never redirected just to browse.
+    if (!user || !token) {
+        personalDashboard.hidden = true;
+        if (guestCta) guestCta.hidden = false;
         return;
     }
 
-    document.getElementById("todayDate").textContent = formatDate(getToday());
-    document.getElementById("userName").textContent = `Hello ${user.name}`;
+    personalDashboard.hidden = false;
+    if (guestCta) guestCta.hidden = true;
+
+    const dateElement = document.getElementById("todayDate");
+    const nameElement = document.getElementById("userName");
+    if (dateElement) dateElement.textContent = formatDate(getToday());
+    if (nameElement) nameElement.textContent = `Welcome back, ${user.name || "athlete"}`;
 
     try {
         const response = await fetch(`${window.API_URL}/api/workouts/today`, {
-            headers: {
-                "Authorization": `Bearer ${getToken()}`
-            }
+            headers: { "Authorization": `Bearer ${token}` }
         });
 
         if (response.status === 401) {
+            // Preserve the existing auth behavior for a logged-in session that expired.
             logout();
             return;
         }
+        if (!response.ok) throw new Error("Failed to load workouts");
 
-        if (!response.ok) {
-            throw new Error("Failed to load workouts");
-        }
-
-        const workouts = await response.json();
+        const responseData = await response.json();
+        const workouts = Array.isArray(responseData) ? responseData : [];
         displayTodayWorkouts(userContainer, workouts);
         loadStreaks();
     } catch (error) {
-        console.error(error);
-        userContainer.textContent = "Could not load workouts.";
+        console.error("Today's workouts error:", error);
+        userContainer.innerHTML = 'Your workout data could not be loaded. You can still browse the <a href="/exercises">exercise library</a>.';
     }
 }
 
 function displayTodayWorkouts(container, workouts) {
-    if (workouts.length === 0) {
-        container.innerHTML = `<p class="no-workout">Nothing , please grow .</p>`;
+    const safeWorkouts = Array.isArray(workouts) ? workouts : [];
+    if (safeWorkouts.length === 0) {
+        container.innerHTML = `<p class="no-workout">No workouts logged today yet. Every step counts—start when you're ready.</p>`;
         return;
     }
 
     container.innerHTML = "";
-
-    workouts.forEach(workout => {
+    safeWorkouts.forEach(workout => {
         const item = document.createElement("div");
         item.className = "workout-item";
         item.innerHTML = `

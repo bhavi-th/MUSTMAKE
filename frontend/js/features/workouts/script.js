@@ -20,10 +20,14 @@ function saveAuth(token, user) {
     localStorage.setItem("user", JSON.stringify(user));
 }
 
-function logout() {
+function logout(redirectToLogin = true) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    if (redirectToLogin) {
+        window.location.href = "/login";
+    } else {
+        window.location.reload();
+    }
 }
 
 function authHeaders() {
@@ -114,11 +118,8 @@ async function loadToday() {
     const user = getCurrentUser();
     const token = getToken();
 
-    // The exercise library is public. Only the personalized workout dashboard
-    // depends on authentication, so visitors are never redirected just to browse.
     if (!user || !token) {
-    
-        window.location.replace("/exercises");
+        window.location.replace("/pages/gst.html");
         return;
     }
 
@@ -128,7 +129,10 @@ async function loadToday() {
     const dateElement = document.getElementById("todayDate");
     const nameElement = document.getElementById("userName");
     if (dateElement) dateElement.textContent = formatDate(getToday());
-    if (nameElement) nameElement.textContent = `Welcome back, ${user.name || "athlete"}`;
+    if (nameElement) {
+        const greeting =  "Hello" ;
+        nameElement.textContent = `${greeting}, ${user.name || "athlete"}`;
+    }
 
     try {
         const response = await fetch(`${window.API_URL}/api/workouts/today`, {
@@ -136,7 +140,6 @@ async function loadToday() {
         });
 
         if (response.status === 401) {
-            // Preserve the existing auth behavior for a logged-in session that expired.
             logout();
             return;
         }
@@ -148,14 +151,14 @@ async function loadToday() {
         loadStreaks();
     } catch (error) {
         console.error("Today's workouts error:", error);
-        userContainer.innerHTML = 'Your workout data could not be loaded. You can still browse the <a href="/exercises">exercise library</a>.';
+        userContainer.innerHTML = 'Your workout data could not be loaded. You can still browse the <a href="/pages/gst.html">guest page</a>.';
     }
 }
 
 function displayTodayWorkouts(container, workouts) {
     const safeWorkouts = Array.isArray(workouts) ? workouts : [];
     if (safeWorkouts.length === 0) {
-        container.innerHTML = `<p class="no-workout">No workouts logged today yet. Every step counts—start when you're ready.</p>`;
+        container.innerHTML = `<p class="no-workout">Another day , please grow </p>`;
         return;
     }
 

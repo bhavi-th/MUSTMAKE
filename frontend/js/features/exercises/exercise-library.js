@@ -1,105 +1,129 @@
 (() => {
     "use strict";
 
-    const exercises = [
-        { id: "push-ups", name: "Push-ups", category: "Chest", difficulty: "Beginner", equipment: "None", muscles: ["Chest", "Triceps", "Shoulders"], steps: ["Place your hands slightly wider than shoulder-width, fingers facing forward.", "Step your feet back and keep your head, hips, and heels in one line.", "Bend your elbows and lower your chest under control.", "Press the floor away to return to the starting position."], mistakes: ["Letting the hips sag or rise too high", "Rushing the lowering phase", "Flaring the elbows straight out"], easier: "Use an elevated surface or perform knee push-ups." },
-        { id: "incline-push-ups", name: "Incline push-ups", category: "Chest", difficulty: "Beginner", equipment: "Stable bench or counter", muscles: ["Chest", "Triceps", "Shoulders"], steps: ["Place your hands on a stable, non-slippery elevated surface.", "Walk your feet back and keep your body aligned.", "Lower your chest toward the surface with control.", "Push back until your arms are extended without locking forcefully."], mistakes: ["Using a surface that can move", "Allowing the lower back to sag", "Only moving the head"], easier: "Use a higher, sturdy surface." },
-        { id: "knee-push-ups", name: "Knee push-ups", category: "Chest", difficulty: "Beginner", equipment: "None", muscles: ["Chest", "Triceps", "Shoulders"], steps: ["Kneel on a mat and place your hands slightly wider than your shoulders.", "Keep a straight line from your head to your knees.", "Lower your chest toward the floor with control.", "Press up to the starting position."], mistakes: ["Bending at the hips", "Dropping the head forward", "Cutting the range short when comfortable movement is possible"], easier: "Try wall push-ups if kneeling push-ups are still too difficult." },
-        { id: "decline-push-ups", name: "Decline push-ups", category: "Chest", difficulty: "Advanced", equipment: "Stable bench", muscles: ["Chest", "Shoulders", "Triceps"], steps: ["Place your feet on a stable elevated surface and hands on the floor.", "Brace your abdomen and keep your body aligned.", "Lower your chest under control.", "Press back up without bouncing."], mistakes: ["Using an unstable support", "Overarching the lower back", "Trying a height that compromises control"], easier: "Use standard or incline push-ups." },
-        { id: "pull-ups", name: "Pull-ups", category: "Back", difficulty: "Advanced", equipment: "Secure pull-up bar", muscles: ["Lats", "Upper back", "Biceps"], steps: ["Grip a securely mounted bar with hands around shoulder-width or slightly wider.", "Start from a controlled hang with shoulders engaged.", "Pull your body upward until your chin reaches bar height if comfortable.", "Lower slowly to the starting position."], mistakes: ["Swinging to create momentum", "Dropping suddenly from the top", "Using a bar that is not securely mounted"], easier: "Use an assisted pull-up machine or resistance-band assistance." },
-        { id: "assisted-pull-ups", name: "Assisted pull-ups", category: "Back", difficulty: "Beginner", equipment: "Assisted machine or suitable band", muscles: ["Lats", "Upper back", "Biceps"], steps: ["Set up assistance according to the equipment instructions.", "Grip the bar and engage your shoulders.", "Pull upward with a smooth motion.", "Lower with control and keep the assistance secure."], mistakes: ["Using a band that is not safely anchored", "Kicking or swinging excessively", "Dropping through the lowering phase"], easier: "Try a supported lat pulldown or a lighter range of motion." },
-        { id: "dumbbell-row", name: "Dumbbell row", category: "Back", difficulty: "Beginner", equipment: "Dumbbell and stable support", muscles: ["Lats", "Upper back", "Biceps"], steps: ["Support one hand on a stable bench and hinge at the hips with a neutral back.", "Hold the dumbbell beneath your shoulder.", "Pull it toward your hip without twisting your torso.", "Lower slowly and repeat on the other side."], mistakes: ["Rotating the torso to lift the weight", "Rounding the back", "Using momentum instead of control"], easier: "Use a lighter dumbbell or a supported machine row." },
-        { id: "superman", name: "Superman", category: "Back", difficulty: "Beginner", equipment: "Mat", muscles: ["Back extensors", "Glutes"], steps: ["Lie face down with arms extended or beside your body.", "Gently brace your abdomen.", "Lift your arms and legs a small, comfortable distance if pain-free.", "Pause briefly, then lower with control."], mistakes: ["Overarching the lower back", "Jerking upward", "Continuing if it causes back pain"], easier: "Lift only the opposite arm and leg, one pair at a time." },
-        { id: "shoulder-press", name: "Dumbbell shoulder press", category: "Shoulders", difficulty: "Intermediate", equipment: "Dumbbells", muscles: ["Shoulders", "Triceps"], steps: ["Stand or sit tall with dumbbells at shoulder height.", "Brace your abdomen and keep your ribs comfortably stacked over your hips.", "Press the weights overhead without pain.", "Lower slowly to shoulder height."], mistakes: ["Arching the lower back", "Using weights too heavy to control", "Forcing the arms into a painful position"], easier: "Use lighter weights or a comfortable partial range." },
-        { id: "lateral-raise", name: "Lateral raises", category: "Shoulders", difficulty: "Beginner", equipment: "Light dumbbells", muscles: ["Side deltoids", "Upper shoulders"], steps: ["Stand tall with a light weight in each hand at your sides.", "Keep a slight bend in your elbows.", "Raise your arms out to the sides to a comfortable height.", "Lower slowly without swinging."], mistakes: ["Swinging the weights", "Shrugging excessively", "Choosing weights that force poor form"], easier: "Use lighter weights or perform one arm at a time." },
-        { id: "pike-push-ups", name: "Pike push-ups", category: "Shoulders", difficulty: "Intermediate", equipment: "None", muscles: ["Shoulders", "Triceps", "Upper chest"], steps: ["Start in a downward-V position with hips raised.", "Place hands securely and keep your head between your arms.", "Bend your elbows to lower your head toward the floor in front of your hands.", "Press back up smoothly."], mistakes: ["Dropping the hips", "Lowering directly onto the top of the head", "Trying the movement without shoulder comfort"], easier: "Use a smaller range of motion or incline push-ups." },
-        { id: "biceps-curl", name: "Biceps curls", category: "Arms", difficulty: "Beginner", equipment: "Dumbbells or resistance band", muscles: ["Biceps", "Forearms"], steps: ["Stand tall with elbows close to your sides.", "Curl the weights upward without moving your upper arms much.", "Pause briefly at the top.", "Lower slowly to the starting position."], mistakes: ["Swinging the torso", "Moving elbows far forward", "Dropping the weights quickly"], easier: "Use lighter weights or a resistance band." },
-        { id: "hammer-curl", name: "Hammer curls", category: "Arms", difficulty: "Beginner", equipment: "Dumbbells", muscles: ["Biceps", "Brachialis", "Forearms"], steps: ["Hold dumbbells at your sides with palms facing inward.", "Keep elbows near your torso.", "Curl the weights without rotating your wrists.", "Lower slowly."], mistakes: ["Swinging the weights", "Shrugging shoulders", "Using a painful wrist position"], easier: "Reduce the weight and keep the movement controlled." },
-        { id: "triceps-dips", name: "Triceps dips", category: "Arms", difficulty: "Intermediate", equipment: "Stable parallel bars or suitable bench", muscles: ["Triceps", "Chest", "Shoulders"], steps: ["Use only a stable support designed for the movement.", "Keep shoulders comfortable and lower by bending your elbows.", "Stop at a depth that does not strain your shoulders.", "Press back up with control."], mistakes: ["Going too deep", "Using a wobbly chair or support", "Continuing with shoulder pain"], easier: "Try close-grip incline push-ups or band press-downs." },
-        { id: "overhead-triceps", name: "Overhead triceps extension", category: "Arms", difficulty: "Intermediate", equipment: "One dumbbell or resistance band", muscles: ["Triceps"], steps: ["Hold a light weight overhead with elbows pointing generally forward.", "Bend your elbows to lower the weight behind your head within a comfortable range.", "Keep your torso steady.", "Extend your elbows to return to the start."], mistakes: ["Arching the back", "Allowing elbows to flare excessively", "Using a weight you cannot control"], easier: "Use a lighter weight or a resistance-band press-down." },
-        { id: "squat", name: "Bodyweight squats", category: "Legs", difficulty: "Beginner", equipment: "None", muscles: ["Quadriceps", "Glutes", "Core"], steps: ["Stand with feet around shoulder-width and toes slightly turned out if comfortable.", "Brace your abdomen and move your hips down and back.", "Keep your feet grounded and knees tracking in the direction of your toes.", "Stand by pushing through the whole foot."], mistakes: ["Heels lifting unintentionally", "Knees collapsing inward", "Dropping too quickly"], easier: "Use a chair or box as a depth target." },
-        { id: "reverse-lunge", name: "Reverse lunges", category: "Legs", difficulty: "Intermediate", equipment: "None", muscles: ["Quadriceps", "Glutes", "Hamstrings"], steps: ["Stand tall with feet hip-width apart.", "Step one foot backward and bend both knees as comfortable.", "Keep your front foot planted and torso steady.", "Push through the front foot to return and switch sides."], mistakes: ["Losing balance", "Letting the front knee collapse inward", "Taking a step length that feels unstable"], easier: "Hold a stable support and use a shallow range." },
-        { id: "forward-lunge", name: "Forward lunges", category: "Legs", difficulty: "Intermediate", equipment: "None", muscles: ["Quadriceps", "Glutes", "Hamstrings"], steps: ["Stand tall with feet hip-width apart.", "Take a controlled step forward.", "Bend both knees within a comfortable range while keeping balance.", "Push through the front foot to return to standing."], mistakes: ["Stepping too narrowly", "Losing balance", "Allowing the knee to collapse inward"], easier: "Try reverse lunges while holding a stable support." },
-        { id: "calf-raises", name: "Calf raises", category: "Legs", difficulty: "Beginner", equipment: "None or stable support", muscles: ["Calves"], steps: ["Stand with feet hip-width apart and hold a support if needed.", "Rise onto the balls of your feet.", "Pause briefly at the top.", "Lower your heels slowly."], mistakes: ["Bouncing at the bottom", "Rolling ankles outward", "Using momentum"], easier: "Use both feet and hold a wall for balance." },
-        { id: "glute-bridge", name: "Glute bridges", category: "Legs", difficulty: "Beginner", equipment: "Mat", muscles: ["Glutes", "Hamstrings", "Core"], steps: ["Lie on your back with knees bent and feet flat.", "Brace your abdomen gently.", "Press through your feet and lift your hips until your body forms a comfortable line from shoulders to knees.", "Lower slowly."], mistakes: ["Overarching the lower back", "Pushing mostly through the toes", "Rushing the movement"], easier: "Lift the hips only a short distance." },
-        { id: "wall-sit", name: "Wall sit", category: "Legs", difficulty: "Beginner", equipment: "Wall", muscles: ["Quadriceps", "Glutes"], steps: ["Stand with your back against a wall and feet a step forward.", "Slide down to a comfortable squat position.", "Keep feet flat and knees aligned with toes.", "Hold while breathing normally, then slide up."], mistakes: ["Going lower than comfortable", "Holding your breath", "Allowing knees to fall inward"], easier: "Use a higher position and hold for a shorter time." },
-        { id: "plank", name: "Forearm plank", category: "Core", difficulty: "Beginner", equipment: "Mat", muscles: ["Abdominals", "Obliques", "Shoulders"], steps: ["Place forearms under your shoulders and extend your legs.", "Keep your body aligned from head to heels.", "Brace your abdomen and breathe normally.", "Hold only while you can maintain position, then lower your knees."], mistakes: ["Hips sagging", "Hips raised too high", "Holding your breath"], easier: "Perform the plank from your knees or against a stable elevated surface." },
-        { id: "side-plank", name: "Side plank", category: "Core", difficulty: "Intermediate", equipment: "Mat", muscles: ["Obliques", "Core", "Shoulders"], steps: ["Lie on one side with elbow under shoulder.", "Stack or stagger your feet for balance.", "Lift your hips and keep your body in a straight line.", "Breathe steadily, then lower and switch sides."], mistakes: ["Shoulder collapsing toward the ear", "Hips rotating forward", "Holding your breath"], easier: "Bend your knees and support yourself on the lower forearm." },
-        { id: "crunches", name: "Crunches", category: "Core", difficulty: "Beginner", equipment: "Mat", muscles: ["Abdominals"], steps: ["Lie on your back with knees bent and feet flat.", "Place hands lightly beside your head or across your chest.", "Gently curl your shoulders off the floor by tightening your abdomen.", "Lower slowly without pulling on your neck."], mistakes: ["Pulling the head forward", "Using momentum", "Trying to lift the entire torso"], easier: "Use a smaller, comfortable curl." },
-        { id: "bicycle-crunch", name: "Bicycle crunches", category: "Core", difficulty: "Intermediate", equipment: "Mat", muscles: ["Abdominals", "Obliques"], steps: ["Lie on your back with knees lifted and hands lightly supporting your head.", "Curl your shoulders up and rotate your torso toward the opposite knee.", "Extend the other leg only as far as you can keep your lower back comfortable.", "Alternate sides slowly."], mistakes: ["Pulling on the neck", "Moving too quickly", "Arching the lower back"], easier: "Keep both feet on the floor and perform slow alternating torso rotations." },
-        { id: "leg-raises", name: "Lying leg raises", category: "Core", difficulty: "Intermediate", equipment: "Mat", muscles: ["Lower abdominals", "Hip flexors"], steps: ["Lie on your back with legs extended or knees slightly bent.", "Brace your abdomen and keep your lower back comfortable against the mat.", "Raise and lower your legs slowly within a controlled range.", "Bend your knees if your back starts to arch."], mistakes: ["Swinging the legs", "Letting the lower back arch", "Lowering farther than control allows"], easier: "Perform bent-knee marches or reverse crunches." },
-        { id: "dead-bug", name: "Dead bug", category: "Core", difficulty: "Beginner", equipment: "Mat", muscles: ["Core", "Abdominals"], steps: ["Lie on your back with arms up and knees bent at about 90 degrees.", "Brace your abdomen gently.", "Slowly extend one arm and the opposite leg without arching your back.", "Return and alternate sides."], mistakes: ["Moving too quickly", "Arching the lower back", "Extending farther than you can control"], easier: "Move only one limb at a time." },
-        { id: "walking", name: "Brisk walking", category: "Cardio", difficulty: "Beginner", equipment: "Comfortable shoes", muscles: ["Legs", "Glutes", "Cardiovascular system"], steps: ["Choose a safe, well-lit route and comfortable shoes.", "Start at an easy pace for a few minutes.", "Increase to a pace that raises your breathing but still lets you talk.", "Slow down gradually at the end."], mistakes: ["Increasing distance too quickly", "Ignoring unsafe surfaces or traffic", "Wearing uncomfortable footwear"], easier: "Start with shorter, comfortable walks." },
-        { id: "running", name: "Easy running", category: "Cardio", difficulty: "Intermediate", equipment: "Running shoes", muscles: ["Legs", "Glutes", "Cardiovascular system"], steps: ["Begin with a few minutes of walking.", "Run at a pace that feels controlled and allows short conversation.", "Keep steps relaxed and avoid overstriding.", "Finish with an easy walk."], mistakes: ["Starting too fast", "Increasing weekly volume abruptly", "Ignoring persistent pain"], easier: "Alternate short running intervals with walking." },
-        { id: "jump-rope", name: "Skipping rope", category: "Cardio", difficulty: "Intermediate", equipment: "Jump rope and clear floor space", muscles: ["Calves", "Shoulders", "Cardiovascular system"], steps: ["Check the area above and around you for hazards.", "Hold the handles and turn the rope mainly with your wrists.", "Use small, low jumps and land softly.", "Start with short rounds and rest as needed."], mistakes: ["Jumping too high", "Landing stiffly", "Starting with long rounds before adapting"], easier: "Practice low two-foot hops without a rope or march in place." },
-        { id: "jumping-jacks", name: "Jumping jacks", category: "Cardio", difficulty: "Beginner", equipment: "Clear floor space", muscles: ["Legs", "Shoulders", "Cardiovascular system"], steps: ["Stand tall with arms at your sides.", "Jump feet apart while raising arms overhead, or step one foot at a time.", "Return feet together and lower arms.", "Repeat at a steady, controlled rhythm."], mistakes: ["Landing heavily", "Using a slippery surface", "Moving faster than coordination allows"], easier: "Step side to side while raising one or both arms." },
-        { id: "high-knees", name: "High knees", category: "Cardio", difficulty: "Intermediate", equipment: "Clear floor space", muscles: ["Hip flexors", "Quadriceps", "Core"], steps: ["Stand tall with your torso upright.", "March or jog in place, lifting one knee at a time.", "Land lightly and swing your arms naturally.", "Choose a pace you can control."], mistakes: ["Leaning far backward", "Stomping heavily", "Starting at sprint speed"], easier: "Perform a slow high-knee march." },
-        { id: "mountain-climbers", name: "Mountain climbers", category: "Full body", difficulty: "Intermediate", equipment: "Mat", muscles: ["Core", "Shoulders", "Hip flexors"], steps: ["Start in a high-plank position with hands under shoulders.", "Keep your body aligned and brace your abdomen.", "Bring one knee toward your chest.", "Return it and alternate legs at a controlled pace."], mistakes: ["Bouncing hips excessively", "Hands placed far ahead of shoulders", "Rushing before stable form"], easier: "Step knees forward one at a time instead of hopping." },
-        { id: "burpees", name: "Burpees", category: "Full body", difficulty: "Advanced", equipment: "Clear floor space", muscles: ["Legs", "Chest", "Shoulders", "Core"], steps: ["Start standing with feet about hip-width apart.", "Squat and place hands on the floor.", "Step or jump feet back to a plank, then return them toward your hands.", "Stand up; add a jump only if comfortable and controlled."], mistakes: ["Dropping abruptly into the floor", "Allowing the lower back to sag", "Choosing speed over control"], easier: "Step back one leg at a time and omit the push-up and jump." },
-        { id: "bear-crawl", name: "Bear crawl", category: "Full body", difficulty: "Intermediate", equipment: "Clear floor space", muscles: ["Core", "Shoulders", "Legs"], steps: ["Start on hands and knees with hands under shoulders.", "Lift knees a small distance from the floor.", "Move opposite hand and foot forward a short distance.", "Continue slowly while keeping hips relatively steady."], mistakes: ["Hips rocking side to side", "Taking steps that are too long", "Holding your breath"], easier: "Practice slow shoulder taps from a stable tabletop position." },
-        { id: "step-ups", name: "Step-ups", category: "Legs", difficulty: "Beginner", equipment: "Low, stable step", muscles: ["Quadriceps", "Glutes", "Calves"], steps: ["Use a low, stable step that cannot slide.", "Place the whole foot on the step.", "Push through that foot to step up with control.", "Step down slowly and alternate legs."], mistakes: ["Using a wobbly chair", "Pushing off excessively with the trailing foot", "Dropping quickly on the way down"], easier: "Use a lower step and hold a stable rail." },
-        { id: "hip-hinge", name: "Hip hinge / good morning", category: "Back", difficulty: "Beginner", equipment: "None or light resistance", muscles: ["Hamstrings", "Glutes", "Back extensors"], steps: ["Stand with knees softly bent and feet hip-width apart.", "Push hips backward while keeping your spine neutral.", "Stop when you feel a gentle stretch in the back of your legs.", "Drive hips forward to stand tall."], mistakes: ["Rounding the back", "Squatting instead of hinging", "Forcing extra depth"], easier: "Practice pushing your hips back toward a wall behind you." },
-        { id: "bird-dog", name: "Bird dog", category: "Core", difficulty: "Beginner", equipment: "Mat", muscles: ["Core", "Back", "Glutes"], steps: ["Start on hands and knees with hands under shoulders.", "Brace your abdomen and extend one arm and the opposite leg.", "Keep your hips facing the floor and avoid twisting.", "Return slowly and switch sides."], mistakes: ["Arching the back", "Lifting the leg too high", "Rotating the hips"], easier: "Extend one arm or one leg at a time." },
-        { id: "shoulder-taps", name: "Plank shoulder taps", category: "Core", difficulty: "Intermediate", equipment: "Mat", muscles: ["Core", "Shoulders", "Chest"], steps: ["Start in a high plank with feet slightly wider for balance.", "Lift one hand and tap the opposite shoulder.", "Place the hand down without rocking your hips excessively.", "Alternate sides slowly."], mistakes: ["Hips twisting widely", "Hands too far ahead", "Rushing the taps"], easier: "Perform shoulder taps from an elevated stable surface." }
+    const exerciseGroups = [
+        {
+            key: "bodyweight",
+            title: "Pure Yourself",
+            exercises: [
+                "Push-ups",
+                "Pull-ups",
+                "Squats",
+                "Plank",
+                "Jumping Jacks",
+                "Skipping Rope",
+                "Running",
+                "Walking"
+            ]
+        },
+        {
+            key: "dumbbells",
+            title: "With Dumbbells",
+            exercises: [
+                "Biceps Curls",
+                "Shoulder Press",
+                "Lateral Raises",
+                "Triceps Extension"
+            ]
+        }
     ];
 
     const grid = document.getElementById("exerciseGrid");
     if (!grid) return;
 
-    const searchInput = document.getElementById("exerciseSearch");
-    const categoryInput = document.getElementById("exerciseCategory");
-    const difficultyInput = document.getElementById("exerciseDifficulty");
     const count = document.getElementById("exerciseCount");
-
+    const bookmarksKey = "mustmake:saved-exercises";
     const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, character => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[character]);
 
-    function renderExercise(exercise) {
-        const steps = exercise.steps.map((step, index) => `<li>${escapeHTML(step)}</li>`).join("");
-        const mistakes = exercise.mistakes.map(mistake => `<li>${escapeHTML(mistake)}</li>`).join("");
-        const muscles = exercise.muscles.map(muscle => `<span class="exercise-tag">${escapeHTML(muscle)}</span>`).join("");
+    const artwork = {
+        "Push-ups": '<circle cx="165" cy="61" r="10"/><path d="m153 69-48 10-36 1m82-9 22 25m-70-17-14 24m-48-23 35 1-10 23m62-33 22 1 13 22M54 103h17m92-1h17"/>',
+        "Pull-ups": '<path class="art-equipment" d="M70 28h100M83 28v7m74-7v7"/><circle cx="121" cy="56" r="10"/><path d="m121 66 1 32m0-27-28-39m28 39 28-39m-28 66-20 20m20-20 23 18"/>',
+        "Squats": '<circle cx="120" cy="40" r="10"/><path d="m120 51-2 29m0-20-29-13m29 13 30-13m-30 33-26 12-19 23m45-35 25 13 23 22m-91 0h16m68 0h16"/>',
+        "Plank": '<circle cx="169" cy="67" r="10"/><path d="m157 73-50 8-37 1m-1 0-12 23m51-24-12 24m-29 0h15m26 0h15m57-22 20 22m-7 0h14"/>',
+        "Jumping Jacks": '<circle cx="120" cy="38" r="10"/><path d="m120 49 1 37m0-27L84 39m37 20 37-20m-37 27-30 33m30-33 30 33m-67 0h15m44 0h15"/>',
+        "Skipping Rope": '<circle cx="130" cy="39" r="10"/><path d="m123 50-12 29 24 14 19-18m-34-20-25 4-15 22m42-24 20-5 13 11m-42 30-21 27m21-27 29 19m-54 8h16m28 0h16"/><path class="art-rope" d="M76 103c-18-52 15-76 48-75 33 1 58 28 46 75"/>',
+        "Running": '<circle cx="132" cy="36" r="10"/><path d="m125 47-13 31 25 13 20-18m-35-20-26 5-15 22m43-24 21-5 14 12m-43 28-22 29m22-29 30 20m-57 9h17m28 0h17"/>',
+        "Walking": '<circle cx="120" cy="36" r="10"/><path d="m120 47 1 37m0-27-21 15m21-15 20 15m-20 12-21 34m21-34 27 29m-62 5h17m37-3h16"/>',
+        "Biceps Curls": '<circle cx="120" cy="36" r="10"/><path d="m120 47 1 39m0-28-28 9 8-21m20 12 28 9-8-21m-49-13-6-8m6 8 8 4m42-4 6-8m-6 8-8 4m-35 34-10 37m42-37 10 37"/>',
+        "Shoulder Press": '<circle cx="120" cy="36" r="10"/><path d="m120 47 1 39m0-28-29-25m29 25 29-25m-58-5-8-8m8 8 8 8m50-8 8-8m-8 8-8 8m-40 25-13 38m40-38 13 38"/>',
+        "Lateral Raises": '<circle cx="120" cy="36" r="10"/><path d="m120 47 1 39m0-28-40-1m40 1 40-1m-40 29-20 37m20-37 20 37m-69-35-9-1m9-8v16m89-8 9-1m-9-8v16"/>',
+        "Triceps Extension": '<circle cx="120" cy="38" r="10"/><path d="m120 49 1 37m0-26-20-23 9-16m11 39 20-23-9-16m-40 0h12m25 0h12m-41 39-14 38m42-38 14 38m-55-1h15m41 0h15"/>'
+    };
+
+    function getBookmarks() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(bookmarksKey) || "[]");
+            return new Set(Array.isArray(saved) ? saved.filter(value => typeof value === "string") : []);
+        } catch {
+            return new Set();
+        }
+    }
+
+    function exerciseId(name) {
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    }
+
+    function exerciseArtwork(name, groupKey) {
+        const extraArt = groupKey === "dumbbells"
+            ? '<g class="art-dumbbell"><path d="M74 72h24m44 0h24M92 63v18m-8-13v8m64-13v18m8-13v8"/></g>'
+            : "";
+        return `<svg viewBox="0 0 240 150" role="img" aria-label="${escapeHTML(name)} illustration" focusable="false"><path class="art-orbit" d="M35 108c4-34 36-66 83-70 44-4 80 17 89 49 9 33-23 51-63 49-47-2-81 5-99-11-7-6-11-12-10-17Z"/><path class="art-ground" d="M43 124h155"/><g class="art-person" fill="none" stroke-linecap="round" stroke-linejoin="round">${artwork[name] || artwork.Squats}</g>${extraArt}<circle class="art-spark" cx="57" cy="42" r="4"/><circle class="art-spark art-spark-small" cx="195" cy="74" r="3"/></svg>`;
+    }
+
+    function renderExercise(name, group, bookmarks) {
+        const id = exerciseId(name);
+        const isSaved = bookmarks.has(id);
         return `
             <article class="exercise-card">
-                <div class="exercise-card-topline">
-                    <span class="exercise-category">${escapeHTML(exercise.category)}</span>
-                    <span class="exercise-level level-${exercise.difficulty.toLowerCase()}">${escapeHTML(exercise.difficulty)}</span>
+                <div class="exercise-card-media">
+                    ${exerciseArtwork(name, group.key)}
+                    <button class="exercise-bookmark${isSaved ? " is-saved" : ""}" type="button" data-bookmark="${id}" aria-label="${isSaved ? "Remove" : "Save"} ${escapeHTML(name)} ${isSaved ? "from" : "to"} bookmarks" aria-pressed="${isSaved}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.75 4.75h10.5a1 1 0 0 1 1 1v14l-6.25-3.9-6.25 3.9v-14a1 1 0 0 1 1-1Z"/></svg>
+                    </button>
                 </div>
-                <h3>${escapeHTML(exercise.name)}</h3>
-                <p class="exercise-equipment"><strong>Equipment:</strong> ${escapeHTML(exercise.equipment)}</p>
-                <div class="exercise-muscles" aria-label="Target areas">${muscles}</div>
-                <details class="exercise-details">
-                    <summary>How to do it</summary>
-                    <div class="exercise-detail-content">
-                        <h4>Step by step</h4>
-                        <ol>${steps}</ol>
-                        <h4>Common mistakes</h4>
-                        <ul>${mistakes}</ul>
-                        <p class="exercise-alternative"><strong>Make it easier:</strong> ${escapeHTML(exercise.easier)}</p>
-                    </div>
-                </details>
+                <div class="exercise-card-content">
+                    <h3>${escapeHTML(name)}</h3>
+                </div>
             </article>`;
     }
 
     function render() {
-        const query = (searchInput?.value || "").trim().toLowerCase();
-        const category = categoryInput?.value || "all";
-        const difficulty = difficultyInput?.value || "all";
-        const filtered = exercises.filter(exercise => {
-            const searchable = [exercise.name, exercise.category, exercise.difficulty, exercise.equipment, ...exercise.muscles].join(" ").toLowerCase();
-            return (!query || searchable.includes(query)) &&
-                (category === "all" || exercise.category === category) &&
-                (difficulty === "all" || exercise.difficulty === difficulty);
-        });
+        const bookmarks = getBookmarks();
+        const total = exerciseGroups.reduce((sum, group) => sum + group.exercises.length, 0);
 
-        if (count) count.textContent = `${filtered.length} ${filtered.length === 1 ? "exercise" : "exercises"}`;
-        grid.innerHTML = filtered.length
-            ? filtered.map(renderExercise).join("")
-            : `<div class="library-empty"><h3>No exercises found</h3><p>Try a different search or category.</p></div>`;
+        if (count) count.textContent = `${total} ${total === 1 ? "exercise" : "exercises"}`;
+        grid.innerHTML = exerciseGroups.map((group, index) => `
+                <section class="exercise-section" aria-labelledby="exerciseGroup${index}">
+                    <div class="exercise-section-heading">
+                        <h2 id="exerciseGroup${index}">${escapeHTML(group.title)}</h2>
+                        <span>${group.exercises.length}</span>
+                    </div>
+                    <div class="exercise-list exercise-grid">
+                        ${group.exercises.map(name => renderExercise(name, group, bookmarks)).join("")}
+                    </div>
+                </section>
+            `).join("");
     }
 
-    [searchInput, categoryInput, difficultyInput].forEach(control => {
-        control?.addEventListener(control === searchInput ? "input" : "change", render);
+    grid.addEventListener("click", event => {
+        const button = event.target.closest("[data-bookmark]");
+        if (!button) return;
+        const bookmarks = getBookmarks();
+        const id = button.dataset.bookmark;
+        if (bookmarks.has(id)) bookmarks.delete(id);
+        else bookmarks.add(id);
+        try {
+            localStorage.setItem(bookmarksKey, JSON.stringify([...bookmarks]));
+        } catch {
+            // The current session still reflects the selected bookmark.
+        }
+        const name = [...exerciseGroups.flatMap(group => group.exercises)].find(item => exerciseId(item) === id);
+        const isSaved = bookmarks.has(id);
+        button.classList.toggle("is-saved", isSaved);
+        button.setAttribute("aria-pressed", String(isSaved));
+        button.setAttribute("aria-label", `${isSaved ? "Remove" : "Save"} ${name || "exercise"} ${isSaved ? "from" : "to"} bookmarks`);
     });
 
     render();

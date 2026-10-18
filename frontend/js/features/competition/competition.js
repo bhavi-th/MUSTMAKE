@@ -78,7 +78,7 @@ async function searchUsers(username) {
 
 function displaySearchResults(users) {
     if (!users || users.length === 0) {
-        searchResults.innerHTML = `<p class="search-status">No users found.</p>`;
+        searchResults.innerHTML = `<p class="search-status">Tell them to use mustmake</p>`;
         return;
     }
 
@@ -203,7 +203,7 @@ async function loadCompetition() {
         const competitions = await response.json();
 
         if (competitions.length === 0) {
-            competitionList.innerHTML = `<p class="no-workout">No competitors added yet.</p>`;
+            competitionList.innerHTML = `<p class="no-workout">None</p>`;
             return;
         }
 

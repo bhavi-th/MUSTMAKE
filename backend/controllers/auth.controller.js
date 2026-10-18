@@ -388,7 +388,7 @@ const verifyOtp = async (req, res) => {
                     throw error;
                 }
             } else {
-                user = await User.findOne({ email: cleanEmail });
+                user = await User.findOne({ email: cleanEmail }).select("+ageReferenceYear");
                 if (!user) {
                     return res.status(404).json({ message: "Account not found." });
                 }
@@ -468,7 +468,7 @@ const login = async (req, res) => {
                         }
 
                     ]
-                });
+                }).select("+ageReferenceYear");
 
 
             if (!user) {
@@ -546,8 +546,8 @@ const login = async (req, res) => {
                     profilePicture:
                         user.profilePicture,
 
-                    dateOfBirth:
-                        user.dateOfBirth
+                    age:
+                        user.age
                 }
             });
 
@@ -605,8 +605,8 @@ const googleCallback = async (req, res) => {
                 profilePicture:
                     req.user.profilePicture,
 
-                dateOfBirth:
-                    req.user.dateOfBirth
+                age:
+                    req.user.age
             };
 
 

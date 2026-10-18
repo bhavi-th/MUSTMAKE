@@ -39,7 +39,7 @@ function createAuthSession(user) {
             username: user.username,
             email: user.email,
             profilePicture: user.profilePicture,
-            dateOfBirth: user.dateOfBirth
+            age: user.age
         }
     };
 }

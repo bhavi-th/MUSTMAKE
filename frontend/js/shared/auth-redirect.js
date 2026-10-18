@@ -1,5 +1,5 @@
 window.redirectAfterAuthentication = function (user) {
-    const destination = user?.dateOfBirth
+    const destination = user?.age !== null && user?.age !== undefined
         ? "/today"
         : "/first-details";
 

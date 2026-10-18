@@ -15,7 +15,7 @@ const currentUser = async (req, res) => {
                 await User.findById(
                     req.userId
                 ).select(
-                    "-passwordHash"
+                    "-passwordHash +ageReferenceYear"
                 );
 
 
@@ -130,7 +130,7 @@ const getPublicProfile = async (req, res) => {
                     req.params.id
                 )
                 .select(
-                    "name username profilePicture dateOfBirth height weight socials"
+                    "name username profilePicture age +ageReferenceYear height weight socials"
                 );
 
 

@@ -7,9 +7,21 @@
     <title>MUSTMAKE</title>
 </head>
 <body>
+    <p>Opening MUSTMAKE… <a id="homeLink" href="/pages/gst.html">Continue</a></p>
     <script>
-        window.location.replace("/exercises");
+        let isAuthenticated = false;
+        try {
+            isAuthenticated = Boolean(
+                localStorage.getItem("token") &&
+                JSON.parse(localStorage.getItem("user") || "null")
+            );
+        } catch {
+            isAuthenticated = false;
+        }
+
+        const destination = isAuthenticated ? "/pages/index.html" : "/pages/gst.html";
+        document.getElementById("homeLink").href = destination;
+        window.location.replace(destination);
     </script>
-    <p>Opening the <a href="/exercises">MUSTMAKE exercise library</a>...</p>
 </body>
 </html>

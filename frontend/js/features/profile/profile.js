@@ -8,42 +8,6 @@ function logout() {
     window.location.href = "/login";
 }
 
-function calculateAge(dateOfBirth) {
-    if (!dateOfBirth) return null;
-
-    const match = String(dateOfBirth).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!match) return null;
-
-    const [, yearText, monthText, dayText] = match;
-    const birthYear = Number(yearText);
-    const birthMonth = Number(monthText);
-    const birthDay = Number(dayText);
-    const birthDate = new Date(Date.UTC(birthYear, birthMonth - 1, birthDay));
-    if (
-        birthDate.getUTCFullYear() !== birthYear ||
-        birthDate.getUTCMonth() !== birthMonth - 1 ||
-        birthDate.getUTCDate() !== birthDay
-    ) return null;
-
-    const todayParts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Kolkata",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).formatToParts(new Date()).reduce((parts, part) => {
-        if (part.type !== "literal") parts[part.type] = Number(part.value);
-        return parts;
-    }, {});
-
-    let age = todayParts.year - birthYear;
-    if (
-        todayParts.month < birthMonth ||
-        (todayParts.month === birthMonth && todayParts.day < birthDay)
-    ) age--;
-
-    return age >= 0 ? age : null;
-}
-
 function safeSocialUrl(value) {
     try {
         const url = new URL(value);
@@ -84,7 +48,7 @@ async function loadProfile() {
         document.getElementById("profileName").textContent = user.name;
         document.getElementById("profileUsername").textContent = `@${user.username}`;
 
-        const age = calculateAge(user.dateOfBirth);
+        const age = Number.isInteger(user.age) ? user.age : null;
         const hasAge = age !== null;
         document.getElementById("profileAge").textContent = hasAge ? age : "";
         document.getElementById("profileAgeSection").hidden = !hasAge;

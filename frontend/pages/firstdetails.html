@@ -35,23 +35,28 @@
                 </div>
 
                 <form id="profileForm" class="setup-form">
-                    <div class="setup-field">
-                        <label for="dateOfBirth">Date of birth <span class="optional-label">Optional</span></label>
-                        <input
-                            type="date"
-                            id="dateOfBirth"
-                            autocomplete="bday"
-                            aria-describedby="dateOfBirthHint dateOfBirthError"
-                            
-     
-                            onkeydown="return false"
-                        onpaste="return false"
-                        placeholder="Click the Calender"
-                        >
-                        <small id="dateOfBirthHint" class="field-hint">Your age can be shown on your profile; your full birth date is not displayed.</small>
-                        <small id="dateOfBirthError" class="field-hint age-validation-message" role="alert" hidden>You must be at least 5 years old to create an account.</small>
-                    </div>
 
+<div class="setup-field">
+    <label for="age">
+        Age <span class="optional-label">Optional</span>
+    </label>
+
+    <input
+        type="number"
+        id="age"
+        name="age"
+        min="0"
+        max="120"
+        step="1"
+        inputmode="numeric"
+        placeholder="e.g. 28"
+        aria-describedby="ageHint"
+    >
+
+    <small id="ageHint" class="field-hint">
+        Age is shown on your profile and automatically increases every January.
+    </small>
+</div>
                     <div class="metrics-grid">
                         <div class="setup-field">
                             <label for="height">Height </label>

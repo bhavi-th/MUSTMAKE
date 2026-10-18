@@ -5,9 +5,7 @@ const OTP = require("../models/OTP");
 const connectDB = require("../config/database");
 const cloudinary = require("../config/cloudinary");
 const {
-    isPlainObject,
-    isValidDateOnly,
-    isAtLeastAge
+    isPlainObject
 } = require("../utils/validation");
 const { getDateString } = require("../utils/date");
 
@@ -18,7 +16,7 @@ const getProfile = async (req, res) => {
             const user =
                 await User.findById(
                     req.userId
-                ).select("-passwordHash");
+                ).select("-passwordHash +ageReferenceYear");
 
             if (!user) {
                 return res.status(404).json({
@@ -55,7 +53,7 @@ const updateProfile = async (req, res) => {
 
             const {
                 name,
-                dateOfBirth,
+                age,
                 height,
                 weight,
                 profilePicture,
@@ -70,19 +68,21 @@ const updateProfile = async (req, res) => {
                 normalizedName = name.trim();
             }
 
-            let normalizedDateOfBirth;
-            if (dateOfBirth !== undefined) {
-                if (dateOfBirth === null || dateOfBirth === "") {
-                    normalizedDateOfBirth = null;
+            let normalizedAge;
+            if (age !== undefined) {
+                if (age === null || age === "") {
+                    normalizedAge = null;
                 } else if (
-                    !isValidDateOnly(dateOfBirth) ||
-                    dateOfBirth > getDateString()
+                    (typeof age !== "number" && typeof age !== "string") ||
+                    (typeof age === "string" && age.trim() === "")
                 ) {
-                    return res.status(400).json({ message: "Enter a valid date of birth that is not in the future." });
-                } else if (!isAtLeastAge(dateOfBirth, 5)) {
-                    return res.status(400).json({ message: "You must be at least 5 years old to create an account." });
+                    return res.status(400).json({ message: "Age must be a whole number between 0 and 120." });
                 } else {
-                    normalizedDateOfBirth = new Date(`${dateOfBirth}T00:00:00.000Z`);
+                    const numericAge = Number(age);
+                    if (!Number.isInteger(numericAge) || numericAge < 0 || numericAge > 120) {
+                        return res.status(400).json({ message: "Age must be a whole number between 0 and 120." });
+                    }
+                    normalizedAge = numericAge;
                 }
             }
 
@@ -138,7 +138,7 @@ const updateProfile = async (req, res) => {
             const user =
                 await User.findById(
                     req.userId
-                );
+                ).select("+ageReferenceYear");
 
             if (!user) {
                 return res.status(404).json({
@@ -178,7 +178,12 @@ const updateProfile = async (req, res) => {
 
             if (normalizedName !== undefined) user.name = normalizedName;
 
-            if (normalizedDateOfBirth !== undefined) user.dateOfBirth = normalizedDateOfBirth;
+            if (normalizedAge !== undefined) {
+                user.age = normalizedAge;
+                user.ageReferenceYear = normalizedAge === null
+                    ? null
+                    : Number(getDateString().slice(0, 4));
+            }
 
             if (normalizedHeight) user.height = normalizedHeight.value;
 
@@ -201,7 +206,7 @@ const updateProfile = async (req, res) => {
             const updatedUser =
                 await User.findById(
                     req.userId
-                ).select("-passwordHash");
+                ).select("-passwordHash +ageReferenceYear");
 
             res.json({
                 success: true,

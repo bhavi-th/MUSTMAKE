@@ -49,7 +49,7 @@ passport.use(
                     await User.findOne({
                         googleId:
                             profile.id
-                    });
+                    }).select("+ageReferenceYear");
 
                 // If Google ID doesn't exist, try matching email
 
@@ -59,7 +59,7 @@ passport.use(
                         await User.findOne({
                             email:
                                 email.toLowerCase()
-                        });
+                        }).select("+ageReferenceYear");
                 }
 
                 // Create new account

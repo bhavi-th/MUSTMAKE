@@ -25,15 +25,17 @@
             <form id="profileForm">
 
                 <div class="form-group">
-                    <label for="dateOfBirth">Date of Birth</label>
+                    <label for="age">Age</label>
                     <input
-                        type="date"
-                        id="dateOfBirth"
-                        required
-                        onkeydown="return false"
-                        onpaste="return false"
-                        placeholder="Click the Calender"
+                        type="number"
+                        id="age"
+                        min="0"
+                        max="120"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="Example: 28"
                     >
+                    <small>We like to know your age for customized suggestions.</small>
                 </div>
 
                 <div class="form-group">
@@ -57,25 +59,35 @@
 
                 <h2>Socials</h2>
 
-                <div class="form-group">
-                    <label for="instagram">Instagram</label>
-                    <input type="url" id="instagram" placeholder="https://instagram.com/...">
-                </div>
+               
+<div class="form-group">
+    <label>Social Links (Maximum 10)</label>
 
-                <div class="form-group">
-                    <label for="youtube">YouTube</label>
-                    <input type="url" id="youtube" placeholder="https://youtube.com/...">
-                </div>
+    <div id="social-links-container">
+        <div class="social-link-item">
+            <input
+                type="text"
+                name="socialPlatform[]"
+                placeholder="Platform name (e.g. Instagram)"
+                maxlength="50"
+            >
+            <input
+                type="url"
+                name="socialUrl[]"
+                placeholder="https://example.com/YOU"
+            >
+            <button type="button" class="remove-social-link"
+                aria-label="Remove social link">×</button>
+        </div>
+    </div>
 
-                <div class="form-group">
-                    <label for="github">GitHub</label>
-                    <input type="url" id="github" placeholder="https://github.com/...">
-                </div>
+    <button type="button" id="add-social-link">
+        + Add Link
+    </button>
 
-                <div class="form-group">
-                    <label for="x">X</label>
-                    <input type="url" id="x" placeholder="https://x.com/...">
-                </div>
+    <small id="social-links-count">1 of 10 links</small>
+</div>
+
 
                 <button type="submit" class="main-button">Save Profile</button>
 

@@ -49,39 +49,9 @@ function safeImageUrl(value) {
     }
 }
 
-function calculateAge(dateOfBirth) {
-    const match = String(dateOfBirth || "").slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!match) return null;
-
-    const [, yearText, monthText, dayText] = match;
-    const year = Number(yearText);
-    const month = Number(monthText);
-    const day = Number(dayText);
-    const birthDate = new Date(Date.UTC(year, month - 1, day));
-    if (
-        birthDate.getUTCFullYear() !== year ||
-        birthDate.getUTCMonth() !== month - 1 ||
-        birthDate.getUTCDate() !== day
-    ) return null;
-
-    const today = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Kolkata",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).formatToParts(new Date()).reduce((parts, part) => {
-        if (part.type !== "literal") parts[part.type] = Number(part.value);
-        return parts;
-    }, {});
-
-    let age = today.year - year;
-    if (today.month < month || (today.month === month && today.day < day)) age--;
-    return age >= 0 ? age : null;
-}
-
 function displayProfile({ user, workoutHistory = [] }) {
     const photo = safeImageUrl(user.profilePicture) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=181818&color=ffffff`;
-    const age = calculateAge(user.dateOfBirth);
+    const age = Number.isInteger(user.age) ? user.age : null;
     const hasHeight = user.height !== null && user.height !== undefined &&
         String(user.height).trim() !== "";
     const hasWeight = user.weight !== null && user.weight !== undefined &&

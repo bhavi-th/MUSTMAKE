@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        try {
+            const isAuthenticated = Boolean(
+                localStorage.getItem("token") &&
+                JSON.parse(localStorage.getItem("user") || "null")
+            );
+            if (!isAuthenticated) window.location.replace("/pages/gst.html");
+        } catch {
+            window.location.replace("/pages/gst.html");
+        }
+    </script>
     <script src="/js/core/change_backend_url.js"></script>
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
     <title>Today | MUSTMAKE</title>
@@ -16,11 +27,11 @@
         <section id="guestCta" class="today-guest" hidden>
             <section class="hero">
                 <h1>Today</h1>
-                <p class="subtitle">Sign in to see your workouts and daily streak.</p>
+                <p class="subtitle">Log in to see your workouts and daily streak.</p>
             </section>
             <p class="auth-footer"><a href="/login">Sign in</a> · <a href="/signup">Create account</a></p>
         </section>
-
+<!-- //normal -->
         <section id="personalDashboard" hidden>
             <section class="hero">
                 <h1 id="todayDate">Loading...</h1>
@@ -41,14 +52,24 @@
                 <div id="userWorkouts" class="workouts">Loading workouts...</div>
             </section>
 
-            <section class="actions">
-                <a href="/add-workout" class="main-button">+ Add Workout</a>
-                <a href="/history" class="secondary-button">View History</a>
-            </section>
+          
         </section>
+        <!-- //normal end  -->
+
+    <main class="container exercise-library-page">
+        <section class="exercise-library" aria-labelledby="exerciseLibraryTitle">
+            <div class="library-heading">
+                <p id="exerciseCount" class="exercise-count" aria-live="polite">12 exercises</p>
+            </div>
+
+            <div id="exerciseGrid" class="exercise-library-groups" aria-live="polite"></div>
+        </section>
+    </main>
+
     </main>
 
     <script src="/js/shared/navbar.js"></script>
     <script src="/js/features/workouts/script.js"></script>
+    <script src="/js/features/exercises/exercise-library.js"></script>
 </body>
 </html>

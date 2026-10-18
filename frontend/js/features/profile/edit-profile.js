@@ -10,54 +10,9 @@ function logout() {
 
 const profilePictureInput = document.getElementById("profilePicture");
 const photoPreview = document.getElementById("photoPreview");
-const dateOfBirthInput = document.getElementById("dateOfBirth");
-const dateOfBirthError = document.getElementById("dateOfBirthError");
+const ageInput = document.getElementById("age");
 const deleteAccountButton = document.getElementById("deleteAccountButton");
 const deleteAccountMessage = document.getElementById("deleteAccountMessage");
-
-function getMinimumBirthDate() {
-    const today = new Date();
-    const year = today.getFullYear() - 5;
-    const month = today.getMonth();
-    const day = Math.min(today.getDate(), new Date(year, month + 1, 0).getDate());
-    const pad = value => String(value).padStart(2, "0");
-
-    return `${year}-${pad(month + 1)}-${pad(day)}`;
-}
-
-function isAtLeastFiveYearsOld(value) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
-    const [birthYear, birthMonth, birthDay] = value.split("-").map(Number);
-    const today = new Date();
-    let age = today.getFullYear() - birthYear;
-    const birthdayHasPassed = today.getMonth() + 1 > birthMonth ||
-        (today.getMonth() + 1 === birthMonth && today.getDate() >= birthDay);
-
-    if (!birthdayHasPassed) age -= 1;
-    return age >= 5;
-}
-
-function validateDateOfBirth(reportValidity = false) {
-    if (!dateOfBirthInput.value) {
-        dateOfBirthInput.setCustomValidity("");
-        if (dateOfBirthError) dateOfBirthError.hidden = true;
-        return true;
-    }
-
-    const isOldEnough = isAtLeastFiveYearsOld(dateOfBirthInput.value);
-    const error = isOldEnough ? "" : "You must be at least 5 years old to create an account.";
-
-    dateOfBirthInput.setCustomValidity(error);
-    if (dateOfBirthError) dateOfBirthError.hidden = isOldEnough;
-    if (!isOldEnough && reportValidity) dateOfBirthInput.reportValidity();
-
-    return isOldEnough;
-}
-
-dateOfBirthInput.max = getMinimumBirthDate();
-dateOfBirthInput.addEventListener("input", () => validateDateOfBirth());
-dateOfBirthInput.addEventListener("change", () => validateDateOfBirth());
 
 profilePictureInput.addEventListener("change", () => {
     const file = profilePictureInput.files[0];
@@ -103,10 +58,7 @@ async function loadProfile() {
 
         const user = data.user;
 
-        if (user.dateOfBirth) {
-            dateOfBirthInput.value = user.dateOfBirth.split("T")[0];
-            validateDateOfBirth();
-        }
+        ageInput.value = user.age ?? "";
 
         document.getElementById("height").value = user.height || "";
         document.getElementById("weight").value = user.weight || "";
@@ -138,16 +90,11 @@ profileForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const message = document.getElementById("profileMessage");
-    if (!validateDateOfBirth(true)) {
-        message.textContent = "You must be at least 5 years old to create an account.";
-        return;
-    }
-
     message.textContent = "Saving...";
 
     try {
         const payload = {
-            dateOfBirth: dateOfBirthInput.value,
+            age: ageInput.value,
             height: document.getElementById("height").value,
             weight: document.getElementById("weight").value,
             socials: {

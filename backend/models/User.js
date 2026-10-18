@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { getDateString } = require("../utils/date");
 
 const userSchema = new mongoose.Schema(
     {
@@ -40,9 +41,26 @@ const userSchema = new mongoose.Schema(
             default: null
         },
 
-        dateOfBirth: {
-            type: Date,
-            default: null
+        age: {
+            type: Number,
+            min: 0,
+            max: 120,
+            default: null,
+            get(value) {
+                if (value === null || value === undefined) return value;
+
+                const referenceYear = this.get("ageReferenceYear");
+                if (!Number.isInteger(referenceYear)) return value;
+
+                const currentYear = Number(getDateString().slice(0, 4));
+                return value + currentYear - referenceYear;
+            }
+        },
+
+        ageReferenceYear: {
+            type: Number,
+            default: null,
+            select: false
         },
 
         height: {
@@ -78,7 +96,9 @@ const userSchema = new mongoose.Schema(
         }
     },
     {
-        timestamps: true
+        timestamps: true,
+        toJSON: { getters: true },
+        toObject: { getters: true }
     }
 );
 

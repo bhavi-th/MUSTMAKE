@@ -169,7 +169,7 @@ const getCompetitors = async (req, res) => {
                     { createdAt: { $gte: recentCutoff } }
                 ]
             })
-                .select("user exercise reps sets weight amount unit date createdAt")
+                .select("user exercise reps sets weight amount duration unit date createdAt")
                 .sort({ createdAt: 1 });
             const byUser = new Map();
             for (const record of records) {

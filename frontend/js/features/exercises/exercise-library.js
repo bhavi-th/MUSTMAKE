@@ -1,85 +1,10 @@
-
 (() => {
     "use strict";
 
-    const exerciseGroups = [
-        {
-            key: "bodyweight",
-            title: "Pure Yourself",
-            exercises: [
-                "Push-ups",
-                "Pull-ups",
-                "Squats",
-                "Plank",
-                "Jumping Jacks",
-                "Skipping Rope",
-                "Running",
-                "Walking"
-            ]
-        },
-        {
-            key: "dumbbells",
-            title: "With Dumbbells",
-            exercises: [
-                "Biceps Curls",
-                "Shoulder Press",
-                "Lateral Raises",
-                "Triceps Extension"
-            ]
-        }
+    const groups = [
+        { key: "bodyweight", title: "Pure Yourself" },
+        { key: "dumbbells", title: "With Dumbbells" }
     ];
-
-    const exerciseMedia = {
-        "Push-ups": {
-            src: "/assets/images/pushups.mp4",
-            type: "video"
-        },
-        "Pull-ups": {
-            src: "/assets/images/pullups.mp4",
-            type: "video"
-        },
-        "Squats": {
-            src: "/assets/images/squats.mp4",
-            type: "video"
-        },
-        "Plank": {
-            src: "/assets/images/plank.jpeg",
-            type: "image"
-        },
-        "Jumping Jacks": {
-            src: "/assets/images/jumping_jacks.mp4",
-            type: "video"
-        },
-        "Skipping Rope": {
-            src: "/assets/images/skipping.mp4",
-            type: "video"
-        },
-        "Running": {
-            src: "/assets/images/running.mp4",
-            type: "video"
-        },
-        "Walking": {
-            src: "/assets/images/walking.mp4",
-            type: "video"
-        },
-        "Biceps Curls": {
-            src: "/assets/images/bicepcurl.mp4",
-            type: "video"
-        },
-        "Shoulder Press": {
-            src: "/assets/images/Shoulder_press.mp4",
-            type: "video"
-        },
-        "Lateral Raises": {
-            src: "/assets/images/lateral_raises.mp4",
-            type: "video"
-        },
-        "Triceps Extension": {
-            src: "/assets/images/tricep_extension.mp4",
-            type: "video"
-        }
-    };
-
     const grid = document.getElementById("exerciseGrid");
     if (!grid) return;
 
@@ -92,42 +17,42 @@
             "'": "&#39;"
         })[character]);
 
-    function renderExerciseMedia(name) {
-        const media = exerciseMedia[name];
-
+    function renderMedia(exercise) {
+        const media = exercise.media;
         if (!media) return "";
 
         if (media.type === "image") {
-            return `
-                <img
-                    class="exercise-media"
-                    src="${media.src}"
-                    alt="${escapeHTML(name)}"
-                    loading="lazy"
-                >
-            `;
+            return `<img class="exercise-media" src="${escapeHTML(media.src)}" alt="${escapeHTML(exercise.name)} demonstration" loading="lazy">`;
         }
 
         return `
-            <video
-                class="exercise-media exercise-demo"
-                muted
-                loop
-                playsinline
-                preload="none"
-                aria-label="${escapeHTML(name)} demonstration"
-            >
-                <source src="${media.src}" type="video/mp4">
+            <video class="exercise-media exercise-demo" muted loop playsinline preload="none" aria-label="${escapeHTML(exercise.name)} demonstration">
+                <source src="${escapeHTML(media.src)}" type="video/mp4">
             </video>
         `;
     }
 
-    // Play visible videos and pause videos outside the viewport.
-    const exerciseVideoObserver = new IntersectionObserver(
-        entries => {
+    function renderExercise(exercise) {
+        return `
+            <article class="exercise-card">
+                <a class="exercise-card-link" href="/exercises/${encodeURIComponent(exercise.slug)}" aria-label="Open ${escapeHTML(exercise.name)} workout">
+                    <div class="exercise-card-media">
+                        ${renderMedia(exercise)}
+                    </div>
+                    <div class="exercise-card-content">
+                        <h3>${escapeHTML(exercise.name)}</h3>
+                    </div>
+                </a>
+            </article>
+        `;
+    }
+
+    function observeVideos() {
+        if (typeof IntersectionObserver !== "function") return;
+
+        const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 const video = entry.target;
-
                 if (entry.isIntersecting) {
                     video.play().catch(() => {});
                 } else {
@@ -135,55 +60,54 @@
                     video.currentTime = 0;
                 }
             });
-        },
-        {
-            threshold: 0.4
+        }, { threshold: 0.4 });
+
+        grid.querySelectorAll(".exercise-demo").forEach(video => observer.observe(video));
+    }
+
+    async function loadExercises() {
+        let apiError;
+        try {
+            const response = await fetch(`${window.API_URL}/api/exercises`);
+            if (!response.ok) throw new Error(`Exercise API returned ${response.status}.`);
+            const exercises = await response.json();
+            if (!Array.isArray(exercises)) throw new Error("Exercise API returned an invalid catalog.");
+            return exercises;
+        } catch (error) {
+            apiError = error;
         }
-    );
 
-    function observeExerciseVideos(root = grid) {
-        root.querySelectorAll(".exercise-demo:not([data-observed])")
-            .forEach(video => {
-                video.dataset.observed = "true";
-                exerciseVideoObserver.observe(video);
-            });
+        const response = await fetch("/data/exercises.json");
+        if (!response.ok) throw apiError;
+        const exercises = await response.json();
+        if (!Array.isArray(exercises)) throw apiError;
+        console.warn("Exercise API unavailable; loaded the bundled exercise catalog instead.", apiError);
+        return exercises;
     }
 
-    function renderExercise(name) {
-        return `
-            <article class="exercise-card">
-                <div class="exercise-card-media">
-                    ${renderExerciseMedia(name)}
-                </div>
+    async function render() {
+        try {
+            const exercises = await loadExercises();
 
-                <div class="exercise-card-content">
-                    <h3>${escapeHTML(name)}</h3>
-                </div>
-            </article>
-        `;
-    }
+            grid.innerHTML = groups.map(group => {
+                const groupExercises = exercises.filter(exercise => exercise.group === group.key);
+                return `
+                    <section class="exercise-section" aria-labelledby="exerciseGroup-${group.key}">
+                        <div class="exercise-section-heading">
+                            <h2 id="exerciseGroup-${group.key}">${escapeHTML(group.title)}</h2>
+                        </div>
+                        <div class="exercise-list exercise-grid">
+                            ${groupExercises.map(renderExercise).join("")}
+                        </div>
+                    </section>
+                `;
+            }).join("");
 
-    function render() {
-        grid.innerHTML = exerciseGroups.map((group, index) => `
-            <section
-                class="exercise-section"
-                aria-labelledby="exerciseGroup${index}"
-            >
-                <div class="exercise-section-heading">
-                    <h2 id="exerciseGroup${index}">
-                        ${escapeHTML(group.title)}
-                    </h2>
-                </div>
-
-                <div class="exercise-list exercise-grid">
-                    ${group.exercises
-                        .map(renderExercise)
-                        .join("")}
-                </div>
-            </section>
-        `).join("");
-
-        observeExerciseVideos(grid);
+            observeVideos();
+        } catch (error) {
+            console.error("Exercise library error:", error);
+            grid.innerHTML = '<p class="no-workout">The exercise library could not be loaded.</p>';
+        }
     }
 
     render();

@@ -13,7 +13,9 @@ const profileRoutes = require("./routes/profile.routes");
 const usersRoutes = require("./routes/users.routes");
 const competitionRoutes = require("./routes/competition.routes");
 const workoutsRoutes = require("./routes/workouts.routes");
+const exercisesRoutes = require("./routes/exercises.routes");
 const errorHandler = require("./middleware/error-handler");
+const exercises = require("./config/exercises.json");
 
 const app = express();
 
@@ -45,6 +47,7 @@ app.use(usersRoutes);
 app.use(profileRoutes);
 app.use(competitionRoutes);
 app.use(workoutsRoutes);
+app.use(exercisesRoutes);
 
 app.get("/", (req, res) => {
     res.json({
@@ -78,6 +81,16 @@ if (fs.existsSync(frontendRoot)) {
             });
         });
     }
+
+    const exercisePageSlugs = new Set(exercises.map(exercise => exercise.slug));
+    app.get("/exercises/:exercise", (req, res, next) => {
+        const slug = req.params.exercise;
+        if (!exercisePageSlugs.has(slug)) return next();
+
+        res.sendFile(path.join(frontendRoot, "exercises", slug, "index.html"), error => {
+            if (error) next(error);
+        });
+    });
 
     app.use(express.static(frontendRoot));
 }

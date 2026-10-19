@@ -84,29 +84,33 @@ function escapeHTML(value) {
 }
 
 function workoutDetails(workout) {
-    if (
-        workout.exercise === "Push-ups" ||
-        workout.exercise === "Pull-ups" ||
-        workout.exercise === "Squats"
-    ) {
-        const total = workout.reps * workout.sets;
-        return `${workout.reps} reps × ${workout.sets} sets = ${total} reps`;
+    const duration = Number(workout.duration);
+    const durationText = Number.isFinite(duration) && duration > 0
+        ? formatWorkoutDuration(duration)
+        : "";
+
+    if (workout.reps != null && workout.sets != null) {
+        const reps = Number(workout.reps);
+        const sets = Number(workout.sets);
+        const total = reps * sets;
+        const weight = workout.weight != null ? `${workout.weight} kg each hand · ` : "";
+        return `${weight}${reps} reps × ${sets} sets = ${total} reps`;
     }
 
-    if (workout.exercise === "Dumbbell") {
-        const total = workout.reps * workout.sets;
-        return `${workout.weight} kg each hand · ${workout.reps} reps × ${workout.sets} sets = ${total} reps`;
+    if (workout.amount != null) {
+        const amountText = `${workout.amount}${workout.unit ? ` ${workout.unit}` : ""}`;
+        return durationText ? `${amountText} · ${durationText}` : amountText;
     }
 
-    if (workout.exercise === "Skipping Rope") {
-        return `${workout.amount} jumps`;
-    }
+    return durationText;
+}
 
-    if (workout.exercise === "Running" || workout.exercise === "Walking") {
-        return `${workout.amount} km`;
-    }
-
-    return "";
+function formatWorkoutDuration(seconds) {
+    const wholeSeconds = Math.round(seconds);
+    const minutes = Math.floor(wholeSeconds / 60);
+    const remainingSeconds = wholeSeconds % 60;
+    if (!minutes) return `${remainingSeconds} sec`;
+    return remainingSeconds ? `${minutes} min ${remainingSeconds} sec` : `${minutes} min`;
 }
 
 async function loadToday() {

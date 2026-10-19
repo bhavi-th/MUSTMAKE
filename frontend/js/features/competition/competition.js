@@ -260,9 +260,24 @@ function workoutDetails(workout) {
         return `${workout.reps} reps × ${workout.sets} sets${weight}`;
     }
     if (workout.amount != null) {
-        return `${workout.amount}${workout.unit ? ` ${workout.unit}` : ""}`;
+        const amount = `${workout.amount}${workout.unit ? ` ${workout.unit}` : ""}`;
+        const duration = Number(workout.duration);
+        return Number.isFinite(duration) && duration > 0
+            ? `${amount} · ${formatWorkoutDuration(duration)}`
+            : amount;
     }
-    return "";
+    const duration = Number(workout.duration);
+    return Number.isFinite(duration) && duration > 0
+        ? formatWorkoutDuration(duration)
+        : "";
+}
+
+function formatWorkoutDuration(seconds) {
+    const wholeSeconds = Math.round(seconds);
+    const minutes = Math.floor(wholeSeconds / 60);
+    const remainingSeconds = wholeSeconds % 60;
+    if (!minutes) return `${remainingSeconds} sec`;
+    return remainingSeconds ? `${minutes} min ${remainingSeconds} sec` : `${minutes} min`;
 }
 
 if (!getToken()) {

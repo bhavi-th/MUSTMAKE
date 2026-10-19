@@ -1,0 +1,280 @@
+(() => {
+    "use strict";
+
+    const root = document.getElementById("exerciseDetail");
+    const slug = document.body.dataset.exerciseSlug;
+    if (!root || !slug) return;
+
+    const escapeHTML = value =>
+        String(value ?? "").replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[character]);
+
+    function renderMedia(exercise) {
+        if (exercise.media?.type === "image") {
+            return `<img class="exercise-detail-media" src="${escapeHTML(exercise.media.src)}" alt="${escapeHTML(exercise.name)} demonstration">`;
+        }
+
+        if (exercise.media?.type === "video") {
+            return `
+                <video class="exercise-detail-media" controls muted playsinline preload="metadata" aria-label="${escapeHTML(exercise.name)} demonstration video">
+                    <source src="${escapeHTML(exercise.media.src)}" type="video/mp4">
+                    Your browser does not support video playback.
+                </video>
+            `;
+        }
+
+        return '<div class="exercise-detail-media exercise-media-placeholder" role="img" aria-label="No exercise demonstration is available">Demonstration coming soon</div>';
+    }
+
+    function renderField(field) {
+        const id = `workout-${field.name}`;
+        return `
+            <div class="exercise-form-field">
+                <label for="${escapeHTML(id)}">${escapeHTML(field.label)}</label>
+                <input
+                    id="${escapeHTML(id)}"
+                    name="${escapeHTML(field.name)}"
+                    type="number"
+                    min="${escapeHTML(field.min)}"
+                    step="${escapeHTML(field.step)}"
+                    inputmode="decimal"
+                    required
+                >
+            </div>
+        `;
+    }
+
+    function renderManualMode(exercise) {
+        return `
+            <div class="exercise-mode-content">
+                <div class="exercise-mode-intro">
+                    <span class="exercise-mode-kicker">Manual Entry</span>
+                    <h2 id="exerciseModeTitle">Record your session</h2>
+                    <p>Enter the details below to add this workout to your history.</p>
+                </div>
+                <form id="manualWorkoutForm" class="exercise-workout-form">
+                    <div class="exercise-form-grid">
+                        ${exercise.fields.map(renderField).join("")}
+                    </div>
+                    <p id="exerciseFormMessage" class="exercise-form-message" role="status" aria-live="polite"></p>
+                    <button class="main-button exercise-done-button" type="submit">Done</button>
+                </form>
+            </div>
+        `;
+    }
+
+    function renderAiMode() {
+        return `
+            <div class="exercise-ai-coming-soon">
+                <span class="exercise-coming-soon-badge">Coming Soon</span>
+                <div class="exercise-ai-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none">
+                        <rect x="7" y="10" width="34" height="27" rx="8" />
+                        <circle cx="18" cy="23" r="2" />
+                        <circle cx="30" cy="23" r="2" />
+                        <path d="M18 30c3.3 2.5 8.7 2.5 12 0M24 4v6" />
+                    </svg>
+                </div>
+                <p class="exercise-mode-kicker">AI Mode</p>
+                <h2 id="aiModeTitle">Smarter workout tracking is on the way</h2>
+                <p>Automatic exercise detection and movement feedback are being developed for this exercise. AI Mode is not active yet.</p>
+            </div>
+        `;
+    }
+
+    function render(exercise) {
+        const supportedModes = Array.isArray(exercise.modes)
+            ? exercise.modes.filter(mode => mode === "ai" || mode === "manual")
+            : ["manual"];
+        const hasAiMode = supportedModes.includes("ai");
+        const hasManualMode = supportedModes.includes("manual");
+        const selectedMode = hasManualMode ? "manual" : hasAiMode ? "ai" : null;
+        const modeLabel = mode => mode === "ai" ? "AI Mode" : "Manual Entry";
+        const modeButtons = supportedModes.length > 1
+            ? `
+                <div class="exercise-mode-tabs" role="tablist" aria-label="Workout mode">
+                    ${supportedModes.map(mode => `
+                        <button type="button" role="tab" id="${mode}ModeTab" tabindex="${mode === selectedMode ? "0" : "-1"}" aria-selected="${mode === selectedMode}" aria-controls="exerciseModeContent" data-exercise-mode="${mode}">${modeLabel(mode)}</button>
+                    `).join("")}
+                </div>
+            `
+            : "";
+
+        const initialModeContent = selectedMode === "ai"
+            ? renderAiMode()
+            : selectedMode === "manual"
+                ? renderManualMode(exercise)
+                : '<p class="no-workout">No workout modes are configured for this exercise.</p>';
+        const panelAttributes = supportedModes.length > 1
+            ? `role="tabpanel" aria-labelledby="${selectedMode}ModeTab" tabindex="0"`
+            : selectedMode
+                ? `aria-labelledby="${selectedMode === "ai" ? "aiModeTitle" : "exerciseModeTitle"}"`
+                : "";
+
+        document.title = `${exercise.name} | MUSTMAKE`;
+        root.innerHTML = `
+            <a class="exercise-back-link" href="/today">&larr; Back to exercises</a>
+            <header class="exercise-detail-heading">
+                <p class="exercise-detail-eyebrow">${exercise.group === "dumbbells" ? "Dumbbell exercise" : "Bodyweight exercise"}</p>
+                <h1>${escapeHTML(exercise.name)}</h1>
+                <p>Choose a workout mode and record your progress.</p>
+            </header>
+            <div class="exercise-detail-layout">
+                <section class="exercise-demo-panel" aria-label="Exercise demonstration">
+                    ${renderMedia(exercise)}
+                </section>
+                <section class="exercise-workout-panel" aria-label="Workout modes">
+                    ${modeButtons}
+                    <div id="exerciseModeContent" class="exercise-mode-panel" ${panelAttributes}>
+                        ${initialModeContent}
+                    </div>
+                </section>
+            </div>
+        `;
+
+        const modeContent = root.querySelector("#exerciseModeContent");
+        const tabs = [...root.querySelectorAll("[data-exercise-mode]")];
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(item => {
+                    const selected = item === tab;
+                    item.setAttribute("aria-selected", String(selected));
+                    item.tabIndex = selected ? 0 : -1;
+                });
+                const mode = tab.dataset.exerciseMode;
+                modeContent.setAttribute("aria-labelledby", mode === "ai" ? "aiModeTab" : "manualModeTab");
+                modeContent.innerHTML = mode === "ai" ? renderAiMode() : renderManualMode(exercise);
+                bindManualForm(exercise);
+            });
+
+            tab.addEventListener("keydown", event => {
+                if (!tabs.length) return;
+                let nextIndex = tabs.indexOf(tab);
+                if (event.key === "ArrowRight") nextIndex = (nextIndex + 1) % tabs.length;
+                else if (event.key === "ArrowLeft") nextIndex = (nextIndex - 1 + tabs.length) % tabs.length;
+                else if (event.key === "Home") nextIndex = 0;
+                else if (event.key === "End") nextIndex = tabs.length - 1;
+                else return;
+
+                event.preventDefault();
+                tabs[nextIndex].focus();
+                tabs[nextIndex].click();
+            });
+        });
+
+        if (selectedMode === "manual") bindManualForm(exercise);
+    }
+
+    function buildWorkoutPayload(exercise, form) {
+        const values = new FormData(form);
+        const payload = { exercise: exercise.name };
+
+        exercise.fields.forEach(field => {
+            const value = Number(values.get(field.name));
+            if (field.name === "durationMinutes") {
+                payload.duration = Math.round(value * 60);
+            } else {
+                payload[field.name] = value;
+            }
+        });
+
+        if (exercise.manualType === "distance-duration") payload.unit = "km";
+        if (exercise.manualType === "jumps-duration") payload.unit = "jumps";
+        return payload;
+    }
+
+    function bindManualForm(exercise) {
+        const form = root.querySelector("#manualWorkoutForm");
+        if (!form) return;
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            const message = root.querySelector("#exerciseFormMessage");
+            const button = form.querySelector("button[type='submit']");
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                message.innerHTML = 'Please <a href="/login">sign in</a> to save your workout.';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Saving…";
+            message.textContent = "Saving your workout…";
+
+            try {
+                const response = await fetch(`${window.API_URL}/api/workouts`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(buildWorkoutPayload(exercise, form))
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    message.innerHTML = 'Your session expired. Please <a href="/login">sign in</a> again.';
+                    return;
+                }
+                if (!response.ok) {
+                    message.textContent = data.message || "Could not save this workout. Check the values and try again.";
+                    return;
+                }
+
+                form.reset();
+                message.innerHTML = 'Workout saved. <a href="/today">View today</a> or <a href="/history">open history</a>.';
+            } catch (error) {
+                console.error("Save workout error:", error);
+                message.textContent = "Could not connect to the server. Please try again.";
+            } finally {
+                button.disabled = false;
+                button.textContent = "Done";
+            }
+        });
+    }
+
+    async function loadExercises() {
+        let apiError;
+        try {
+            const response = await fetch(`${window.API_URL}/api/exercises`);
+            if (!response.ok) throw new Error(`Exercise API returned ${response.status}.`);
+            const exercises = await response.json();
+            if (!Array.isArray(exercises)) throw new Error("Exercise API returned an invalid catalog.");
+            return exercises;
+        } catch (error) {
+            apiError = error;
+        }
+
+        const response = await fetch("/data/exercises.json");
+        if (!response.ok) throw apiError;
+        const exercises = await response.json();
+        if (!Array.isArray(exercises)) throw apiError;
+        console.warn("Exercise API unavailable; loaded the bundled exercise catalog instead.", apiError);
+        return exercises;
+    }
+
+    async function loadExercise() {
+        try {
+            const exercises = await loadExercises();
+            const exercise = exercises.find(item => item.slug === slug);
+            if (!exercise) throw new Error("This exercise could not be found.");
+            render(exercise);
+        } catch (error) {
+            console.error("Exercise detail error:", error);
+            root.innerHTML = `
+                <a class="exercise-back-link" href="/today">&larr; Back to exercises</a>
+                <p class="no-workout">${escapeHTML(error.message || "This exercise could not be loaded.")}</p>
+            `;
+        }
+    }
+
+    loadExercise();
+})();

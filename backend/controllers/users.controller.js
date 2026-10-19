@@ -144,7 +144,7 @@ const getPublicProfile = async (req, res) => {
             }
 
             const workoutHistory = await Workout.find({ user: user._id })
-                .select("exercise reps sets weight amount unit date createdAt")
+                .select("exercise reps sets weight amount duration unit date createdAt")
                 .sort({ date: -1, createdAt: -1 })
                 .lean();
 

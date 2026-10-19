@@ -26,9 +26,25 @@ function workoutDetails(workout) {
         return `${escapeHtml(workout.reps)} reps × ${escapeHtml(workout.sets)} sets = ${escapeHtml(volume)} reps${weight}`;
     }
     if (workout.amount != null) {
-        return `${escapeHtml(workout.amount)}${workout.unit ? ` ${escapeHtml(workout.unit)}` : ""}`;
+        const amount = `${escapeHtml(workout.amount)}${workout.unit ? ` ${escapeHtml(workout.unit)}` : ""}`;
+        const duration = Number(workout.duration);
+        return Number.isFinite(duration) && duration > 0
+            ? `${amount} · ${escapeHtml(formatWorkoutDuration(duration))}`
+            : amount;
+    }
+    const duration = Number(workout.duration);
+    if (Number.isFinite(duration) && duration > 0) {
+        return escapeHtml(formatWorkoutDuration(duration));
     }
     return "Workout details not recorded";
+}
+
+function formatWorkoutDuration(seconds) {
+    const wholeSeconds = Math.round(seconds);
+    const minutes = Math.floor(wholeSeconds / 60);
+    const remainingSeconds = wholeSeconds % 60;
+    if (!minutes) return `${remainingSeconds} sec`;
+    return remainingSeconds ? `${minutes} min ${remainingSeconds} sec` : `${minutes} min`;
 }
 
 function safeSocialUrl(value) {

@@ -33,6 +33,12 @@ const workoutSchema = new mongoose.Schema(
             default: null
         },
 
+        duration: {
+            type: Number,
+            min: 1,
+            default: null
+        },
+
         unit: {
             type: String,
             default: null

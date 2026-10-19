@@ -4,105 +4,99 @@ const connectDB = require("../config/database");
 const { getDateString, calculateStreak } = require("../utils/date");
 const { isPlainObject, parseWorkoutNumber } = require("../utils/validation");
 const { createWorkoutRecord } = require("../services/workout.service");
+const exercises = require("../config/exercises.json");
+
+const exercisesByName = new Map(exercises.map(exercise => [exercise.name, exercise]));
 
 const addWorkout = async (req, res) => {
-
-        try {
-
-            await connectDB();
-
-
-            if (!isPlainObject(req.body)) {
-                return res.status(400).json({ message: "Workout data must be an object." });
-            }
-
-            const { exercise, reps, sets, weight, amount } = req.body;
-            const supportedExercises = new Set([
-                "Push-ups", "Pull-ups", "Dumbbell", "Squats",
-                "Skipping Rope", "Running", "Walking"
-            ]);
-
-            if (typeof exercise !== "string" || !supportedExercises.has(exercise)) {
-                return res.status(400).json({ message: "Select a supported exercise." });
-            }
-
-            let workoutValues = { reps: null, sets: null, weight: null, amount: null, unit: null };
-            if (["Push-ups", "Pull-ups", "Squats"].includes(exercise)) {
-                const parsedReps = parseWorkoutNumber(reps, { integer: true, min: 1 });
-                const parsedSets = parseWorkoutNumber(sets, { integer: true, min: 1 });
-                if (!parsedReps.valid || !parsedSets.valid || !Number.isSafeInteger(parsedReps.value * parsedSets.value)) {
-                    return res.status(400).json({ message: "Reps and sets must be positive whole numbers." });
-                }
-                workoutValues = { ...workoutValues, reps: parsedReps.value, sets: parsedSets.value };
-            } else if (exercise === "Dumbbell") {
-                const parsedWeight = parseWorkoutNumber(weight, { min: 0 });
-                const parsedReps = parseWorkoutNumber(reps, { integer: true, min: 1 });
-                const parsedSets = parseWorkoutNumber(sets, { integer: true, min: 1 });
-                if (!parsedWeight.valid || !parsedReps.valid || !parsedSets.valid || !Number.isSafeInteger(parsedReps.value * parsedSets.value)) {
-                    return res.status(400).json({ message: "Enter a valid weight, reps and sets." });
-                }
-                workoutValues = {
-                    ...workoutValues,
-                    weight: parsedWeight.value,
-                    reps: parsedReps.value,
-                    sets: parsedSets.value
-                };
-            } else {
-                const parsedAmount = parseWorkoutNumber(amount, {
-                    integer: exercise === "Skipping Rope",
-                    min: exercise === "Skipping Rope" ? 1 : 0
-                });
-                if (!parsedAmount.valid) {
-                    return res.status(400).json({ message: "Enter a valid workout amount." });
-                }
-                workoutValues = {
-                    ...workoutValues,
-                    amount: parsedAmount.value,
-                    unit: exercise === "Skipping Rope" ? "jumps" : "km"
-                };
-            }
-
-
-            const date =
-                getDateString();
-
-
-            const workout =
-                await createWorkoutRecord({
-
-                    // IMPORTANT:
-                    // The logged-in user's ID comes
-                    // from the JWT authentication.
-                    user:
-                        req.userId,
-
-                    exercise,
-
-                    ...workoutValues,
-
-                    date
-                });
-
-
-            res.status(201).json(
-                workout
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Save workout error:",
-                error
-            );
-
-
-            res.status(500).json({
-                message:
-                    "Could not save workout."
-            });
+    try {
+        if (!isPlainObject(req.body)) {
+            return res.status(400).json({ message: "Workout data must be an object." });
         }
-    };
+
+        const { exercise, reps, sets, weight, amount, duration } = req.body;
+        const config = exercisesByName.get(exercise);
+        const manualType = exercise === "Dumbbell"
+            ? "weighted-sets-reps"
+            : config?.manualType;
+
+        if (typeof exercise !== "string" || !manualType) {
+            return res.status(400).json({ message: "Select a supported exercise." });
+        }
+
+        let workoutValues = {
+            reps: null,
+            sets: null,
+            weight: null,
+            amount: null,
+            duration: null,
+            unit: null
+        };
+
+        if (manualType === "sets-reps" || manualType === "weighted-sets-reps") {
+            const parsedReps = parseWorkoutNumber(reps, { integer: true, min: 1 });
+            const parsedSets = parseWorkoutNumber(sets, { integer: true, min: 1 });
+            if (!parsedReps.valid || !parsedSets.valid ||
+                !Number.isSafeInteger(parsedReps.value * parsedSets.value)) {
+                return res.status(400).json({ message: "Reps and sets must be positive whole numbers." });
+            }
+
+            workoutValues.reps = parsedReps.value;
+            workoutValues.sets = parsedSets.value;
+
+            if (manualType === "weighted-sets-reps") {
+                const parsedWeight = parseWorkoutNumber(weight, { min: 0 });
+                if (!parsedWeight.valid) {
+                    return res.status(400).json({ message: "Enter a valid weight." });
+                }
+                workoutValues.weight = parsedWeight.value;
+            }
+        } else if (manualType === "duration") {
+            const parsedDuration = parseWorkoutNumber(duration, { integer: true, min: 1 });
+            if (!parsedDuration.valid) {
+                return res.status(400).json({ message: "Duration must be a positive number of seconds." });
+            }
+            workoutValues.duration = parsedDuration.value;
+        } else if (manualType === "distance-duration") {
+            const parsedDistance = parseWorkoutNumber(amount, { min: 0 });
+            const parsedDuration = duration == null || duration === ""
+                ? { valid: true, value: null }
+                : parseWorkoutNumber(duration, { integer: true, min: 1 });
+            if (!parsedDistance.valid || !parsedDuration.valid) {
+                return res.status(400).json({ message: "Enter a positive distance and a valid duration." });
+            }
+            workoutValues.amount = parsedDistance.value;
+            workoutValues.duration = parsedDuration.value;
+            workoutValues.unit = "km";
+        } else if (manualType === "jumps-duration") {
+            const parsedJumps = parseWorkoutNumber(amount, { integer: true, min: 1 });
+            const parsedDuration = duration == null || duration === ""
+                ? { valid: true, value: null }
+                : parseWorkoutNumber(duration, { integer: true, min: 1 });
+            if (!parsedJumps.valid || !parsedDuration.valid) {
+                return res.status(400).json({ message: "Enter a positive jump count and a valid duration." });
+            }
+            workoutValues.amount = parsedJumps.value;
+            workoutValues.duration = parsedDuration.value;
+            workoutValues.unit = "jumps";
+        } else {
+            return res.status(400).json({ message: "This exercise does not support manual entry yet." });
+        }
+
+        await connectDB();
+        const workout = await createWorkoutRecord({
+            user: req.userId,
+            exercise,
+            ...workoutValues,
+            date: getDateString()
+        });
+
+        return res.status(201).json(workout);
+    } catch (error) {
+        console.error("Save workout error:", error);
+        return res.status(500).json({ message: "Could not save workout." });
+    }
+};
 
 const getTodayWorkouts = async (req, res) => {
 

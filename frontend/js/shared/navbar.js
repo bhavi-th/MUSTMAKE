@@ -9,7 +9,7 @@
 
         const legacyRoutes = {
             "/pages/index": "/today",
-            "/pages/exercises": "/gst",
+            "/pages/exercises": "/exercises",
             "/pages/competition": "/competition",
             "/pages/profile": "/profile",
             "/pages/login": "/login",
@@ -20,16 +20,45 @@
         return legacyRoutes[path] || path;
     }
 
-    function navLink(href, label, currentPage) {
-        const normalizedHref = href.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
-        const pageAliases = {
+    function normalizeRoute(href) {
+        const path = href.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+
+        const aliases = {
             "/pages/index": "/today",
             "/pages/competition": "/competition"
         };
-        const activeClass = currentPage === (pageAliases[normalizedHref] || normalizedHref)
-            ? ' class="active"'
-            : "";
-        return `<a href="${href}"${activeClass}>${label}</a>`;
+
+        return aliases[path] || path;
+    }
+
+    function isRouteActive(href, currentPage) {
+        const target = normalizeRoute(href);
+
+        return currentPage === target ||
+            (target === "/exercises" &&
+                (currentPage === "/gst" || currentPage.startsWith("/exercises/")));
+    }
+
+    function navLink(href, label, currentPage) {
+        const active = isRouteActive(href, currentPage);
+
+        return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ""}>${label}</a>`;
+    }
+
+    function bottomNavLink(href, label, icon, currentPage) {
+        const active = isRouteActive(href, currentPage);
+
+        return `
+            <a class="bottom-nav-item${active ? " active" : ""}"
+               href="${href}"
+               aria-label="${label}"
+               title="${label}"
+               ${active ? 'aria-current="page"' : ""}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    ${icon}
+                </svg>
+            </a>
+        `;
     }
 
     function getAuthenticationState() {
@@ -50,28 +79,55 @@
         const currentPage = getCurrentPage();
         const isAuthenticated = getAuthenticationState();
         const isLoginPage = currentPage === "/login";
+
         const menuButtonHTML = isAuthenticated
-            ? `<button class="mobile-menu-toggle"
+            ? `
+                <button class="mobile-menu-toggle"
                     type="button"
                     aria-label="Open navigation menu"
                     aria-expanded="false"
                     aria-controls="mobileNavigation">
-                    <span></span><span></span><span></span>
-                </button>`
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            `
             : "";
+
         const guestActionHTML = isAuthenticated
             ? ""
             : `<a class="mobile-login" href="${isLoginPage ? "/signup" : "/login"}">${isLoginPage ? "Signup" : "Login"}</a>`;
+
+        // Desktop navigation: always displayed at the top-right on large screens.
+        const desktopNavigationHTML = isAuthenticated
+            ? `
+                <nav class="desktop-navigation" aria-label="Desktop navigation">
+                    ${navLink("/exercises", "Exercises", currentPage)}
+                    ${navLink("/pages/competition.html", "Community", currentPage)}
+                    ${navLink("/profile", "Profile", currentPage)}
+                    <button class="desktop-nav-logout"
+                        type="button"
+                        data-auth-logout>
+                        Logout
+                    </button>
+                </nav>
+            `
+            : "";
+
+        // Slide-out navigation: used on mobile only.
         const navigationHTML = isAuthenticated
             ? `
                 <div class="mobile-nav-backdrop" data-mobile-nav-close hidden></div>
+
                 <aside id="mobileNavigation"
                     class="mobile-nav-panel"
                     aria-label="Main navigation"
                     aria-hidden="true"
                     hidden>
+
                     <div class="mobile-nav-heading">
                         <a class="mobile-nav-brand" href="/pages/index.html">MUSTMAKE</a>
+
                         <button class="mobile-nav-close"
                             type="button"
                             aria-label="Close navigation menu"
@@ -81,11 +137,16 @@
                             </svg>
                         </button>
                     </div>
+
                     <nav class="mobile-nav-links" aria-label="Navigation links">
-                        ${navLink("/pages/index.html", "ME", currentPage)}
-                        ${navLink("/pages/competition.html", "COMMUNITY", currentPage)}
+                        ${navLink("/pages/index.html", "Home", currentPage)}
+                        ${navLink("/exercises", "Exercises", currentPage)}
+                        ${navLink("/pages/competition.html", "Community", currentPage)}
                         ${navLink("/profile", "My profile", currentPage)}
-                        <button class="mobile-nav-logout" type="button" data-auth-logout>
+
+                        <button class="mobile-nav-logout"
+                            type="button"
+                            data-auth-logout>
                             Logout
                         </button>
                     </nav>
@@ -93,24 +154,81 @@
             `
             : "";
 
+        // Mobile bottom navigation: icons only.
+        const bottomNavigationHTML = isAuthenticated
+            ? `
+                <nav class="bottom-navigation" aria-label="Main navigation">
+
+                    ${bottomNavLink(
+                        "/exercises",
+                        "Exercises",
+                        '<path d="M7 7v10M17 7v10M4 9v6M20 9v6M7 12h10"/>',
+                        currentPage
+                    )}
+
+                    ${bottomNavLink(
+                        "/pages/competition.html",
+                        "Community",
+                        '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 20v-1.5a5.5 5.5 0 0 1 11 0V20zM15 15a4.5 4.5 0 0 1 5.5 4.5"/>',
+                        currentPage
+                    )}
+
+                    ${bottomNavLink(
+                        "/profile",
+                        "Profile",
+                        '<circle cx="12" cy="8" r="3.5"/><path d="M5 21v-1.5a7 7 0 0 1 14 0V21z"/>',
+                        currentPage
+                    )}
+
+                    <button class="bottom-nav-item bottom-nav-more mobile-menu-toggle"
+                        type="button"
+                        aria-label="Open more navigation options"
+                        title="More options"
+                        aria-expanded="false"
+                        aria-controls="mobileNavigation">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="5" cy="12" r="1.5"/>
+                            <circle cx="12" cy="12" r="1.5"/>
+                            <circle cx="19" cy="12" r="1.5"/>
+                        </svg>
+                    </button>
+
+                </nav>
+            `
+            : "";
+
         const navbarHTML = `
             <header class="topbar">
                 <div class="topbar-start">
                     ${menuButtonHTML}
+
                     <a class="logo"
                         href="${isAuthenticated ? "/pages/index.html" : "/pages/gst.html"}"
                         aria-label="MUSTMAKE home">
                         MUSTMAKE
                     </a>
                 </div>
+
+                ${desktopNavigationHTML}
                 ${guestActionHTML}
             </header>
+
             ${navigationHTML}
+            ${bottomNavigationHTML}
         `;
 
         container.innerHTML = navbarHTML;
 
-        const menuButton = container.querySelector(".mobile-menu-toggle");
+        document.body.classList.toggle(
+            "has-bottom-navigation",
+            isAuthenticated
+        );
+
+        const menuButtons = Array.from(
+            container.querySelectorAll(".mobile-menu-toggle")
+        );
+
         const menuPanel = container.querySelector("#mobileNavigation");
         const backdrop = container.querySelector(".mobile-nav-backdrop");
         const closeButton = container.querySelector(".mobile-nav-close");
@@ -119,15 +237,23 @@
         let closeTimer = null;
 
         function closeMobileMenu() {
-            if (!menuButton || !menuPanel || menuPanel.hidden) return;
+            if (!menuPanel || menuPanel.hidden) return;
 
             if (closeTimer !== null) {
                 window.clearTimeout(closeTimer);
                 closeTimer = null;
             }
 
-            menuButton.setAttribute("aria-expanded", "false");
-            menuButton.setAttribute("aria-label", "Open navigation menu");
+            menuButtons.forEach(button => {
+                button.setAttribute("aria-expanded", "false");
+                button.setAttribute(
+                    "aria-label",
+                    button.classList.contains("bottom-nav-more")
+                        ? "Open more navigation options"
+                        : "Open navigation menu"
+                );
+            });
+
             menuPanel.setAttribute("aria-hidden", "true");
             menuPanel.classList.remove("is-open");
             backdrop?.classList.remove("is-visible");
@@ -142,55 +268,58 @@
             lastMenuFocus?.focus();
         }
 
-        function openMobileMenu() {
-            if (!menuButton || !menuPanel) return;
+        function openMobileMenu(trigger) {
+            if (!menuPanel) return;
 
             if (closeTimer !== null) {
                 window.clearTimeout(closeTimer);
                 closeTimer = null;
             }
 
-            lastMenuFocus = menuButton;
-            menuPanel.hidden = false;
+            lastMenuFocus = trigger;
 
+            menuPanel.hidden = false;
             if (backdrop) backdrop.hidden = false;
 
+            // Allow the opening animation to run.
             void menuPanel.offsetWidth;
 
             menuPanel.classList.add("is-open");
             backdrop?.classList.add("is-visible");
-
             menuPanel.setAttribute("aria-hidden", "false");
-            menuButton.setAttribute("aria-expanded", "true");
-            menuButton.setAttribute("aria-label", "Close navigation menu");
+
+            menuButtons.forEach(button => {
+                button.setAttribute("aria-expanded", "true");
+                button.setAttribute("aria-label", "Close navigation menu");
+            });
 
             document.body.classList.add("mobile-nav-open");
             closeButton?.focus();
         }
 
-        if (menuButton && menuPanel) {
-            menuButton.addEventListener("click", () => {
-                if (menuButton.getAttribute("aria-expanded") === "true") {
+        menuButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                if (button.getAttribute("aria-expanded") === "true") {
                     closeMobileMenu();
                 } else {
-                    openMobileMenu();
+                    openMobileMenu(button);
                 }
             });
+        });
 
-            container.querySelectorAll("[data-mobile-nav-close]").forEach(element => {
-                element.addEventListener("click", closeMobileMenu);
-            });
+        container.querySelectorAll("[data-mobile-nav-close]").forEach(element => {
+            element.addEventListener("click", closeMobileMenu);
+        });
 
-            menuPanel.querySelectorAll("a").forEach(link => {
-                link.addEventListener("click", closeMobileMenu);
-            });
+        menuPanel?.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", closeMobileMenu);
+        });
 
-            document.addEventListener("keydown", event => {
-                if (event.key === "Escape") {
-                    closeMobileMenu();
-                }
-            });
-        }
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeMobileMenu();
+            }
+        });
 
         container.querySelectorAll("[data-auth-logout], #logoutButton").forEach(button => {
             button.addEventListener("click", () => {
@@ -199,7 +328,6 @@
                 window.location.href = "/login";
             });
         });
-
     }
 
     if (document.readyState === "loading") {

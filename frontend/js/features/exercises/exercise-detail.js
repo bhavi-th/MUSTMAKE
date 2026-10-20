@@ -53,9 +53,7 @@
         return `
             <div class="exercise-mode-content">
                 <div class="exercise-mode-intro">
-                    <span class="exercise-mode-kicker">Manual Entry</span>
-                    <h2 id="exerciseModeTitle">Record your session</h2>
-                    <p>Enter the details below to add this workout to your history.</p>
+                    
                 </div>
                 <form id="manualWorkoutForm" class="exercise-workout-form">
                     <div class="exercise-form-grid">
@@ -70,20 +68,7 @@
 
     function renderAiMode() {
         return `
-            <div class="exercise-ai-coming-soon">
-                <span class="exercise-coming-soon-badge">Coming Soon</span>
-                <div class="exercise-ai-icon" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" fill="none">
-                        <rect x="7" y="10" width="34" height="27" rx="8" />
-                        <circle cx="18" cy="23" r="2" />
-                        <circle cx="30" cy="23" r="2" />
-                        <path d="M18 30c3.3 2.5 8.7 2.5 12 0M24 4v6" />
-                    </svg>
-                </div>
-                <p class="exercise-mode-kicker">AI Mode</p>
-                <h2 id="aiModeTitle">Smarter workout tracking is on the way</h2>
-                <p>Automatic exercise detection and movement feedback are being developed for this exercise. AI Mode is not active yet.</p>
-            </div>
+            <p>Still in development , sorry for any inconvenience caused</p>
         `;
     }
 
@@ -118,11 +103,8 @@
 
         document.title = `${exercise.name} | MUSTMAKE`;
         root.innerHTML = `
-            <a class="exercise-back-link" href="/today">&larr; Back to exercises</a>
             <header class="exercise-detail-heading">
-                <p class="exercise-detail-eyebrow">${exercise.group === "dumbbells" ? "Dumbbell exercise" : "Bodyweight exercise"}</p>
                 <h1>${escapeHTML(exercise.name)}</h1>
-                <p>Choose a workout mode and record your progress.</p>
             </header>
             <div class="exercise-detail-layout">
                 <section class="exercise-demo-panel" aria-label="Exercise demonstration">

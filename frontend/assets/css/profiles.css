@@ -1,0 +1,275 @@
+/* PROFILE */
+
+.profile-card {
+    padding: 30px;
+}
+
+.profile-container {
+    width: calc(100% - 2rem);
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 5vw, 3.5rem) 0;
+}
+
+.profile-container > .profile-card {
+    width: 100%;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    text-align: center;
+}
+
+.profile-photo-container {
+    display: flex;
+    justify-content: center;
+}
+
+.profile-container #profileName {
+    margin-top: 0.25rem;
+    font-size: clamp(1.6rem, 4vw, 2rem);
+    overflow-wrap: anywhere;
+}
+
+.profile-container .profile-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.profile-container > .profile-card > .main-button {
+    display: flex;
+    width: max-content;
+    margin: 1rem auto 0;
+}
+
+.profile-container > .logoutBtn {
+    display: block;
+    margin: 1rem auto 0;
+}
+
+.social-section {
+    margin: 0 0 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #222;
+}
+
+.social-section h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.social-links a {
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.55rem 0.8rem;
+    background: rgba(22, 10, 12, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.profile-header {
+    text-align: center;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid #222;
+}
+
+.profile-photo {
+    width: 120px;
+
+    height: 120px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 2px solid #292929;
+
+    display: block;
+
+    margin: 0 auto 18px;
+}
+
+.profile-header h2 {
+    font-size: 28px;
+
+    margin-bottom: 5px;
+}
+
+.profile-username {
+    color: #777;
+
+    font-size: 14px;
+}
+
+/* PROFILE DETAILS */
+
+.profile-details {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    padding: 25px 0;
+}
+
+.profile-detail {
+    background: rgba(22, 10, 12, 0.34);
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+
+    border-radius: 9px;
+
+    padding: 17px;
+
+    text-align: center;
+}
+
+.profile-detail span {
+    display: block;
+
+    color: #666;
+
+    font-size: 11px;
+
+    margin-bottom: 6px;
+}
+
+.profile-detail strong {
+    color: #fff;
+
+    font-size: 17px;
+}
+
+/* SOCIALS */
+
+.profile-socials {
+    border-top: 1px solid #222;
+
+    padding-top: 24px;
+}
+
+.profile-socials h3 {
+    font-size: 15px;
+
+    margin-bottom: 12px;
+}
+
+.profile-socials a {
+    display: block;
+
+    color: #aaa;
+
+    text-decoration: none;
+
+    padding: 9px 0;
+
+    font-size: 14px;
+}
+
+.profile-socials a:hover {
+    color: #fff;
+}
+
+/* PROFILE UPLOAD */
+
+.profile-upload {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    background: rgba(22, 10, 12, 0.34);
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+
+    border-radius: 9px;
+}
+
+.profile-upload .profile-photo {
+    margin: 0;
+}
+
+.profile-upload input[type="file"] {
+    padding: 10px;
+
+    background: rgba(22, 10, 12, 0.38);
+}
+
+/* PUBLIC PROFILE */
+
+.public-profile-header {
+    text-align: center;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid #222;
+}
+
+.public-profile-photo {
+    width: 120px;
+
+    height: 120px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 2px solid #292929;
+
+    margin-bottom: 18px;
+}
+
+.public-profile-header h2 {
+    font-size: 28px;
+
+    margin-bottom: 5px;
+}
+
+.public-workout-history {
+    margin-top: 28px;
+}
+
+.public-workout-history h2 {
+    margin-bottom: 14px;
+}
+
+.public-workout-list {
+    display: grid;
+    gap: 10px;
+}
+
+.public-workout {
+    padding: 14px;
+    background: rgba(22, 10, 12, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9px;
+}
+
+.public-workout > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.public-workout time,
+.public-workout p {
+    color: #999;
+}
+
+.public-workout p {
+    margin: 8px 0 0;
+}
+

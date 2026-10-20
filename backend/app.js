@@ -68,7 +68,6 @@ if (fs.existsSync(frontendRoot)) {
         "/profile": "profile.html",
         "/edit-profile": "edit-profile.html",
         "/user-profile": "user-profile.html",
-        "/add-workout": "add-workout.html",
         "/competition": "competition.html",
         "/google-callback": "google-callback.html",
         "/first-details": "firstdetails.html"
@@ -87,7 +86,7 @@ if (fs.existsSync(frontendRoot)) {
         const slug = req.params.exercise;
         if (!exercisePageSlugs.has(slug)) return next();
 
-        res.sendFile(path.join(frontendRoot, "exercises", slug, "index.html"), error => {
+        res.sendFile(path.join(frontendRoot, "pages", "exercises", `${slug}.html`), error => {
             if (error) next(error);
         });
     });

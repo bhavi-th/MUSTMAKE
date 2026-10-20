@@ -611,8 +611,8 @@ nav button,
         inset: auto 0 0;
         z-index: 999;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+        grid-template-columns: repeat(3, minmax(0, 1fr)) 48px;
+        padding: 8px 14px max(8px, env(safe-area-inset-bottom));
         border-top: 1px solid rgba(220, 229, 239, 0.9);
         background: rgba(255, 255, 255, 0.96);
         box-shadow: 0 -6px 24px rgba(38, 60, 86, 0.08);
@@ -660,6 +660,8 @@ nav button,
     }
 
     .bottom-nav-more {
+        width: 48px;
+        justify-self: end;
         font: inherit;
     }
 }
@@ -730,6 +732,68 @@ nav button,
 .secondary-button {
     border-radius: 999px;
     box-shadow: none;
+}
+
+.main-button,
+.workout-form .submit-button,
+#firstSetupPage .save-button {
+    color: #fff !important;
+    background: #202124 !important;
+    border: 1px solid #202124 !important;
+    box-shadow: none;
+}
+
+.main-button:hover,
+.workout-form .submit-button:hover,
+#firstSetupPage .save-button:hover {
+    color: #fff !important;
+    background: #3f4348 !important;
+    border-color: #3f4348 !important;
+}
+
+.secondary-button {
+    color: #343a40;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+}
+
+.secondary-button:hover {
+    color: #202124;
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.main-button:focus-visible,
+.secondary-button:focus-visible,
+.workout-form .submit-button:focus-visible,
+#firstSetupPage .save-button:focus-visible {
+    outline: 3px solid rgba(55, 65, 81, 0.28);
+    outline-offset: 3px;
+}
+
+.topbar .mobile-login {
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 0;
+    color: #343a40;
+    background: transparent;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.topbar .mobile-login:hover {
+    color: #111827;
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.topbar .mobile-login:focus-visible {
+    outline: 2px solid #6b7280;
+    outline-offset: 2px;
 }
 
 .exercise-card {

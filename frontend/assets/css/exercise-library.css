@@ -1,4 +1,26 @@
 /* PUBLIC EXERCISE LIBRARY */
+/* Exercise demonstration videos */
+.exercise-demo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    border: none;
+    outline: none;
+}
+
+/* Never display native video controls */
+.exercise-demo::-webkit-media-controls,
+.exercise-demo::-webkit-media-controls-enclosure,
+.exercise-demo::-webkit-media-controls-panel,
+.exercise-demo::-webkit-media-controls-timeline,
+.exercise-demo::-webkit-media-controls-play-button,
+.exercise-demo::-webkit-media-controls-mute-button,
+.exercise-demo::-webkit-media-controls-fullscreen-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
 .library-heading h2 {
     font-size: clamp(1.7rem, 3.4vw, 2.35rem);
     letter-spacing: -0.04em;

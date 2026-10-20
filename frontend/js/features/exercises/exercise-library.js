@@ -32,6 +32,36 @@
         `;
     }
 
+    function observeVideos() {
+    const videos = grid.querySelectorAll(".exercise-demo");
+
+    if (typeof IntersectionObserver !== "function") {
+        videos.forEach(video => {
+            video.muted = true;
+            video.loop = true;
+            video.play().catch(() => {});
+        });
+        return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            const video = entry.target;
+
+            if (entry.isIntersecting) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+    }, {
+        threshold: 0.4
+    });
+
+    videos.forEach(video => observer.observe(video));
+}
+
     function renderExercise(exercise) {
         return `
             <article class="exercise-card">

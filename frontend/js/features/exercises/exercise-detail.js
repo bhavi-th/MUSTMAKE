@@ -14,22 +14,40 @@
             "'": "&#39;"
         })[character]);
 
-    function renderMedia(exercise) {
-        if (exercise.media?.type === "image") {
-            return `<img class="exercise-detail-media" src="${escapeHTML(exercise.media.src)}" alt="${escapeHTML(exercise.name)} demonstration">`;
-        }
+function renderMedia(exercise) {
+    const media = exercise.media;
+    if (!media) return "";
 
-        if (exercise.media?.type === "video") {
-            return `
-                <video class="exercise-detail-media" controls muted playsinline preload="metadata" aria-label="${escapeHTML(exercise.name)} demonstration video">
-                    <source src="${escapeHTML(exercise.media.src)}" type="video/mp4">
-                    Your browser does not support video playback.
-                </video>
-            `;
-        }
-
-        return '<div class="exercise-detail-media exercise-media-placeholder" role="img" aria-label="No exercise demonstration is available">Demonstration coming soon</div>';
+    if (media.type === "image") {
+        return `
+            <img
+                class="exercise-media"
+                src="${escapeHTML(media.src)}"
+                alt="${escapeHTML(exercise.name)} demonstration"
+                loading="lazy"
+            >
+        `;
     }
+
+    return `
+        <video
+            class="exercise-media exercise-demo"
+            autoplay
+            muted
+            loop
+            playsinline
+            disablepictureinpicture
+            controlslist="nodownload noplaybackrate noremoteplayback"
+            preload="metadata"
+            aria-label="${escapeHTML(exercise.name)} demonstration"
+        >
+            <source
+                src="${escapeHTML(media.src)}"
+                type="video/mp4"
+            >
+        </video>
+    `;
+}
 
     function renderField(field) {
         const id = `workout-${field.name}`;

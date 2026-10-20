@@ -2,8 +2,8 @@
     "use strict";
 
     const groups = [
-        { key: "bodyweight", title: "Pure Yourself" },
-        { key: "dumbbells", title: "With Dumbbells" }
+        { key: "bodyweight" },
+        { key: "dumbbells"}
     ];
     const grid = document.getElementById("exerciseGrid");
     if (!grid) return;

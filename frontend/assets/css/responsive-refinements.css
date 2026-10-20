@@ -724,3 +724,113 @@ nav button,
         display: none;
     }
 }
+
+/* Keep exercise browsing and controls light instead of card-heavy */
+.main-button,
+.secondary-button {
+    border-radius: 999px;
+    box-shadow: none;
+}
+
+.exercise-card {
+    overflow: visible;
+    border: 0;
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.exercise-card-media {
+    background: transparent;
+}
+
+.exercise-card-content,
+.exercise-section .exercise-card-content {
+    min-height: 0;
+    padding: 14px 0 18px;
+}
+
+.exercise-card .exercise-card-topline .exercise-level,
+.exercise-card .exercise-tag {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.exercise-card .exercise-muscles {
+    gap: 4px 10px;
+}
+
+.exercise-card .exercise-details {
+    border-top: 0;
+}
+
+.exercise-card .exercise-details summary {
+    justify-content: flex-start;
+    gap: 8px;
+    color: var(--accent-hover);
+}
+
+.exercise-card .exercise-details summary::after {
+    color: currentColor;
+}
+
+.exercise-detail-page .exercise-demo-panel,
+.exercise-detail-page .exercise-workout-panel {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.exercise-detail-page .exercise-demo-panel {
+    padding: 0;
+}
+
+.exercise-detail-page .exercise-detail-media {
+    border-radius: 8px;
+}
+
+.exercise-detail-page .exercise-workout-panel {
+    padding: 0;
+}
+
+.exercise-detail-page .exercise-mode-tabs {
+    gap: 20px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    background: transparent;
+}
+
+.exercise-detail-page .exercise-mode-tabs button,
+.exercise-detail-page .exercise-mode-tabs button[aria-selected="true"] {
+    min-height: 44px;
+    padding: 8px 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.exercise-detail-page .exercise-mode-tabs button[aria-selected="true"] {
+    color: var(--accent-hover);
+    box-shadow: inset 0 -2px currentColor;
+}
+
+.exercise-detail-page .exercise-form-field input {
+    padding-right: 2px;
+    padding-left: 2px;
+    border: 0;
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    background: transparent;
+}
+
+.exercise-detail-page .exercise-form-field input:focus {
+    border-bottom-color: var(--accent);
+    outline: 0;
+    box-shadow: 0 1px 0 var(--accent);
+}

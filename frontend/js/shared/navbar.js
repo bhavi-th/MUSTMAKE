@@ -80,8 +80,7 @@
         const isAuthenticated = getAuthenticationState();
         const isLoginPage = currentPage === "/login";
 
-        const menuButtonHTML = isAuthenticated
-            ? `
+        const menuButtonHTML = `
                 <button class="mobile-menu-toggle"
                     type="button"
                     aria-label="Open navigation menu"
@@ -91,8 +90,7 @@
                     <span></span>
                     <span></span>
                 </button>
-            `
-            : "";
+            `;
 
         const guestActionsHTML = isAuthenticated
             ? ""
@@ -127,8 +125,35 @@
             : "";
 
         // Slide-out navigation: used on mobile only.
-        const navigationHTML = isAuthenticated
+        const navigationLinksHTML = isAuthenticated
             ? `
+                ${navLink("/edit-profile", "Edit profile", currentPage)}
+                ${navLink("/pages/theme.html", "Theme", currentPage)}
+                ${navLink("/pages/about-us.html", "About us", currentPage)}
+                <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
+                <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>
+                <button class="mobile-nav-delete-account"
+                    type="button"
+                    data-auth-delete-account>
+                    Delete account
+                </button>
+                <p class="mobile-nav-account-message" role="status" aria-live="polite"></p>
+
+                <button class="mobile-nav-logout"
+                    type="button"
+                    data-auth-logout>
+                    Logout
+                </button>
+            `
+            : `
+                ${navLink("/pages/gst.html", "Exercises", currentPage)}
+                ${navLink("/pages/about-us.html", "About us", currentPage)}
+                ${navLink("/pages/theme.html", "Theme", currentPage)}
+                ${navLink("/login", "Login", currentPage)}
+                ${navLink("/signup", "Sign up", currentPage)}
+            `;
+
+        const navigationHTML = `
                 <div class="mobile-nav-backdrop" data-mobile-nav-close hidden></div>
 
                 <aside id="mobileNavigation"
@@ -151,27 +176,10 @@
                     </div>
 
                     <nav class="mobile-nav-links" aria-label="Navigation links">
-                        ${navLink("/edit-profile", "Edit profile", currentPage)}
-                        ${navLink("/pages/theme.html", "Theme", currentPage)}
-                        ${navLink("/pages/about-us.html", "About us", currentPage)}
-                        <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
-                        <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>
-                        <button class="mobile-nav-delete-account"
-                            type="button"
-                            data-auth-delete-account>
-                            Delete account
-                        </button>
-                        <p class="mobile-nav-account-message" role="status" aria-live="polite"></p>
-
-                        <button class="mobile-nav-logout"
-                            type="button"
-                            data-auth-logout>
-                            Logout
-                        </button>
+                        ${navigationLinksHTML}
                     </nav>
                 </aside>
-            `
-            : "";
+            `;
 
         // Mobile bottom navigation: icons only.
         const bottomNavigationHTML = isAuthenticated
@@ -379,9 +387,6 @@
                     touchStart = null;
                     return;
                 }
-            } else if (touch.clientX > 24) {
-                touchStart = null;
-                return;
             }
 
             touchStart = {

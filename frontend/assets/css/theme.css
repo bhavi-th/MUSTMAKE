@@ -73,7 +73,6 @@
 }
 
 :root[data-theme="dark"] .workout-item,
-:root[data-theme="dark"] .history-workout,
 :root[data-theme="dark"] .competition-result,
 :root[data-theme="dark"] .profile-detail,
 :root[data-theme="dark"] .profile-upload,
@@ -90,7 +89,6 @@
 }
 
 :root[data-theme="dark"] .person-top,
-:root[data-theme="dark"] .history-date,
 :root[data-theme="dark"] .social-section,
 :root[data-theme="dark"] .profile-header,
 :root[data-theme="dark"] .profile-socials,
@@ -178,7 +176,7 @@
 
 .theme-heading h1 {
     margin-bottom: 0.5rem;
-    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
 }
 
 .theme-heading > p:last-child,
@@ -189,7 +187,7 @@
 
 .theme-options h2 {
     margin-bottom: 1rem;
-    font-size: 1.25rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
 }
 
 .theme-choices {
@@ -428,4 +426,74 @@
         flex: 1 1 100%;
         padding-left: 54px;
     }
+}
+
+:root[data-theme="dark"] body :is(
+    .container,
+    .app-page,
+    .profile-container,
+    .exercise-library,
+    .exercise-library-groups,
+    .exercise-section,
+    .workout-section,
+    .public-workout-history,
+    .social-section,
+    .competition-people,
+    .competition-search-area,
+    .competition-search,
+    .competition-section
+) {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+:root[data-theme="dark"] body :is(
+    .card,
+    .person-card,
+    .profile-card,
+    .workout-form,
+    .profile-upload,
+    .exercise-detail-page .exercise-demo-panel,
+    .exercise-detail-page .exercise-workout-panel
+) {
+    border-color: var(--glass-border);
+    background: #141414;
+    box-shadow: none;
+}
+
+:root[data-theme="dark"] body :is(
+    .person-top,
+    .social-section,
+    .profile-header,
+    .profile-socials,
+    .public-profile-header
+) {
+    border-color: var(--glass-border);
+}
+
+:root[data-theme="dark"] body :is(
+    .competition-search,
+    .competition-section,
+    .competition-card,
+    .profile-detail,
+    .public-workout,
+    .total-display,
+    .exercise-mode-tabs,
+    .theme-choice:not([aria-pressed="true"])
+) {
+    border-color: var(--glass-border);
+    background: transparent;
+}
+
+:root[data-theme="dark"] #firstSetupPage .setup-card {
+    border-color: var(--glass-border);
+    background: #141414;
+    box-shadow: none;
+}
+
+:root[data-theme="dark"] .workout-item {
+    border-color: var(--glass-border);
+    background: transparent;
+    box-shadow: none;
 }

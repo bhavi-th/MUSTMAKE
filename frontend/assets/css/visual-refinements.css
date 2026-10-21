@@ -63,7 +63,7 @@ small,
 .social-section h2,
 .profile-socials h3,
 .public-workout-history h2 {
-    font-weight: 750;
+    font-weight: 600;
     letter-spacing: -0.02em;
 }
 
@@ -100,7 +100,7 @@ small,
 
     .hero h1,
     .page-heading h1 {
-        font-size: 36px;
+        font-size: clamp(2rem, 4vw, 2.5rem);
     }
 
     .competition-grid {
@@ -179,4 +179,3 @@ small,
     }
 
 }
-

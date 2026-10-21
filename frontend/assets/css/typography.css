@@ -1,4 +1,45 @@
-/* SF PRO TYPE & CONTRAST SYSTEM */
+/* INTER TYPOGRAPHY SYSTEM */
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+h1,
+.hero h1,
+.page-heading h1,
+.exercise-detail-heading h1,
+.auth-content h1 {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+}
+
+h2,
+.person-top h2,
+.profile-header h2,
+.public-profile-header h2,
+.competition-search h2,
+.competition-section h2,
+.workout-section h3,
+.exercise-section-heading h2,
+.library-heading h2,
+.social-section h2,
+.profile-socials h3,
+.public-workout-history h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}
+
+p,
+.subtitle {
+    line-height: 1.6;
+}
 
 .topbar nav button,
 .hero h1,
@@ -83,55 +124,55 @@
 
 .hero h1,
 .page-heading h1 {
-    font-size: clamp(3rem, 5.8vw, 4.75rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
     font-weight: 600;
-    line-height: 1.04;
-    letter-spacing: -0.045em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
     text-shadow: none;
 }
 
 .subtitle {
     max-width: 650px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 400;
     line-height: 1.6;
-    letter-spacing: -0.01em;
+    letter-spacing: normal;
     text-shadow: none;
 }
 
 .small-title {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
 }
 
 .person-top h2,
 .profile-header h2,
 .public-profile-header h2 {
-    font-size: clamp(1.75rem, 3.4vw, 2rem);
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     font-weight: 600;
-    line-height: 1.12;
-    letter-spacing: -0.035em;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
 }
 
 .auth-logo {
     font-size: 20px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
 }
 
 .auth-content h1 {
-    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
     font-weight: 600;
-    line-height: 1.06;
-    letter-spacing: -0.04em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
 }
 
 .profile-container #profileName {
-    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
     font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.04em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
 }
 
 .competition-search h2,
@@ -139,10 +180,10 @@
 .social-section h2,
 .profile-socials h3,
 .public-workout-history h2 {
-    font-size: 1.25rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
 }
 
 .main-button {
@@ -245,17 +286,30 @@ textarea:focus {
 
 .profile-detail strong,
 .workout-name,
-.total-display,
 .competition-user-info strong,
 .competition-card h4 {
     color: var(--text-primary);
+}
+
+.workout-name,
+.competition-card h4 {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.total-display,
+.streak strong,
+.profile-detail strong {
+    font-variant-numeric: tabular-nums;
 }
 
 .streak small,
 small,
 .profile-detail span {
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 400;
 }
 
 .no-workout,
@@ -295,11 +349,10 @@ textarea:focus-visible {
 @media (max-width: 800px) {
     .hero h1,
     .page-heading h1 {
-        font-size: clamp(2.5rem, 8vw, 3.4rem);
+        font-size: clamp(2rem, 7vw, 2.5rem);
     }
 
     .container {
         min-width: 0;
     }
 }
-

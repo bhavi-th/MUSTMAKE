@@ -22,8 +22,8 @@
     -webkit-appearance: none;
 }
 .library-heading h2 {
-    font-size: clamp(1.7rem, 3.4vw, 2.35rem);
-    letter-spacing: -0.04em;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    letter-spacing: -0.02em;
 }
 #personalDashboard[hidden],
 #guestCta[hidden] {
@@ -199,7 +199,7 @@
 }
 
 .library-heading h2 {
-    font-size: clamp(23px, 2.1vw, 30px);
+    font-size: clamp(23px, 2.1vw, 24px);
 }
 
 .exercise-grid {
@@ -401,10 +401,10 @@
     .exercise-library-page .exercise-today-dashboard { order: 2; }
     .exercise-today-dashboard { margin-bottom: 0; }
     .exercise-section-heading { margin-bottom: clamp(11px, 3vw, 15px); }
-    .exercise-section-heading h2 { font-size: clamp(17px, 4.7vw, 20px); }
+    .exercise-section-heading h2 { font-size: clamp(20px, 4.7vw, 24px); }
     .exercise-library-groups { gap: clamp(25px, 7vw, 36px); }
     .library-heading { align-items: center; flex-direction: row; gap: var(--mobile-space); margin-bottom: clamp(14px, 3vw, 18px); }
-    .library-heading h2 { font-size: clamp(20px, 5.3vw, 23px); letter-spacing: -0.035em; }
+    .library-heading h2 { font-size: clamp(20px, 5.3vw, 23px); letter-spacing: -0.02em; }
     .exercise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mobile-space); }
     .exercise-card { border-radius: 16px; box-shadow: 0 2px 9px rgba(20, 37, 63, 0.045); }
     .exercise-card-media { height: clamp(112px, 31vw, 142px); }
@@ -430,7 +430,7 @@
     .competition-section { border-radius: 18px; }
 
     .hero h1,
-    .page-heading h1 { font-size: clamp(2rem, 8vw, 2.65rem); }
+    .page-heading h1 { font-size: clamp(2rem, 7vw, 2.5rem); }
     .small-title { writing-mode: horizontal-tb; transform: none; }
     body,
     body * { writing-mode: horizontal-tb; text-orientation: mixed; }

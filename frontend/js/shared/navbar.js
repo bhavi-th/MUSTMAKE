@@ -271,6 +271,16 @@
 
         let lastMenuFocus = null;
         let closeTimer = null;
+        let touchStart = null;
+        const mobileNavigationQuery = window.matchMedia("(max-width: 800px)");
+        const swipeThreshold = 56;
+        const verticalSwipeRatio = 1.25;
+
+        function isSwipeExcluded(target) {
+            return target instanceof Element && Boolean(
+                target.closest("a, button, input, select, textarea, video, audio, form, [contenteditable='true']")
+            );
+        }
 
         function closeMobileMenu() {
             if (!menuPanel || menuPanel.hidden) return;
@@ -294,17 +304,19 @@
             menuPanel.classList.remove("is-open");
             backdrop?.classList.remove("is-visible");
             document.body.classList.remove("mobile-nav-open");
+            document.documentElement.classList.remove("mobile-nav-open");
 
             closeTimer = window.setTimeout(() => {
                 menuPanel.hidden = true;
                 if (backdrop) backdrop.hidden = true;
                 closeTimer = null;
-            }, 240);
+            }, 200);
 
             lastMenuFocus?.focus();
+            lastMenuFocus = null;
         }
 
-        function openMobileMenu(trigger) {
+        function openMobileMenu(trigger = null) {
             if (!menuPanel) return;
 
             if (closeTimer !== null) {
@@ -330,7 +342,8 @@
             });
 
             document.body.classList.add("mobile-nav-open");
-            closeButton?.focus();
+            document.documentElement.classList.add("mobile-nav-open");
+            if (trigger) closeButton?.focus();
         }
 
         menuButtons.forEach(button => {
@@ -346,6 +359,65 @@
         container.querySelectorAll("[data-mobile-nav-close]").forEach(element => {
             element.addEventListener("click", closeMobileMenu);
         });
+
+        document.addEventListener("touchstart", event => {
+            if (!mobileNavigationQuery.matches || event.touches.length !== 1) {
+                touchStart = null;
+                return;
+            }
+
+            const touch = event.touches[0];
+            const menuIsOpen = Boolean(menuPanel && !menuPanel.hidden);
+
+            if (isSwipeExcluded(event.target)) {
+                touchStart = null;
+                return;
+            }
+
+            if (menuIsOpen) {
+                if (!menuPanel.contains(event.target)) {
+                    touchStart = null;
+                    return;
+                }
+            } else if (touch.clientX > 24) {
+                touchStart = null;
+                return;
+            }
+
+            touchStart = {
+                x: touch.clientX,
+                y: touch.clientY,
+                menuIsOpen
+            };
+        }, { passive: true });
+
+        document.addEventListener("touchend", event => {
+            if (!mobileNavigationQuery.matches || !touchStart || event.changedTouches.length !== 1) {
+                touchStart = null;
+                return;
+            }
+
+            const touch = event.changedTouches[0];
+            const deltaX = touch.clientX - touchStart.x;
+            const deltaY = touch.clientY - touchStart.y;
+            const isHorizontalSwipe =
+                Math.abs(deltaX) >= swipeThreshold &&
+                Math.abs(deltaX) > Math.abs(deltaY) * verticalSwipeRatio;
+
+            if (isHorizontalSwipe) {
+                if (touchStart.menuIsOpen && deltaX < 0) {
+                    closeMobileMenu();
+                } else if (!touchStart.menuIsOpen && deltaX > 0) {
+                    openMobileMenu();
+                }
+            }
+
+            touchStart = null;
+        }, { passive: true });
+
+        document.addEventListener("touchcancel", () => {
+            touchStart = null;
+        }, { passive: true });
 
         menuPanel?.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", closeMobileMenu);

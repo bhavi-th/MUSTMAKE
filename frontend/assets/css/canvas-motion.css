@@ -326,6 +326,22 @@ main.container,
     animation: page-enter 120ms var(--ease-premium) both;
 }
 
+@media (max-width: 800px) {
+    main.container,
+    .auth-container,
+    .profile-container {
+        animation-duration: 80ms;
+    }
+
+    ::view-transition-old(root) {
+        animation-duration: 80ms;
+    }
+
+    ::view-transition-new(root) {
+        animation-duration: 80ms;
+    }
+}
+
 @supports (view-transition-name: root) {
     main.container,
     .auth-container,

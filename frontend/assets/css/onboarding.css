@@ -384,6 +384,43 @@
     cursor: pointer;
 }
 
+#add-social-link {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid var(--glass-border);
+    border-radius: 9px;
+    color: var(--text-secondary);
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease;
+}
+
+#add-social-link:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+#add-social-link:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+#add-social-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 #firstSetupPage .social-links-field > button:disabled,
 .profile-card .social-links-field > button:disabled {
     cursor: not-allowed;

@@ -2198,6 +2198,22 @@ main.container,
     animation: page-enter 120ms var(--ease-premium) both;
 }
 
+@media (max-width: 800px) {
+    main.container,
+    .auth-container,
+    .profile-container {
+        animation-duration: 80ms;
+    }
+
+    ::view-transition-old(root) {
+        animation-duration: 80ms;
+    }
+
+    ::view-transition-new(root) {
+        animation-duration: 80ms;
+    }
+}
+
 @supports (view-transition-name: root) {
     main.container,
     .auth-container,
@@ -2791,6 +2807,43 @@ textarea:focus {
     color: var(--text-primary);
     font: inherit;
     cursor: pointer;
+}
+
+#add-social-link {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid var(--glass-border);
+    border-radius: 9px;
+    color: var(--text-secondary);
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease;
+}
+
+#add-social-link:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+#add-social-link:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+#add-social-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 #firstSetupPage .social-links-field > button:disabled,
@@ -4891,6 +4944,12 @@ nav button,
 
 .mobile-nav-open { overflow: hidden; }
 
+html.mobile-nav-open,
+body.mobile-nav-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
 /* Mobile-first app navigation */
 .bottom-navigation {
     display: none;
@@ -4915,8 +4974,22 @@ nav button,
         border-top: 1px solid var(--glass-border);
         background: rgba(255, 255, 255, 0.96);
         box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.08);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .mobile-nav-panel {
+        width: clamp(220px, 50vw, 320px);
+        min-width: 0;
+        touch-action: pan-y;
+        transition:
+            transform 200ms cubic-bezier(0.2, 0.75, 0.25, 1),
+            visibility 200ms;
+    }
+
+    .mobile-nav-backdrop {
+        background: rgba(0, 0, 0, 0.42);
+        transition: opacity 200ms ease;
     }
 
     .bottom-nav-item {
@@ -4935,7 +5008,16 @@ nav button,
         font-size: 10px;
         line-height: 1.2;
         cursor: pointer;
+        touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
+        transition:
+            transform 120ms ease-out,
+            background-color 140ms ease,
+            color 140ms ease;
+    }
+
+    .bottom-nav-item:active {
+        transform: scale(0.94);
     }
 
     .bottom-nav-item svg {

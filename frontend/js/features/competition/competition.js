@@ -148,7 +148,7 @@ async function addCompetitor(competitorId, button) {
 
 async function removeCompetitor(competitorId, button) {
     button.disabled = true;
-    
+    button.textContent = "...";
 
     try {
         const response = await fetch(`${window.API_URL}/api/competition/${encodeURIComponent(competitorId)}`, {

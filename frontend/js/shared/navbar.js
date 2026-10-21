@@ -396,6 +396,27 @@
             };
         }, { passive: true });
 
+        document.addEventListener("touchmove", event => {
+            if (
+                !mobileNavigationQuery.matches ||
+                !touchStart ||
+                event.touches.length !== 1
+            ) {
+                return;
+            }
+
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - touchStart.x;
+            const deltaY = touch.clientY - touchStart.y;
+            const isHorizontalSwipe =
+                Math.abs(deltaX) >= 10 &&
+                Math.abs(deltaX) > Math.abs(deltaY) * verticalSwipeRatio;
+
+            if (isHorizontalSwipe && event.cancelable) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
         document.addEventListener("touchend", event => {
             if (!mobileNavigationQuery.matches || !touchStart || event.changedTouches.length !== 1) {
                 touchStart = null;

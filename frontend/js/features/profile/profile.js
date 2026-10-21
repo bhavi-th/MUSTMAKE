@@ -25,7 +25,64 @@ function optimizeCloudinaryImage(url) {
     );
 }
 
+function readProfileCache() {
+    try {
+        const data = JSON.parse(sessionStorage.getItem("mustmake_profile") || "null");
+        return data?.user && typeof data.user === "object" ? data : null;
+    } catch (error) {
+        console.warn("Could not read the cached profile.", error);
+        return null;
+    }
+}
+
+function writeProfileCache(data) {
+    try {
+        sessionStorage.setItem("mustmake_profile", JSON.stringify(data));
+    } catch (error) {
+        console.warn("Could not cache the profile.", error);
+    }
+}
+
+function renderProfile(data) {
+    const user = data.user;
+    document.getElementById("profileName").textContent = user.name;
+    document.getElementById("profileUsername").textContent = `@${user.username}`;
+
+    const age = Number.isInteger(user.age) ? user.age : null;
+    const hasAge = age !== null;
+    document.getElementById("profileAge").textContent = hasAge ? age : "";
+    document.getElementById("profileAgeSection").hidden = !hasAge;
+
+    const hasHeight = user.height !== null && user.height !== undefined &&
+        String(user.height).trim() !== "";
+    document.getElementById("profileHeight").textContent = hasHeight
+        ? user.height
+        : "";
+    document.getElementById("profileHeightSection").hidden = !hasHeight;
+
+    const hasWeight = user.weight !== null && user.weight !== undefined &&
+        String(user.weight).trim() !== "";
+    document.getElementById("profileWeight").textContent = hasWeight
+        ? user.weight
+        : "";
+    document.getElementById("profileWeightSection").hidden = !hasWeight;
+
+    const hasProfileDetails = hasAge || hasHeight || hasWeight;
+    document.getElementById("profileDetails").hidden = !hasProfileDetails;
+    document.getElementById("profileIs").hidden = !hasProfileDetails;
+
+    const photo = document.getElementById("profilePhoto");
+    photo.src = user.profilePicture
+        ? optimizeCloudinaryImage(user.profilePicture)
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=200`;
+
+    displaySocials(user.socials);
+}
+
 async function loadProfile() {
+    const cachedProfile = readProfileCache();
+    if (cachedProfile) renderProfile(cachedProfile);
+
     try {
         const response = await fetch(`${window.API_URL}/api/profile`, {
             headers: {
@@ -43,49 +100,14 @@ async function loadProfile() {
         }
 
         const data = await response.json();
-        const user = data.user;
-
-        document.getElementById("profileName").textContent = user.name;
-        document.getElementById("profileUsername").textContent = `@${user.username}`;
-
-        const age = Number.isInteger(user.age) ? user.age : null;
-        const hasAge = age !== null;
-        document.getElementById("profileAge").textContent = hasAge ? age : "";
-        document.getElementById("profileAgeSection").hidden = !hasAge;
-
-        const hasHeight = user.height !== null && user.height !== undefined &&
-            String(user.height).trim() !== "";
-        document.getElementById("profileHeight").textContent = hasHeight
-            ? user.height
-            : "";
-        document.getElementById("profileHeightSection").hidden = !hasHeight;
-
-        const hasWeight = user.weight !== null && user.weight !== undefined &&
-            String(user.weight).trim() !== "";
-        document.getElementById("profileWeight").textContent = hasWeight
-            ? user.weight
-            : "";
-        document.getElementById("profileWeightSection").hidden = !hasWeight;
-
-        const hasProfileDetails = hasAge || hasHeight || hasWeight;
-        document.getElementById("profileDetails").hidden = !hasProfileDetails;
-        document.getElementById("profileIs").hidden = !hasProfileDetails;
-
-        const photo = document.getElementById("profilePhoto");
-        if (user.profilePicture) {
-            photo.src = optimizeCloudinaryImage(user.profilePicture);
-        } else {
-            photo.src =
-                "https://ui-avatars.com/api/?name=" +
-                encodeURIComponent(user.name) +
-                "&size=200";
-        }
-
-        displaySocials(user.socials);
+        writeProfileCache(data);
+        renderProfile(data);
     } catch (error) {
         console.error(error);
-        document.getElementById("profileName").textContent =
-            "Could not load profile.";
+        if (!cachedProfile) {
+            document.getElementById("profileName").textContent =
+                "Could not load profile.";
+        }
     }
 }
 

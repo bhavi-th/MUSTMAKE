@@ -208,14 +208,14 @@
 }
 
 .exercise-card-media {
-    --art-ink: #334e70;
+    --art-ink: #202124;
     --art-accent: var(--accent);
     position: relative;
     display: grid;
     place-items: center;
     height: clamp(136px, 17.75vw, 156px);
     overflow: hidden;
-    background: #edf2f8;
+    background: var(--glass-subtle);
 }
 
 .exercise-card-media > svg {
@@ -225,7 +225,7 @@
 }
 
 .exercise-card-media .art-orbit { fill: rgba(255, 255, 255, 0.72); }
-.exercise-card-media .art-ground { fill: none; stroke: rgba(51, 78, 112, 0.18); stroke-width: 2; stroke-linecap: round; }
+.exercise-card-media .art-ground { fill: none; stroke: rgba(0, 0, 0, 0.18); stroke-width: 2; stroke-linecap: round; }
 .exercise-card-media .art-person { stroke: var(--art-ink); stroke-width: 5; }
 .exercise-card-media .art-person circle { fill: var(--art-accent); stroke: none; }
 .exercise-card-media .art-dumbbell { fill: none; stroke: var(--art-accent); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
@@ -345,7 +345,7 @@
         border-radius: 13px;
         color: #ffffff;
         background: var(--accent);
-        box-shadow: 0 4px 10px rgba(82, 123, 169, 0.16);
+        box-shadow: var(--shadow-soft);
         text-decoration: none;
         font-size: 13px;
         font-weight: 650;
@@ -446,4 +446,3 @@
     .mobile-nav-panel,
     .mobile-nav-backdrop { transition-duration: 0.01ms; }
 }
-

@@ -35,7 +35,7 @@
         const target = normalizeRoute(href);
 
         return currentPage === target ||
-            (target === "/exercises" &&
+            (target === "/today" &&
                 (currentPage === "/gst" || currentPage.startsWith("/exercises/")));
     }
 
@@ -107,13 +107,20 @@
         const desktopNavigationHTML = isAuthenticated
             ? `
                 <nav class="desktop-navigation" aria-label="Desktop navigation">
-                    ${navLink("/exercises", "Exercises", currentPage)}
-                    ${navLink("/pages/competition.html", "Community", currentPage)}
+                    ${navLink("/today", "Exercises", currentPage)}
+                    ${navLink("/competition", "Community", currentPage)}
                     ${navLink("/profile", "Profile", currentPage)}
-                    <button class="desktop-nav-logout"
+                    <button class="desktop-nav-more mobile-menu-toggle"
                         type="button"
-                        data-auth-logout>
-                        Logout
+                        aria-label="Open navigation menu"
+                        title="More options"
+                        aria-expanded="false"
+                        aria-controls="mobileNavigation">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="5" cy="12" r="1.5"/>
+                            <circle cx="12" cy="12" r="1.5"/>
+                            <circle cx="19" cy="12" r="1.5"/>
+                        </svg>
                     </button>
                 </nav>
             `
@@ -131,7 +138,7 @@
                     hidden>
 
                     <div class="mobile-nav-heading">
-                        <a class="mobile-nav-brand" href="/pages/index.html">MUSTMAKE</a>
+                        <a class="mobile-nav-brand" href="/today">MUSTMAKE</a>
 
                         <button class="mobile-nav-close"
                             type="button"
@@ -144,7 +151,7 @@
                     </div>
 
                     <nav class="mobile-nav-links" aria-label="Navigation links">
-                        ${navLink("/pages/edit-profile.html", "Edit profile", currentPage)}
+                        ${navLink("/edit-profile", "Edit profile", currentPage)}
                         ${navLink("/pages/theme.html", "Theme", currentPage)}
                         ${navLink("/pages/about-us.html", "About us", currentPage)}
                         <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
@@ -172,14 +179,14 @@
                 <nav class="bottom-navigation" aria-label="Main navigation">
 
                     ${bottomNavLink(
-                        "/exercises",
+                        "/today",
                         "Exercises",
                         '<path d="M7 7v10M17 7v10M4 9v6M20 9v6M7 12h10"/>',
                         currentPage
                     )}
 
                     ${bottomNavLink(
-                        "/pages/competition.html",
+                        "/competition",
                         "Community",
                         '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 20v-1.5a5.5 5.5 0 0 1 11 0V20zM15 15a4.5 4.5 0 0 1 5.5 4.5"/>',
                         currentPage
@@ -216,7 +223,7 @@
                     ${menuButtonHTML}
 
                     <a class="logo"
-                        href="${isAuthenticated ? "/pages/index.html" : "/pages/gst.html"}"
+                        href="${isAuthenticated ? "/today" : "/pages/gst.html"}"
                         aria-label="MUSTMAKE home">
                         MUSTMAKE
                     </a>
@@ -231,6 +238,23 @@
         `;
 
         container.innerHTML = navbarHTML;
+
+        const prefetchedUrls = new Set();
+        container.querySelectorAll("a[href]").forEach(link => {
+            const prefetchPage = () => {
+                const url = new URL(link.href, window.location.href);
+                if (url.origin !== window.location.origin || prefetchedUrls.has(url.href)) return;
+
+                prefetchedUrls.add(url.href);
+                const prefetchLink = document.createElement("link");
+                prefetchLink.rel = "prefetch";
+                prefetchLink.href = url.href;
+                document.head.appendChild(prefetchLink);
+            };
+
+            link.addEventListener("pointerenter", prefetchPage, { once: true });
+            link.addEventListener("touchstart", prefetchPage, { once: true, passive: true });
+        });
 
         document.body.classList.toggle(
             "has-bottom-navigation",

@@ -311,7 +311,7 @@ textarea {
 main.container,
 .auth-container,
 .profile-container {
-    animation: page-enter 280ms var(--ease-premium) both;
+    animation: page-enter 120ms var(--ease-premium) both;
 }
 
 @view-transition {
@@ -319,11 +319,11 @@ main.container,
 }
 
 ::view-transition-old(root) {
-    animation: page-exit 180ms ease-out both;
+    animation: page-exit 120ms ease-out both;
 }
 
 ::view-transition-new(root) {
-    animation: page-enter 280ms var(--ease-premium) both;
+    animation: page-enter 120ms var(--ease-premium) both;
 }
 
 @supports (view-transition-name: root) {
@@ -356,9 +356,6 @@ main.container,
 }
 
 body,
-body *,
-body *::before,
-body *::after,
 .topbar,
 .card,
 .person-card,
@@ -537,4 +534,3 @@ textarea:focus {
         max-width: 100%;
     }
 }
-

@@ -14,6 +14,14 @@
             "'": "&#39;"
         })[character]);
 
+    function cacheExercises(exercises) {
+        try {
+            sessionStorage.setItem("mustmake_exercises", JSON.stringify(exercises));
+        } catch (error) {
+            console.warn("Could not cache the exercise catalog.", error);
+        }
+    }
+
 function renderMedia(exercise) {
     const media = exercise.media;
     if (!media) return "";
@@ -242,23 +250,37 @@ function renderMedia(exercise) {
     }
 
     async function loadExercises() {
-        let apiError;
+        let cachedExercises;
+        try {
+            cachedExercises = JSON.parse(sessionStorage.getItem("mustmake_exercises") || "null");
+        } catch (error) {
+            console.warn("Could not read the cached exercise catalog.", error);
+        }
+        if (Array.isArray(cachedExercises)) return cachedExercises;
+
+        let catalogError;
+        try {
+            const response = await fetch("/data/exercises.json");
+            if (!response.ok) throw new Error(`Exercise catalog returned ${response.status}.`);
+            const exercises = await response.json();
+            if (!Array.isArray(exercises)) throw new Error("Exercise catalog returned invalid data.");
+            cacheExercises(exercises);
+            return exercises;
+        } catch (error) {
+            catalogError = error;
+        }
+
         try {
             const response = await fetch(`${window.API_URL}/api/exercises`);
             if (!response.ok) throw new Error(`Exercise API returned ${response.status}.`);
             const exercises = await response.json();
             if (!Array.isArray(exercises)) throw new Error("Exercise API returned an invalid catalog.");
+            cacheExercises(exercises);
             return exercises;
-        } catch (error) {
-            apiError = error;
+        } catch (apiError) {
+            console.error("Exercise catalog fallback failed:", catalogError);
+            throw apiError;
         }
-
-        const response = await fetch("/data/exercises.json");
-        if (!response.ok) throw apiError;
-        const exercises = await response.json();
-        if (!Array.isArray(exercises)) throw apiError;
-        console.warn("Exercise API unavailable; loaded the bundled exercise catalog instead.", apiError);
-        return exercises;
     }
 
     async function loadExercise() {

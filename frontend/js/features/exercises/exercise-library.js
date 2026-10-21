@@ -17,6 +17,14 @@
             "'": "&#39;"
         })[character]);
 
+    function cacheExercises(exercises) {
+        try {
+            sessionStorage.setItem("mustmake_exercises", JSON.stringify(exercises));
+        } catch (error) {
+            console.warn("Could not cache the exercise catalog.", error);
+        }
+    }
+
     function renderMedia(exercise) {
         const media = exercise.media;
         if (!media) return "";
@@ -33,34 +41,31 @@
     }
 
     function observeVideos() {
-    const videos = grid.querySelectorAll(".exercise-demo");
+        const videos = grid.querySelectorAll(".exercise-demo");
 
-    if (typeof IntersectionObserver !== "function") {
-        videos.forEach(video => {
-            video.muted = true;
-            video.loop = true;
-            video.play().catch(() => {});
-        });
-        return;
-    }
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            const video = entry.target;
-
-            if (entry.isIntersecting) {
+        if (typeof IntersectionObserver !== "function") {
+            videos.forEach(video => {
+                video.muted = true;
+                video.loop = true;
                 video.play().catch(() => {});
-            } else {
-                video.pause();
-                video.currentTime = 0;
-            }
-        });
-    }, {
-        threshold: 0.4
-    });
+            });
+            return;
+        }
 
-    videos.forEach(video => observer.observe(video));
-}
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                const video = entry.target;
+
+                if (entry.isIntersecting) {
+                    video.play().catch(() => {});
+                } else {
+                    video.pause();
+                }
+            });
+        }, { threshold: 0.4 });
+
+        videos.forEach(video => observer.observe(video));
+    }
 
     function renderExercise(exercise) {
         return `
@@ -77,42 +82,38 @@
         `;
     }
 
-    function observeVideos() {
-        if (typeof IntersectionObserver !== "function") return;
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                const video = entry.target;
-                if (entry.isIntersecting) {
-                    video.play().catch(() => {});
-                } else {
-                    video.pause();
-                    video.currentTime = 0;
-                }
-            });
-        }, { threshold: 0.4 });
-
-        grid.querySelectorAll(".exercise-demo").forEach(video => observer.observe(video));
-    }
-
     async function loadExercises() {
-        let apiError;
+        let cachedExercises;
+        try {
+            cachedExercises = JSON.parse(sessionStorage.getItem("mustmake_exercises") || "null");
+        } catch (error) {
+            console.warn("Could not read the cached exercise catalog.", error);
+        }
+        if (Array.isArray(cachedExercises)) return cachedExercises;
+
+        let catalogError;
+        try {
+            const response = await fetch("/data/exercises.json");
+            if (!response.ok) throw new Error(`Exercise catalog returned ${response.status}.`);
+            const exercises = await response.json();
+            if (!Array.isArray(exercises)) throw new Error("Exercise catalog returned invalid data.");
+            cacheExercises(exercises);
+            return exercises;
+        } catch (error) {
+            catalogError = error;
+        }
+
         try {
             const response = await fetch(`${window.API_URL}/api/exercises`);
             if (!response.ok) throw new Error(`Exercise API returned ${response.status}.`);
             const exercises = await response.json();
             if (!Array.isArray(exercises)) throw new Error("Exercise API returned an invalid catalog.");
+            cacheExercises(exercises);
             return exercises;
-        } catch (error) {
-            apiError = error;
+        } catch (apiError) {
+            console.error("Exercise catalog fallback failed:", catalogError);
+            throw apiError;
         }
-
-        const response = await fetch("/data/exercises.json");
-        if (!response.ok) throw apiError;
-        const exercises = await response.json();
-        if (!Array.isArray(exercises)) throw apiError;
-        console.warn("Exercise API unavailable; loaded the bundled exercise catalog instead.", apiError);
-        return exercises;
     }
 
     async function render() {
@@ -123,9 +124,7 @@
                 const groupExercises = exercises.filter(exercise => exercise.group === group.key);
                 return `
                     <section class="exercise-section" aria-labelledby="exerciseGroup-${group.key}">
-                        <div class="exercise-section-heading">
-                            <h2 id="exerciseGroup-${group.key}">${escapeHTML(group.title)}</h2>
-                        </div>
+                        
                         <div class="exercise-list exercise-grid">
                             ${groupExercises.map(renderExercise).join("")}
                         </div>

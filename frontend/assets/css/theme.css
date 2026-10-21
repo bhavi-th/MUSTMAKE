@@ -1,19 +1,19 @@
 :root[data-theme="dark"] {
     color-scheme: dark;
-    --page-bg: #11151b;
-    --topbar-bg: #171c24;
-    --glass-panel: #1a2029;
-    --glass-subtle: #222a35;
-    --glass-control: #171c24;
-    --glass-border: #35404e;
-    --text-primary: #edf2f8;
-    --text-secondary: #b3bfce;
-    --text-muted: #8996a7;
-    --accent: #82a9d4;
-    --accent-hover: #a3c5e9;
-    --accent-soft: rgba(130, 169, 212, 0.16);
+    --page-bg: #101010;
+    --topbar-bg: #141414;
+    --glass-panel: #181818;
+    --glass-subtle: #1d1d1d;
+    --glass-control: #141414;
+    --glass-border: #303030;
+    --text-primary: #f2f2f2;
+    --text-secondary: #b8b8b8;
+    --text-muted: #8d8d8d;
+    --accent: #2563eb;
+    --accent-hover: #2563eb;
+    --accent-soft: rgba(37, 99, 235, 0.12);
     --danger: #ff8a80;
-    --focus-ring: rgba(130, 169, 212, 0.45);
+    --focus-ring: rgba(37, 99, 235, 0.45);
     --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.24);
     --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -43,7 +43,7 @@
 
 :root[data-theme="dark"] .bottom-navigation {
     border-color: var(--glass-border);
-    background: rgba(26, 32, 41, 0.96);
+    background: rgba(20, 20, 20, 0.96);
     box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.28);
 }
 
@@ -59,7 +59,7 @@
 
 :root[data-theme="dark"] .desktop-navigation a:hover,
 :root[data-theme="dark"] .desktop-navigation a.active,
-:root[data-theme="dark"] .desktop-nav-logout:hover {
+:root[data-theme="dark"] .desktop-nav-more:hover {
     color: var(--accent-hover);
 }
 
@@ -146,6 +146,10 @@
 
 :root[data-theme="dark"] .auth-content a.google-oauth-button {
     color: #202124;
+    background: #fff;
+    border-color: #dadce0;
+    opacity: 1;
+    visibility: visible;
 }
 
 :root[data-theme="dark"] .theme-choice {
@@ -159,7 +163,7 @@
 }
 
 :root[data-theme="dark"] .theme-swatch-light {
-    border-color: #35404e;
+    border-color: #303030;
 }
 
 .theme-page {
@@ -236,15 +240,192 @@
 }
 
 .theme-swatch-light {
-    background: linear-gradient(90deg, #fff 0 65%, #e7edf4 65%);
+    background: linear-gradient(90deg, #fff 0 65%, #e5e7eb 65%);
 }
 
 .theme-swatch-dark {
-    background: linear-gradient(90deg, #151a21 0 65%, #27303b 65%);
+    background: linear-gradient(90deg, #111 0 65%, #303030 65%);
 }
 
 .theme-status {
     min-height: 1.5em;
     margin-top: 0.75rem;
     font-size: 0.9rem;
+}
+
+:root[data-theme="dark"] .exercise-card {
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    background: #141414;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+:root[data-theme="dark"] .exercise-card-media {
+    background: #141414;
+}
+
+:root[data-theme="dark"] .exercise-card:hover {
+    border-color: #454545;
+    background: #181818;
+    transform: translateY(-2px);
+}
+
+:root[data-theme="dark"] .competition-result {
+    border: 0;
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    background: transparent;
+}
+
+:root[data-theme="dark"] .competition-result:hover {
+    background: #161616;
+}
+
+:root[data-theme="dark"] .competition-user-info strong {
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .competition-user-info span {
+    color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .competition-avatar.placeholder {
+    background: #303030;
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .exercise-details {
+    background: transparent;
+}
+
+:root[data-theme="dark"] .competition-search,
+:root[data-theme="dark"] .competition-section,
+:root[data-theme="dark"] .competition-search-area,
+:root[data-theme="dark"] .competition-people,
+:root[data-theme="dark"] .competition-results,
+:root[data-theme="dark"] .competition-grid {
+    background: transparent;
+}
+
+:root[data-theme="dark"] .competition-search-area {
+    width: 100%;
+}
+
+:root[data-theme="dark"] .competition-search-area .competition-result,
+:root[data-theme="dark"] .competition-people .competition-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transition: background-color 160ms ease;
+}
+
+:root[data-theme="dark"] .competition-search-area .competition-result:hover,
+:root[data-theme="dark"] .competition-people .competition-card:hover {
+    background: #181818;
+}
+
+:root[data-theme="dark"] .competition-user-info strong,
+:root[data-theme="dark"] .competition-card-profile h3 {
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+:root[data-theme="dark"] .competition-user-info span,
+:root[data-theme="dark"] .competition-card-header p,
+:root[data-theme="dark"] .competition-card .recent-workouts {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+:root[data-theme="dark"] .competition-people .competition-card-header {
+    flex: 1 1 50%;
+    min-width: 0;
+}
+
+:root[data-theme="dark"] .competition-people .competition-card-profile {
+    align-items: center;
+}
+
+:root[data-theme="dark"] .competition-people .today-workouts {
+    flex: 1 1 35%;
+    min-width: 0;
+    padding: 0;
+}
+
+:root[data-theme="dark"] .competition-people .today-workouts p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+:root[data-theme="dark"] .competition-avatar {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    border: 1px solid var(--glass-border);
+}
+
+:root[data-theme="dark"] .competition-avatar.placeholder {
+    background: #242424;
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .competition-results .add-competitor-button,
+:root[data-theme="dark"] .competition-people .remove-competitor-button {
+    display: inline-grid;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    color: var(--accent-hover);
+    background: transparent;
+    box-shadow: none;
+    font-size: 20px;
+    line-height: 1;
+}
+
+:root[data-theme="dark"] .competition-results .add-competitor-button:hover,
+:root[data-theme="dark"] .competition-people .remove-competitor-button:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 600px) {
+    :root[data-theme="dark"] .competition-search-area .competition-result,
+    :root[data-theme="dark"] .competition-people .competition-card {
+        gap: 10px;
+        padding: 12px 2px;
+    }
+
+    :root[data-theme="dark"] .competition-people .competition-card {
+        flex-wrap: wrap;
+    }
+
+    :root[data-theme="dark"] .competition-people .competition-card-header {
+        flex: 1 1 calc(100% - 48px);
+    }
+
+    :root[data-theme="dark"] .competition-people .today-workouts {
+        flex: 1 1 100%;
+        padding-left: 54px;
+    }
 }

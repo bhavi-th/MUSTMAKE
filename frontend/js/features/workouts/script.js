@@ -4,6 +4,23 @@ function getToken() {
     return localStorage.getItem("token");
 }
 
+function readSessionCache(key) {
+    try {
+        return JSON.parse(sessionStorage.getItem(key) || "null");
+    } catch (error) {
+        console.warn(`Could not read cached ${key}.`, error);
+        return null;
+    }
+}
+
+function writeSessionCache(key, value) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.warn(`Could not cache ${key}.`, error);
+    }
+}
+
 function getCurrentUser() {
     const user = localStorage.getItem("user");
     if (!user) return null;
@@ -117,7 +134,7 @@ async function loadToday() {
     const userContainer = document.getElementById("userWorkouts");
     const personalDashboard = document.getElementById("personalDashboard");
     const guestCta = document.getElementById("guestCta");
-    if (!userContainer || !personalDashboard) return;
+    if (!personalDashboard || !userContainer) return;
 
     const user = getCurrentUser();
     const token = getToken();
@@ -138,11 +155,23 @@ async function loadToday() {
         nameElement.textContent = `${greeting}, ${user.name || "athlete"}`;
     }
 
+    const cachedWorkouts = readSessionCache("mustmake_today_workouts");
+    if (Array.isArray(cachedWorkouts)) {
+        displayTodayWorkouts(userContainer, cachedWorkouts);
+    }
+    const cachedStreak = readSessionCache("mustmake_streak");
+    const streakElement = document.getElementById("userStreak");
+    if (streakElement && Number.isFinite(cachedStreak)) {
+        streakElement.textContent = cachedStreak;
+    }
+
+    const streakPromise = loadStreaks();
     try {
-        const response = await fetch(`${window.API_URL}/api/workouts/today`, {
+        const todayPromise = fetch(`${window.API_URL}/api/workouts/today`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
+        const [response] = await Promise.all([todayPromise, streakPromise]);
         if (response.status === 401) {
             logout();
             return;
@@ -151,11 +180,13 @@ async function loadToday() {
 
         const responseData = await response.json();
         const workouts = Array.isArray(responseData) ? responseData : [];
+        writeSessionCache("mustmake_today_workouts", workouts);
         displayTodayWorkouts(userContainer, workouts);
-        loadStreaks();
     } catch (error) {
         console.error("Today's workouts error:", error);
-        userContainer.innerHTML = 'Your workout data could not be loaded. You can still browse the <a href="/pages/gst.html">guest page</a>.';
+        if (!Array.isArray(cachedWorkouts)) {
+            userContainer.innerHTML = 'Your workout data could not be loaded. You can still browse the <a href="/pages/gst.html">guest page</a>.';
+        }
     }
 }
 
@@ -199,7 +230,9 @@ async function loadStreaks() {
         }
 
         const data = await response.json();
-        streakElement.textContent = data.streak || 0;
+        const streak = Number(data.streak) || 0;
+        writeSessionCache("mustmake_streak", streak);
+        streakElement.textContent = streak;
     } catch (error) {
         console.error("Streak error:", error);
     }
@@ -455,5 +488,5 @@ async function loadHistory() {
     }
 }
 
-loadToday();
-loadHistory();
+if (document.getElementById("personalDashboard")) loadToday();
+if (document.getElementById("history")) loadHistory();

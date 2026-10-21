@@ -215,7 +215,6 @@ async function loadCompetition() {
             card.className = "competition-card";
 
             const safeName = escapeHTML(competitor.name);
-            const safeUsername = escapeHTML(competitor.username);
             const photo = competitor.profilePicture
                 ? `<img src="${escapeHTML(competitor.profilePicture)}" alt="" class="competition-avatar">`
                 : `<div class="competition-avatar placeholder">${safeName.charAt(0).toUpperCase()}</div>`;
@@ -231,9 +230,8 @@ async function loadCompetition() {
                 <div class="competition-card-header">
                     <a class="competition-card-profile competition-user-link" href="/user-profile?id=${encodeURIComponent(competitor.id)}">
                         ${photo}
-                        <div>
+                        <div class="competition-user-info">
                             <h3>${safeName}</h3>
-                            <p>@${safeUsername}</p>
                         </div>
                     </a>
                     <button type="button" class="main-button remove-competitor-button" data-user-id="${encodeURIComponent(competitor.id)}" aria-label="Remove competitor" title="Remove competitor">−</button>

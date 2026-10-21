@@ -344,6 +344,65 @@
     padding: 0 0 2px;
 }
 
+#firstSetupPage .social-links-container,
+.profile-card .social-links-container {
+    display: grid;
+    gap: 9px;
+    margin-bottom: 10px;
+}
+
+#firstSetupPage .social-link-item,
+.profile-card .social-link-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+#firstSetupPage .social-links-container,
+#firstSetupPage .social-links-field > button,
+#firstSetupPage .social-links-field > small {
+    grid-column: 1 / -1;
+}
+
+#firstSetupPage .social-link-item input,
+.profile-card .social-link-item input {
+    min-width: 0;
+}
+
+#firstSetupPage .social-links-field > button,
+#firstSetupPage .remove-social-link,
+.profile-card .social-links-field > button,
+.profile-card .remove-social-link {
+    width: fit-content;
+    padding: 8px 11px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    background: var(--glass-panel);
+    color: var(--text-primary);
+    font: inherit;
+    cursor: pointer;
+}
+
+#firstSetupPage .social-links-field > button:disabled,
+.profile-card .social-links-field > button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+#firstSetupPage .social-links-field > small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.profile-card .social-links-field > small {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
 #firstSetupPage .save-button {
     display: flex;
     width: 100%;
@@ -454,6 +513,13 @@
     }
 }
 
+@media (max-width: 480px) {
+    #firstSetupPage .social-link-item,
+    .profile-card .social-link-item {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+}
+
 .profile-container #profileName,
 .profile-container #profileUsername,
 .profile-container #profileIs {
@@ -552,4 +618,3 @@
         font-size: 12px;
     }
 }
-

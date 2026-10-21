@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/core/change_backend_url.js"></script>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
+    <title>Appearance | MUSTMAKE</title>
+    <script src="/js/shared/theme.js"></script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main class="theme-page">
+        <header class="theme-heading">
+          
+            <p>How MUSTMAKE need to looks on this device.</p>
+        </header>
+
+        <section class="theme-options" aria-labelledby="theme-options-heading">
+            <div class="theme-choices" role="group" aria-label="Choose color theme">
+                <button class="theme-choice" type="button" data-theme-choice="light" aria-pressed="false">
+                    <span class="theme-swatch theme-swatch-light" aria-hidden="true"></span>
+                    <span><strong>Light</strong><small>Bright background and dark text</small></span>
+                </button>
+                <button class="theme-choice" type="button" data-theme-choice="dark" aria-pressed="false">
+                    <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+                    <span><strong>Dark</strong><small>Dim background and light text</small></span>
+                </button>
+            </div>
+            <p id="themeStatus" class="theme-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <script src="/js/shared/navbar.js"></script>
+    <script>
+        const themeChoices = document.querySelectorAll("[data-theme-choice]");
+        const themeStatus = document.getElementById("themeStatus");
+
+        function updateThemeChoices(theme) {
+            themeChoices.forEach(button => {
+                button.setAttribute("aria-pressed", String(button.dataset.themeChoice === theme));
+            });
+        }
+
+        const activeTheme = document.documentElement.dataset.theme || "light";
+        updateThemeChoices(activeTheme);
+
+        themeChoices.forEach(button => {
+            button.addEventListener("click", () => {
+                const theme = button.dataset.themeChoice;
+                window.setColorTheme(theme);
+                updateThemeChoices(theme);
+                themeStatus.textContent = `${theme === "dark" ? "Dark" : "Light"} theme enabled.`;
+            });
+        });
+    </script>
+</body>
+</html>

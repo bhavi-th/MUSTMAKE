@@ -109,17 +109,18 @@ const updateProfile = async (req, res) => {
 
             let normalizedSocials;
             if (socials !== undefined) {
-                if (!isPlainObject(socials)) {
-                    return res.status(400).json({ message: "Social links must be an object." });
+                if (!Array.isArray(socials) && !isPlainObject(socials)) {
+                    return res.status(400).json({ message: "Social links must be a list of URLs." });
                 }
 
-                normalizedSocials = {};
-                for (const key of ["instagram", "youtube", "github", "x"]) {
-                    const value = socials[key];
-                    if (value === undefined || value === null || value === "") {
-                        normalizedSocials[key] = null;
-                        continue;
-                    }
+                const links = (Array.isArray(socials) ? socials : Object.values(socials))
+                    .filter(value => value !== undefined && value !== null && value !== "");
+                if (links.length > 10) {
+                    return res.status(400).json({ message: "You can add up to 10 social links." });
+                }
+
+                normalizedSocials = [];
+                for (const value of links) {
                     if (typeof value !== "string" || value.trim().length > 500) {
                         return res.status(400).json({ message: "Social links must be valid HTTP or HTTPS URLs." });
                     }
@@ -128,7 +129,7 @@ const updateProfile = async (req, res) => {
                         if (!["http:", "https:"].includes(url.protocol) || !url.hostname) {
                             throw new Error("Unsupported URL protocol.");
                         }
-                        normalizedSocials[key] = url.href;
+                        normalizedSocials.push(url.href);
                     } catch {
                         return res.status(400).json({ message: "Social links must be valid HTTP or HTTPS URLs." });
                     }

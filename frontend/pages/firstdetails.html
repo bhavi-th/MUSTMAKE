@@ -54,7 +54,7 @@
     >
 
     <small id="ageHint" class="field-hint">
-        Age is shown on your profile and automatically increases every January.
+        We like to know your age for customized suggestions.
     </small>
 </div>
                     <div class="metrics-grid">
@@ -91,23 +91,10 @@
                             <span>Social links <span>Optional</span></span>
                         </summary>
                         <div class="socials-content">
-                            <div class="socials-grid">
-                                <div class="setup-field">
-                                    <label for="instagram">Instagram</label>
-                                    <input type="url" id="instagram" autocomplete="url" placeholder="https://instagram.com/…">
-                                </div>
-                                <div class="setup-field">
-                                    <label for="youtube">YouTube</label>
-                                    <input type="url" id="youtube" autocomplete="url" placeholder="https://youtube.com/…">
-                                </div>
-                                <div class="setup-field">
-                                    <label for="github">GitHub</label>
-                                    <input type="url" id="github" autocomplete="url" placeholder="https://github.com/…">
-                                </div>
-                                <div class="setup-field">
-                                    <label for="x">X</label>
-                                    <input type="url" id="x" autocomplete="url" placeholder="https://x.com/…">
-                                </div>
+                            <div class="socials-grid social-links-field">
+                                <div id="social-links-container" class="social-links-container"></div>
+                                <button type="button" id="add-social-link">+ Add Link</button>
+                                <small id="social-links-count" aria-live="polite"></small>
                             </div>
                         </div>
                     </details>

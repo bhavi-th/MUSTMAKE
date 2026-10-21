@@ -74,25 +74,8 @@ const userSchema = new mongoose.Schema(
         },
 
         socials: {
-            instagram: {
-                type: String,
-                default: null
-            },
-
-            youtube: {
-                type: String,
-                default: null
-            },
-
-            github: {
-                type: String,
-                default: null
-            },
-
-            x: {
-                type: String,
-                default: null
-            }
+            type: mongoose.Schema.Types.Mixed,
+            default: () => ({})
         }
     },
     {

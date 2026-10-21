@@ -59,46 +59,18 @@
 
                 <h2>Socials</h2>
 
-               
-<div class="form-group">
-    <label>Social Links (Maximum 10)</label>
-
-    <div id="social-links-container">
-        <div class="social-link-item">
-            <input
-                type="text"
-                name="socialPlatform[]"
-                placeholder="Platform name (e.g. Instagram)"
-                maxlength="50"
-            >
-            <input
-                type="url"
-                name="socialUrl[]"
-                placeholder="https://example.com/YOU"
-            >
-            <button type="button" class="remove-social-link"
-                aria-label="Remove social link">×</button>
-        </div>
-    </div>
-
-    <button type="button" id="add-social-link">
-        + Add Link
-    </button>
-
-    <small id="social-links-count">1 of 10 links</small>
-</div>
-
+                <div class="form-group social-links-field">
+                    <label>Social Links</label>
+                    <div id="social-links-container" class="social-links-container"></div>
+                    <button type="button" id="add-social-link">+ Add Link</button>
+                    <small id="social-links-count" aria-live="polite"></small>
+                </div>
 
                 <button type="submit" class="main-button">Save Profile</button>
 
             </form>
 
             <p id="profileMessage" class="auth-message"></p>
-
-            <div class="account-danger-zone">
-                <button id="deleteAccountButton" class="logoutBtn" type="button">Delete account</button>
-                <p id="deleteAccountMessage" class="auth-message account-delete-message" role="status" aria-live="polite"></p>
-            </div>
 
         </section>
 

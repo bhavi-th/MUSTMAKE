@@ -98,24 +98,19 @@ function displaySocials(socials) {
         return;
     }
 
-    const platforms = [
-        { name: "Instagram", key: "instagram" },
-        { name: "YouTube", key: "youtube" },
-        { name: "GitHub", key: "github" },
-        { name: "X", key: "x" }
-    ];
-
     let found = false;
 
-    platforms.forEach(platform => {
-        const href = safeSocialUrl(socials[platform.key]);
+    const links = Array.isArray(socials) ? socials : Object.values(socials);
+    links.forEach(value => {
+        const href = safeSocialUrl(value);
         if (href) {
             found = true;
             const link = document.createElement("a");
             link.href = href;
             link.target = "_blank";
             link.rel = "noopener noreferrer";
-            link.textContent = platform.name;
+            link.textContent = href;
+            link.title = href;
             container.appendChild(link);
         }
     });

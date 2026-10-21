@@ -83,10 +83,13 @@ function displayProfile({ user, workoutHistory = [] }) {
             ? `<div class="profile-detail"><strong>${escapeHtml(user.weight)}</strong><span>kg</span></div>`
             : ""
     ].filter(Boolean).join("");
-    const socials = Object.entries(user.socials || {})
-        .map(([key, value]) => {
+    const socialLinks = Array.isArray(user.socials)
+        ? user.socials
+        : Object.values(user.socials || {});
+    const socials = socialLinks
+        .map(value => {
             const href = safeSocialUrl(value);
-            return href ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(key)}</a>` : "";
+            return href ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(href)}</a>` : "";
         })
         .filter(Boolean)
         .join("");

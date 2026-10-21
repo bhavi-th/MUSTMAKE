@@ -1,0 +1,250 @@
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page-bg: #11151b;
+    --topbar-bg: #171c24;
+    --glass-panel: #1a2029;
+    --glass-subtle: #222a35;
+    --glass-control: #171c24;
+    --glass-border: #35404e;
+    --text-primary: #edf2f8;
+    --text-secondary: #b3bfce;
+    --text-muted: #8996a7;
+    --accent: #82a9d4;
+    --accent-hover: #a3c5e9;
+    --accent-soft: rgba(130, 169, 212, 0.16);
+    --danger: #ff8a80;
+    --focus-ring: rgba(130, 169, 212, 0.45);
+    --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.24);
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:root[data-theme="dark"] body {
+    background-color: var(--page-bg);
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] body :is(h1, h2, h3, h4, h5, h6, p, label, li, dt, dd, time, small) {
+    color: inherit;
+}
+
+:root[data-theme="dark"] body :is(input, select, textarea) {
+    color: var(--text-primary);
+    border-color: var(--glass-border);
+    color-scheme: dark;
+}
+
+:root[data-theme="dark"] body :is(input, select, textarea)::placeholder {
+    color: var(--text-muted);
+}
+
+:root[data-theme="dark"] body :is(button, .main-button, .secondary-button) {
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .bottom-navigation {
+    border-color: var(--glass-border);
+    background: rgba(26, 32, 41, 0.96);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.28);
+}
+
+:root[data-theme="dark"] .bottom-nav-item {
+    color: var(--text-muted);
+    background: transparent;
+}
+
+:root[data-theme="dark"] .bottom-nav-item.active {
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+}
+
+:root[data-theme="dark"] .desktop-navigation a:hover,
+:root[data-theme="dark"] .desktop-navigation a.active,
+:root[data-theme="dark"] .desktop-nav-logout:hover {
+    color: var(--accent-hover);
+}
+
+:root[data-theme="dark"] .topbar .mobile-login {
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .topbar {
+    background: var(--topbar-bg);
+    border-color: var(--glass-border);
+}
+
+:root[data-theme="dark"] .workout-item,
+:root[data-theme="dark"] .history-workout,
+:root[data-theme="dark"] .competition-result,
+:root[data-theme="dark"] .profile-detail,
+:root[data-theme="dark"] .profile-upload,
+:root[data-theme="dark"] .public-workout,
+:root[data-theme="dark"] .total-display,
+:root[data-theme="dark"] .social-links a,
+:root[data-theme="dark"] .google-button,
+:root[data-theme="dark"] .exercise-card,
+:root[data-theme="dark"] .exercise-details,
+:root[data-theme="dark"] .exercise-form-field input {
+    color: var(--text-primary);
+    border-color: var(--glass-border);
+    background-color: var(--glass-subtle);
+}
+
+:root[data-theme="dark"] .person-top,
+:root[data-theme="dark"] .history-date,
+:root[data-theme="dark"] .social-section,
+:root[data-theme="dark"] .profile-header,
+:root[data-theme="dark"] .profile-socials,
+:root[data-theme="dark"] .public-profile-header {
+    border-color: var(--glass-border);
+}
+
+:root[data-theme="dark"] .secondary-button {
+    border-color: var(--glass-border);
+    color: var(--text-primary);
+    background: var(--glass-subtle);
+}
+
+:root[data-theme="dark"] .secondary-button:hover {
+    color: var(--text-primary);
+    background: var(--glass-panel);
+}
+
+:root[data-theme="dark"] .mobile-nav-panel {
+    color: var(--text-primary);
+    background: var(--glass-panel);
+    box-shadow: 18px 0 48px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .mobile-nav-heading {
+    border-color: var(--glass-border);
+}
+
+:root[data-theme="dark"] .mobile-nav-brand,
+:root[data-theme="dark"] .mobile-nav-links > a,
+:root[data-theme="dark"] .mobile-nav-links > .mobile-nav-logout,
+:root[data-theme="dark"] .mobile-nav-close {
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .mobile-nav-close,
+:root[data-theme="dark"] .topbar .mobile-menu-toggle {
+    border-color: var(--glass-border);
+    color: var(--text-primary);
+    background: var(--glass-subtle);
+}
+
+:root[data-theme="dark"] .topbar .mobile-menu-toggle:hover {
+    background: var(--glass-panel);
+}
+
+:root[data-theme="dark"] .mobile-nav-links > a:hover,
+:root[data-theme="dark"] .mobile-nav-links > .mobile-nav-logout:hover,
+:root[data-theme="dark"] .mobile-nav-links > .mobile-nav-delete-account:hover {
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+}
+
+:root[data-theme="dark"] .auth-content a.google-oauth-button {
+    color: #202124;
+}
+
+:root[data-theme="dark"] .theme-choice {
+    border-color: var(--glass-border);
+    background: var(--glass-panel);
+}
+
+:root[data-theme="dark"] .theme-choice[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+:root[data-theme="dark"] .theme-swatch-light {
+    border-color: #35404e;
+}
+
+.theme-page {
+    width: min(calc(100% - 2rem), 760px);
+    margin: 0 auto;
+    padding: clamp(2.5rem, 7vw, 5rem) 0;
+}
+
+.theme-heading {
+    margin-bottom: 2.5rem;
+}
+
+.theme-heading h1 {
+    margin-bottom: 0.5rem;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.theme-heading > p:last-child,
+.theme-choice small,
+.theme-status {
+    color: var(--text-secondary);
+}
+
+.theme-options h2 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.theme-choices {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 520px;
+}
+
+.theme-choice {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    background: var(--glass-panel);
+    text-align: left;
+    cursor: pointer;
+}
+
+.theme-choice[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.theme-choice:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.theme-choice > span:last-child {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.theme-choice small {
+    font-size: 0.85rem;
+}
+
+.theme-swatch {
+    width: 54px;
+    height: 40px;
+    flex: 0 0 54px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+}
+
+.theme-swatch-light {
+    background: linear-gradient(90deg, #fff 0 65%, #e7edf4 65%);
+}
+
+.theme-swatch-dark {
+    background: linear-gradient(90deg, #151a21 0 65%, #27303b 65%);
+}
+
+.theme-status {
+    min-height: 1.5em;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+}

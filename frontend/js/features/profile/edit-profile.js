@@ -11,8 +11,48 @@ function logout() {
 const profilePictureInput = document.getElementById("profilePicture");
 const photoPreview = document.getElementById("photoPreview");
 const ageInput = document.getElementById("age");
-const deleteAccountButton = document.getElementById("deleteAccountButton");
-const deleteAccountMessage = document.getElementById("deleteAccountMessage");
+const socialLinksContainer = document.getElementById("social-links-container");
+const addSocialLinkButton = document.getElementById("add-social-link");
+const socialLinksCount = document.getElementById("social-links-count");
+const maxSocialLinks = 10;
+
+function updateSocialLinksCount() {
+    const count = socialLinksContainer.querySelectorAll(".social-link-item").length;
+    socialLinksCount.textContent = `${count} of ${maxSocialLinks} links`;
+    addSocialLinkButton.disabled = count >= maxSocialLinks;
+}
+
+function addSocialLink(url = "") {
+    if (socialLinksContainer.querySelectorAll(".social-link-item").length >= maxSocialLinks) return;
+
+    const item = document.createElement("div");
+    item.className = "social-link-item";
+
+    const urlInput = document.createElement("input");
+    urlInput.type = "url";
+    urlInput.name = "socialUrl[]";
+    urlInput.placeholder = "https://example.com/you";
+    urlInput.value = url;
+    urlInput.setAttribute("aria-label", "Social link URL");
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-social-link";
+    removeButton.setAttribute("aria-label", "Remove social link");
+    removeButton.textContent = "×";
+    removeButton.addEventListener("click", () => {
+        item.remove();
+        updateSocialLinksCount();
+    });
+
+    item.append(urlInput, removeButton);
+    socialLinksContainer.appendChild(item);
+    updateSocialLinksCount();
+    urlInput.focus();
+}
+
+addSocialLinkButton.addEventListener("click", () => addSocialLink());
+updateSocialLinksCount();
 
 profilePictureInput.addEventListener("change", () => {
     const file = profilePictureInput.files[0];
@@ -72,11 +112,14 @@ async function loadProfile() {
                 "&size=200";
         }
 
-        if (user.socials) {
-            document.getElementById("instagram").value = user.socials.instagram || "";
-            document.getElementById("youtube").value = user.socials.youtube || "";
-            document.getElementById("github").value = user.socials.github || "";
-            document.getElementById("x").value = user.socials.x || "";
+        const savedSocialLinks = (Array.isArray(user.socials)
+            ? user.socials
+            : Object.values(user.socials || {}))
+            .filter(url => typeof url === "string" && url.trim())
+            .slice(0, maxSocialLinks);
+        socialLinksContainer.replaceChildren();
+        if (savedSocialLinks.length) {
+            savedSocialLinks.forEach(url => addSocialLink(url));
         }
     } catch (error) {
         console.error(error);
@@ -93,16 +136,20 @@ profileForm.addEventListener("submit", async event => {
     message.textContent = "Saving...";
 
     try {
+        const socialLinks = [];
+        for (const item of socialLinksContainer.querySelectorAll(".social-link-item")) {
+            const url = item.querySelector('[name="socialUrl[]"]').value.trim();
+            if (url) socialLinks.push(url);
+        }
+        if (socialLinks.length > maxSocialLinks) {
+            throw new Error(`You can add up to ${maxSocialLinks} social links.`);
+        }
+
         const payload = {
             age: ageInput.value,
             height: document.getElementById("height").value,
             weight: document.getElementById("weight").value,
-            socials: {
-                instagram: document.getElementById("instagram").value.trim(),
-                youtube: document.getElementById("youtube").value.trim(),
-                github: document.getElementById("github").value.trim(),
-                x: document.getElementById("x").value.trim()
-            }
+            socials: socialLinks
         };
 
         const selectedPhoto = profilePictureInput.files?.[0];
@@ -146,50 +193,5 @@ profileForm.addEventListener("submit", async event => {
         message.textContent = error.message;
     }
 });
-
-if (deleteAccountButton) {
-    deleteAccountButton.addEventListener("click", async () => {
-        const confirmed = window.confirm(
-            "Delete your account permanently? This will also delete your profile, workouts, and competition links. This action cannot be undone."
-        );
-        if (!confirmed) return;
-
-        const saveButton = profileForm.querySelector('button[type="submit"]');
-        deleteAccountButton.disabled = true;
-        if (saveButton) saveButton.disabled = true;
-        deleteAccountMessage.textContent = "Deleting your account...";
-
-        try {
-            const response = await fetch(`${window.API_URL}/api/account`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${getToken()}`
-                }
-            });
-            const data = await response.json().catch(() => ({}));
-
-            if (response.status === 401) {
-                logout();
-                return;
-            }
-
-            if (!response.ok) {
-                throw new Error(data.message || "Could not delete your account.");
-            }
-
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            deleteAccountMessage.textContent = "Account deleted. Redirecting...";
-            window.setTimeout(() => window.location.replace("/signup"), 600);
-        } catch (error) {
-            console.error(error);
-            deleteAccountMessage.textContent = error instanceof TypeError
-                ? "Could not reach the server. Please try again."
-                : error.message || "Could not delete your account.";
-            deleteAccountButton.disabled = false;
-            if (saveButton) saveButton.disabled = false;
-        }
-    });
-}
 
 loadProfile();

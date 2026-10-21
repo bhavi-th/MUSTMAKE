@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/core/change_backend_url.js"></script>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
+    <title>About Us | MUSTMAKE</title>
+    <script src="/js/shared/theme.js"></script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .about-page {
+            width: min(calc(100% - 2rem), 900px);
+            margin: 0 auto;
+            padding: clamp(2.5rem, 7vw, 5rem) 0;
+        }
+
+        .about-hero {
+            margin-bottom: clamp(2rem, 5vw, 3.5rem);
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+        }
+
+        .about-hero p,
+        .about-section p {
+            max-width: 720px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+
+        .about-section {
+            max-width: 720px;
+            margin-top: 2rem;
+        }
+
+        .about-section h2 {
+            margin-bottom: 0.5rem;
+            font-size: clamp(1.25rem, 3vw, 1.6rem);
+        }
+
+        .about-values {
+            margin: 0.75rem 0 0;
+            padding-left: 1.25rem;
+            color: var(--text-secondary);
+        }
+
+        .about-values li + li {
+            margin-top: 0.6rem;
+        }
+
+        .about-values strong {
+            color: var(--text-primary);
+        }
+
+        .about-cta {
+            max-width: 720px;
+            margin-top: 2.5rem;
+        }
+
+        .about-cta .main-button {
+            display: inline-flex;
+            margin-top: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main class="about-page">
+        <header class="about-hero">
+            <h1>Built on consistency.<br>Driven by progress.</h1>
+            <p class="subtitle">
+                MUSTMAKE is a fitness tracking platform built to help you stay consistent,
+                track your workouts, and turn your fitness goals into daily action.
+            </p>
+        </header>
+
+        <section class="about-section" aria-labelledby="our-story-heading">
+            <h2 id="our-story-heading">Small efforts add up</h2>
+            <p>
+                Progress isn't created in a single day. It's built through small efforts,
+                repeated every day. MUSTMAKE helps you track those efforts, monitor your
+                progress, and build habits that move you closer to your goals.
+            </p>
+        </section>
+
+        <section class="about-section" aria-labelledby="mission-heading">
+            <h2 id="mission-heading">Our mission</h2>
+            <p>
+                Our mission is to make fitness tracking simple, meaningful, and accessible.
+                We want to help people take ownership of their fitness journey by making
+                consistency measurable and progress visible.
+            </p>
+        </section>
+
+        <section class="about-section" aria-labelledby="values-heading">
+            <h2 id="values-heading">What we stand for</h2>
+            <ul class="about-values">
+                <li><strong>Consistency over perfection</strong>Showing up matters more than having a perfect day.</li>
+                <li><strong>Progress you can measure</strong>Track your workouts and see how far you've come.</li>
+                <li><strong>Discipline over excuses</strong>Build habits that keep you moving forward.</li>
+                <li><strong>Your journey, your pace</strong>Focus on improving yourself, one day at a time.</li>
+            </ul>
+        </section>
+
+        <section class="about-section" aria-labelledby="vision-heading">
+            <h2 id="vision-heading">Our vision</h2>
+            <p>
+                We envision a world where fitness becomes a sustainable part of everyday
+                life, powered by discipline, meaningful progress, and the determination
+                to keep going.
+            </p>
+        </section>
+
+        <section class="about-cta" aria-labelledby="make-it-happen-heading">
+            <h2 id="make-it-happen-heading">Make it happen</h2>
+            <p>Every workout counts. Every effort matters. Every day is another opportunity to improve.</p>
+            <p><strong>Set your goal. Show up. Track your progress.</strong></p>
+            <a class="main-button" href="/pages/gst.html">Explore MUSTMAKE</a>
+        </section>
+    </main>
+
+    <script src="/js/shared/navbar.js"></script>
+</body>
+</html>

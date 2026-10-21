@@ -94,9 +94,14 @@
             `
             : "";
 
-        const guestActionHTML = isAuthenticated
+        const guestActionsHTML = isAuthenticated
             ? ""
-            : `<a class="mobile-login" href="${isLoginPage ? "/signup" : "/login"}">${isLoginPage ? "Signup" : "Login"}</a>`;
+            : `
+                <nav class="guest-actions" aria-label="Account">
+                    ${navLink("/login", "Login", currentPage)}
+                    ${navLink("/signup", "Sign up", currentPage)}
+                </nav>
+            `;
 
         // Desktop navigation: always displayed at the top-right on large screens.
         const desktopNavigationHTML = isAuthenticated
@@ -139,10 +144,17 @@
                     </div>
 
                     <nav class="mobile-nav-links" aria-label="Navigation links">
-                        ${navLink("/pages/index.html", "Home", currentPage)}
-                        ${navLink("/exercises", "Exercises", currentPage)}
-                        ${navLink("/pages/competition.html", "Community", currentPage)}
-                        ${navLink("/profile", "My profile", currentPage)}
+                        ${navLink("/pages/edit-profile.html", "Edit profile", currentPage)}
+                        ${navLink("/pages/theme.html", "Theme", currentPage)}
+                        ${navLink("/pages/about-us.html", "About us", currentPage)}
+                        <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
+                        <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>
+                        <button class="mobile-nav-delete-account"
+                            type="button"
+                            data-auth-delete-account>
+                            Delete account
+                        </button>
+                        <p class="mobile-nav-account-message" role="status" aria-live="polite"></p>
 
                         <button class="mobile-nav-logout"
                             type="button"
@@ -211,7 +223,7 @@
                 </div>
 
                 ${desktopNavigationHTML}
-                ${guestActionHTML}
+                ${guestActionsHTML}
             </header>
 
             ${navigationHTML}
@@ -327,6 +339,49 @@
                 localStorage.removeItem("user");
                 window.location.href = "/login";
             });
+        });
+
+        const deleteAccountButton = container.querySelector("[data-auth-delete-account]");
+        const deleteAccountMessage = container.querySelector(".mobile-nav-account-message");
+        deleteAccountButton?.addEventListener("click", async () => {
+            const confirmed = window.confirm(
+                "Delete your account permanently? This will also delete your profile, workouts, and competition links. This action cannot be undone."
+            );
+            if (!confirmed) return;
+
+            deleteAccountButton.disabled = true;
+            deleteAccountMessage.textContent = "Deleting your account...";
+
+            try {
+                const response = await fetch(`${window.API_URL}/api/account`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    window.location.href = "/login";
+                    return;
+                }
+                if (!response.ok) {
+                    throw new Error(data.message || "Could not delete your account.");
+                }
+
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                deleteAccountMessage.textContent = "Account deleted. Redirecting...";
+                window.setTimeout(() => window.location.replace("/signup"), 600);
+            } catch (error) {
+                console.error("Account deletion error:", error);
+                deleteAccountMessage.textContent = error instanceof TypeError
+                    ? "Could not reach the server. Please try again."
+                    : error.message || "Could not delete your account.";
+                deleteAccountButton.disabled = false;
+            }
         });
     }
 

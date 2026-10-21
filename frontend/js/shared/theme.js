@@ -15,7 +15,7 @@
         }
     }
 
-    let savedTheme = "light";
+    let savedTheme = "dark";
     try {
         const storedTheme = localStorage.getItem(themeStorageKey);
         if (validThemes.includes(storedTheme)) savedTheme = storedTheme;

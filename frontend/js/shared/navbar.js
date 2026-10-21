@@ -248,21 +248,33 @@
         container.innerHTML = navbarHTML;
 
         const prefetchedUrls = new Set();
+        const prefetchPage = link => {
+            const url = new URL(link.href, window.location.href);
+            if (url.origin !== window.location.origin || prefetchedUrls.has(url.href)) return;
+
+            prefetchedUrls.add(url.href);
+            const prefetchLink = document.createElement("link");
+            prefetchLink.rel = "prefetch";
+            prefetchLink.href = url.href;
+            document.head.appendChild(prefetchLink);
+        };
+
         container.querySelectorAll("a[href]").forEach(link => {
-            const prefetchPage = () => {
-                const url = new URL(link.href, window.location.href);
-                if (url.origin !== window.location.origin || prefetchedUrls.has(url.href)) return;
-
-                prefetchedUrls.add(url.href);
-                const prefetchLink = document.createElement("link");
-                prefetchLink.rel = "prefetch";
-                prefetchLink.href = url.href;
-                document.head.appendChild(prefetchLink);
-            };
-
-            link.addEventListener("pointerenter", prefetchPage, { once: true });
-            link.addEventListener("touchstart", prefetchPage, { once: true, passive: true });
+            const prefetch = () => prefetchPage(link);
+            link.addEventListener("pointerenter", prefetch, { once: true });
+            link.addEventListener("touchstart", prefetch, { once: true, passive: true });
         });
+
+        const warmBottomNavigation = () => {
+            if (navigator.connection?.saveData) return;
+            container.querySelectorAll(".bottom-navigation a[href]").forEach(prefetchPage);
+        };
+
+        if ("requestIdleCallback" in window) {
+            window.requestIdleCallback(warmBottomNavigation, { timeout: 1500 });
+        } else {
+            window.setTimeout(warmBottomNavigation, 1000);
+        }
 
         document.body.classList.toggle(
             "has-bottom-navigation",

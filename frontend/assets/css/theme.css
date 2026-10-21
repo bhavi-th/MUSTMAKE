@@ -49,12 +49,10 @@
 
 :root[data-theme="dark"] .bottom-nav-item {
     color: var(--text-muted);
-    background: transparent;
 }
 
 :root[data-theme="dark"] .bottom-nav-item.active {
     color: var(--accent-hover);
-    background: var(--accent-soft);
 }
 
 :root[data-theme="dark"] .desktop-navigation a:hover,

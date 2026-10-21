@@ -20,6 +20,40 @@ const searchResults = document.getElementById("searchResults");
 const competitionList = document.getElementById("competitionList");
 const searchControl = document.getElementById("peopleSearch");
 const searchToggle = document.getElementById("searchToggle");
+const competitionCacheKey = getCompetitionCacheKey();
+
+function getCompetitionCacheKey() {
+    try {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userId = user?._id || user?.id || user?.username;
+        return userId ? `mustmake_competition_${encodeURIComponent(userId)}` : null;
+    } catch (error) {
+        console.warn("Could not determine the current user for competition cache.", error);
+        return null;
+    }
+}
+
+function readCompetitionCache() {
+    if (!competitionCacheKey) return null;
+
+    try {
+        const cached = JSON.parse(sessionStorage.getItem(competitionCacheKey) || "null");
+        return Array.isArray(cached) ? cached : null;
+    } catch (error) {
+        console.warn("Could not read cached competition data.", error);
+        return null;
+    }
+}
+
+function writeCompetitionCache(competitions) {
+    if (!competitionCacheKey) return;
+
+    try {
+        sessionStorage.setItem(competitionCacheKey, JSON.stringify(competitions));
+    } catch (error) {
+        console.warn("Could not cache competition data.", error);
+    }
+}
 
 function escapeHTML(value) {
     const div = document.createElement("div");
@@ -137,7 +171,7 @@ async function addCompetitor(competitorId, button) {
         }
 
         button.textContent = "-";
-        await loadCompetition();
+        await loadCompetition({ renderCache: false });
     } catch (error) {
         console.error("Add competitor error:", error);
         button.disabled = false;
@@ -176,7 +210,7 @@ async function removeCompetitor(competitorId, button) {
             }
         });
 
-        await loadCompetition();
+        await loadCompetition({ renderCache: false });
     } catch (error) {
         console.error("Remove competitor error:", error);
         button.disabled = false;
@@ -185,7 +219,10 @@ async function removeCompetitor(competitorId, button) {
     }
 }
 
-async function loadCompetition() {
+async function loadCompetition({ renderCache = true } = {}) {
+    const cachedCompetition = renderCache ? readCompetitionCache() : null;
+    if (cachedCompetition) renderCompetition(cachedCompetition);
+
     try {
         const response = await fetch(`${window.API_URL}/api/competition`, {
             headers: authHeaders()
@@ -201,54 +238,59 @@ async function loadCompetition() {
         }
 
         const competitions = await response.json();
-
-        if (competitions.length === 0) {
-            competitionList.innerHTML = `<p class="no-workout">None</p>`;
-            return;
-        }
-
-        competitionList.innerHTML = "";
-
-        for (const competitor of competitions) {
-
-            const card = document.createElement("div");
-            card.className = "competition-card";
-
-            const safeName = escapeHTML(competitor.name);
-            const photo = competitor.profilePicture
-                ? `<img src="${escapeHTML(competitor.profilePicture)}" alt="" class="competition-avatar">`
-                : `<div class="competition-avatar placeholder">${safeName.charAt(0).toUpperCase()}</div>`;
-            const todayWorkouts = competitor.todayWorkouts || [];
-            const workoutsMarkup = todayWorkouts.length
-                ? todayWorkouts.map(workout => {
-                    const details = workoutDetails(workout);
-                    return `<p class="recent-workouts"><strong>${escapeHTML(workout.exercise)}</strong>${details ? ` · ${escapeHTML(details)}` : ""}</p>`;
-                }).join("")
-                : '<p class="recent-workouts">No workouts recorded today.</p>';
-
-            card.innerHTML = `
-                <div class="competition-card-header">
-                    <a class="competition-card-profile competition-user-link" href="/user-profile?id=${encodeURIComponent(competitor.id)}">
-                        ${photo}
-                        <div class="competition-user-info">
-                            <h3>${safeName}</h3>
-                        </div>
-                    </a>
-                    <button type="button" class="main-button remove-competitor-button" data-user-id="${encodeURIComponent(competitor.id)}" aria-label="Remove competitor" title="Remove competitor">−</button>
-                </div>
-                
-                <div class="today-workouts">${workoutsMarkup}</div>
-            `;
-
-            card.querySelector(".remove-competitor-button").addEventListener("click", event => {
-                removeCompetitor(event.currentTarget.dataset.userId, event.currentTarget);
-            });
-
-            competitionList.appendChild(card);
-        }
+        writeCompetitionCache(competitions);
+        renderCompetition(competitions);
     } catch (error) {
         console.error("Load competition error:", error);
-        competitionList.innerHTML = `<p class="no-workout">Could not load competition.</p>`;
+        if (!cachedCompetition) {
+            competitionList.innerHTML = `<p class="no-workout">Could not load competition.</p>`;
+        }
+    }
+}
+
+function renderCompetition(competitions) {
+    if (competitions.length === 0) {
+        competitionList.innerHTML = `<p class="no-workout">None</p>`;
+        return;
+    }
+
+    competitionList.innerHTML = "";
+
+    for (const competitor of competitions) {
+
+        const card = document.createElement("div");
+        card.className = "competition-card";
+
+        const safeName = escapeHTML(competitor.name);
+        const photo = competitor.profilePicture
+            ? `<img src="${escapeHTML(competitor.profilePicture)}" alt="" class="competition-avatar">`
+            : `<div class="competition-avatar placeholder">${safeName.charAt(0).toUpperCase()}</div>`;
+        const todayWorkouts = competitor.todayWorkouts || [];
+        const workoutsMarkup = todayWorkouts.length
+            ? todayWorkouts.map(workout => {
+                const details = workoutDetails(workout);
+                return `<p class="recent-workouts"><strong>${escapeHTML(workout.exercise)}</strong>${details ? ` · ${escapeHTML(details)}` : ""}</p>`;
+            }).join("")
+            : '<p class="recent-workouts">No workouts recorded today.</p>';
+
+        card.innerHTML = `
+            <div class="competition-card-header">
+                <a class="competition-card-profile competition-user-link" href="/user-profile?id=${encodeURIComponent(competitor.id)}">
+                    ${photo}
+                    <div class="competition-user-info">
+                        <h3>${safeName}</h3>
+                    </div>
+                </a>
+                <button type="button" class="main-button remove-competitor-button" data-user-id="${encodeURIComponent(competitor.id)}" aria-label="Remove competitor" title="Remove competitor">−</button>
+            </div>
+            <div class="today-workouts">${workoutsMarkup}</div>
+        `;
+
+        card.querySelector(".remove-competitor-button").addEventListener("click", event => {
+            removeCompetitor(event.currentTarget.dataset.userId, event.currentTarget);
+        });
+
+        competitionList.appendChild(card);
     }
 }
 

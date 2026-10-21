@@ -326,6 +326,12 @@ main.container,
     animation: page-enter 120ms var(--ease-premium) both;
 }
 
+::view-transition-group(bottom-navigation),
+::view-transition-group(bottom-nav-indicator) {
+    animation-duration: 180ms;
+    animation-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
 @media (max-width: 800px) {
     main.container,
     .auth-container,
@@ -368,6 +374,11 @@ main.container,
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+
+    ::view-transition-group(bottom-navigation),
+    ::view-transition-group(bottom-nav-indicator) {
+        animation-duration: 0.01ms;
     }
 }
 

@@ -17,12 +17,14 @@ const socialLinksCount = document.getElementById("social-links-count");
 const maxSocialLinks = 10;
 
 function updateSocialLinksCount() {
+    if (!socialLinksContainer || !socialLinksCount || !addSocialLinkButton) return;
     const count = socialLinksContainer.querySelectorAll(".social-link-item").length;
     socialLinksCount.textContent = `${count} of ${maxSocialLinks} links`;
     addSocialLinkButton.disabled = count >= maxSocialLinks;
 }
 
 function addSocialLink(url = "") {
+    if (!socialLinksContainer) return;
     if (socialLinksContainer.querySelectorAll(".social-link-item").length >= maxSocialLinks) return;
 
     const item = document.createElement("div");
@@ -51,10 +53,10 @@ function addSocialLink(url = "") {
     urlInput.focus();
 }
 
-addSocialLinkButton.addEventListener("click", () => addSocialLink());
+addSocialLinkButton?.addEventListener("click", () => addSocialLink());
 updateSocialLinksCount();
 
-profilePictureInput.addEventListener("change", () => {
+profilePictureInput?.addEventListener("change", () => {
     const file = profilePictureInput.files[0];
     if (!file) return;
 
@@ -103,23 +105,27 @@ async function loadProfile() {
         document.getElementById("height").value = user.height || "";
         document.getElementById("weight").value = user.weight || "";
 
-        if (user.profilePicture) {
-            photoPreview.src = user.profilePicture;
-        } else {
-            photoPreview.src =
-                "https://ui-avatars.com/api/?name=" +
-                encodeURIComponent(user.name) +
-                "&size=200";
+        if (photoPreview) {
+            if (user.profilePicture) {
+                photoPreview.src = user.profilePicture;
+            } else {
+                photoPreview.src =
+                    "https://ui-avatars.com/api/?name=" +
+                    encodeURIComponent(user.name) +
+                    "&size=200";
+            }
         }
 
-        const savedSocialLinks = (Array.isArray(user.socials)
-            ? user.socials
-            : Object.values(user.socials || {}))
-            .filter(url => typeof url === "string" && url.trim())
-            .slice(0, maxSocialLinks);
-        socialLinksContainer.replaceChildren();
-        if (savedSocialLinks.length) {
-            savedSocialLinks.forEach(url => addSocialLink(url));
+        if (socialLinksContainer) {
+            const savedSocialLinks = (Array.isArray(user.socials)
+                ? user.socials
+                : Object.values(user.socials || {}))
+                .filter(url => typeof url === "string" && url.trim())
+                .slice(0, maxSocialLinks);
+            socialLinksContainer.replaceChildren();
+            if (savedSocialLinks.length) {
+                savedSocialLinks.forEach(url => addSocialLink(url));
+            }
         }
     } catch (error) {
         console.error(error);
@@ -136,23 +142,25 @@ profileForm.addEventListener("submit", async event => {
     message.textContent = "Saving...";
 
     try {
-        const socialLinks = [];
-        for (const item of socialLinksContainer.querySelectorAll(".social-link-item")) {
-            const url = item.querySelector('[name="socialUrl[]"]').value.trim();
-            if (url) socialLinks.push(url);
-        }
-        if (socialLinks.length > maxSocialLinks) {
-            throw new Error(`You can add up to ${maxSocialLinks} social links.`);
-        }
-
         const payload = {
             age: ageInput.value,
             height: document.getElementById("height").value,
-            weight: document.getElementById("weight").value,
-            socials: socialLinks
+            weight: document.getElementById("weight").value
         };
 
-        const selectedPhoto = profilePictureInput.files?.[0];
+        if (socialLinksContainer) {
+            const socialLinks = [];
+            for (const item of socialLinksContainer.querySelectorAll(".social-link-item")) {
+                const url = item.querySelector('[name="socialUrl[]"]').value.trim();
+                if (url) socialLinks.push(url);
+            }
+            if (socialLinks.length > maxSocialLinks) {
+                throw new Error(`You can add up to ${maxSocialLinks} social links.`);
+            }
+            payload.socials = socialLinks;
+        }
+
+        const selectedPhoto = profilePictureInput?.files?.[0];
         if (selectedPhoto) {
             payload.profilePicture = await new Promise((resolve, reject) => {
                 const reader = new FileReader();

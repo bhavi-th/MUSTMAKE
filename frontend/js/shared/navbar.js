@@ -128,7 +128,6 @@
         const navigationLinksHTML = isAuthenticated
             ? `
                 ${navLink("/edit-profile", "Edit profile", currentPage)}
-                ${navLink("/pages/theme.html", "Theme", currentPage)}
                 ${navLink("/pages/about-us.html", "About us", currentPage)}
                 <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
                 <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>
@@ -148,7 +147,6 @@
             : `
                 ${navLink("/pages/gst.html", "Exercises", currentPage)}
                 ${navLink("/pages/about-us.html", "About us", currentPage)}
-                ${navLink("/pages/theme.html", "Theme", currentPage)}
                 ${navLink("/login", "Login", currentPage)}
                 ${navLink("/signup", "Sign up", currentPage)}
             `;

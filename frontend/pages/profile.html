@@ -13,15 +13,24 @@
     <title>Profile | MUSTMAKE</title>
     <script src="/js/shared/theme.js"></script>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/profiles.css">
 </head>
 
 <body>
     <div id="navbar"></div>
 
     <main class="profile-container">
+        <div class="profile-theme-control">
+            <span id="profileThemeLabel">Dark mode</span>
+            <button type="button" id="profileThemeToggle" class="profile-theme-toggle" role="switch" aria-checked="true" aria-label="Toggle dark mode">
+                <span class="profile-theme-toggle-thumb"></span>
+            </button>
+        </div>
         <section >
             <div class="profile-photo-container">
-                <img id="profilePhoto" src="" alt="Profile Photo" class="profile-photo" decoding="async">
+                <button type="button" id="profilePhotoButton" class="profile-photo-button" aria-label="View profile photo" disabled>
+                    <img id="profilePhoto" src="" alt="Profile Photo" class="profile-photo" decoding="async">
+                </button>
             </div>
 
             <h1 id="profileName">Hello</h1>
@@ -30,21 +39,35 @@
             <p id="profileIs" hidden>is</p>
             <div class="profile-details" id="profileDetails" hidden>
                 <div class="social-sections" id="profileAgeSection" hidden>
-                    <strong id="profileAge"></strong>
+                    <button type="button" class="profile-metric-value" data-profile-metric="age" aria-label="Edit age" disabled>
+                        <strong id="profileAge"></strong>
+                    </button>
                     <span>years old</span>
+                    <div class="profile-metric-editor" data-metric-editor="age" hidden></div>
                 </div>
                 <div class="social-sections" id="profileHeightSection" hidden>
-                    <strong id="profileHeight"></strong>
+                    <button type="button" class="profile-metric-value" data-profile-metric="height" aria-label="Edit height" disabled>
+                        <strong id="profileHeight"></strong>
+                    </button>
                     <span>cm tall</span>
+                    <div class="profile-metric-editor" data-metric-editor="height" hidden></div>
                 </div>
                 <div class="social-sections" id="profileWeightSection" hidden>
-                    <strong id="profileWeight"></strong>
+                    <button type="button" class="profile-metric-value" data-profile-metric="weight" aria-label="Edit weight" disabled>
+                        <strong id="profileWeight"></strong>
+                    </button>
                     <span>kg</span>
+                    <div class="profile-metric-editor" data-metric-editor="weight" hidden></div>
                 </div>
             </div>
 
             <div class="social-section">
-                <h2>Socials</h2>
+                <div class="social-section-heading">
+                    <h2>Socials</h2>
+                    <button type="button" id="addProfileSocial" class="social-add-button" aria-label="Add social link" title="Add social link" disabled>
+                        <span aria-hidden="true">+</span>
+                    </button>
+                </div>
                 <div id="socialLinks" class="social-links">You only have only you do</div>
             </div>
 
@@ -55,6 +78,37 @@
             <div id="history">You can and you must</div>
         </section>
     </main>
+
+    <div id="profilePhotoDialog" class="profile-interaction-overlay" hidden>
+        <section class="profile-photo-dialog" role="dialog" aria-modal="true" aria-labelledby="photoDialogTitle">
+            <h2 id="photoDialogTitle">Profile photo</h2>
+            <div class="profile-photo-preview-wrap">
+                <img id="profilePhotoPreview" class="profile-photo-preview" src="" alt="Selected profile photo preview">
+                <button type="button" id="chooseProfilePhoto" class="photo-edit-button" aria-label="Choose a profile photo" title="Choose a profile photo">
+                    <span aria-hidden="true">✎</span>
+                </button>
+            </div>
+            <input type="file" id="profilePhotoInput" accept="image/jpeg,image/png,image/webp" hidden>
+            <p id="profilePhotoMessage" class="profile-interaction-message" role="status" aria-live="polite"></p>
+            <div class="profile-interaction-actions">
+                <button type="button" id="saveProfilePhoto" class="main-button" disabled>Save</button>
+                <button type="button" id="cancelProfilePhoto" class="secondary-button">Cancel</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="socialDialog" class="profile-interaction-overlay" hidden>
+        <section class="profile-social-dialog" role="dialog" aria-modal="true" aria-labelledby="socialDialogTitle">
+            <h2 id="socialDialogTitle">Social links</h2>
+            <div id="savedSocialLinks" class="saved-social-links" aria-label="Saved social links"></div>
+            <input type="url" id="socialUrlInput" inputmode="url" autocomplete="url" placeholder="https://…">
+            <p id="socialDialogMessage" class="profile-interaction-message" role="status" aria-live="polite"></p>
+            <div class="profile-interaction-actions">
+                <button type="button" id="saveProfileSocial" class="main-button">Add link</button>
+                <button type="button" id="cancelProfileSocial" class="secondary-button">Cancel</button>
+            </div>
+        </section>
+    </div>
 
     <script src="/js/shared/navbar.js"></script>
     <script src="/js/features/workouts/script.js"></script>

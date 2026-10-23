@@ -273,3 +273,448 @@
     margin: 8px 0 0;
 }
 
+/* Contextual profile edits */
+.profile-theme-control {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.profile-theme-toggle {
+    position: relative;
+    display: inline-flex;
+    width: 46px;
+    min-width: 46px;
+    height: 28px;
+    min-height: 28px;
+    align-items: center;
+    padding: 3px;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: var(--glass-subtle);
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.profile-theme-toggle-thumb {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    transform: translateX(0);
+    transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.profile-theme-toggle[aria-checked="true"] {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+.profile-theme-toggle[aria-checked="true"] .profile-theme-toggle-thumb {
+    background: var(--text-on-accent);
+    transform: translateX(18px);
+}
+
+.profile-theme-toggle:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+}
+
+.profile-photo-button {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.social-links {
+    justify-content: flex-start;
+}
+
+.social-links a {
+    min-height: 44px;
+    padding: 0.35rem 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--text-primary);
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.profile-photo-button:focus-visible,
+.profile-metric-value:focus-visible,
+.social-add-button:focus-visible,
+.profile-interaction-overlay button:focus-visible,
+.profile-interaction-overlay input:focus-visible,
+.profile-interaction-overlay select:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+}
+
+.profile-details .social-sections {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.profile-metric-value {
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.profile-metric-value:hover {
+    opacity: 0.82;
+}
+
+.profile-metric-value strong {
+    font: inherit;
+}
+
+.profile-metric-editor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 36px;
+}
+
+.profile-metric-editor[hidden] {
+    display: none;
+}
+
+.profile-metric-editor input {
+    width: 5.5rem;
+    min-width: 0;
+    min-height: 44px;
+    height: 44px;
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    background: var(--glass-panel);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
+.profile-metric-actions {
+    display: inline-flex;
+    align-items: center;
+}
+
+.profile-metric-actions button {
+    display: inline-grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--text-primary);
+    background: transparent;
+    font: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.profile-metric-actions .metric-confirm {
+    color: #65c985;
+}
+
+.profile-metric-actions button:hover:not(:disabled) {
+    background: var(--glass-subtle);
+}
+
+.profile-metric-actions button:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.metric-status {
+    position: absolute;
+    top: calc(100% + 0.1rem);
+    left: 0;
+    width: max-content;
+    max-width: min(12rem, 75vw);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-align: left;
+    z-index: 1;
+}
+
+.social-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.social-section-heading h2 {
+    margin: 0;
+}
+
+.social-add-button {
+    display: inline-grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--text-primary);
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.social-add-button span {
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.social-add-button:hover:not(:disabled) {
+    background: var(--glass-subtle);
+}
+
+.social-add-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.profile-interaction-overlay {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.46);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+.profile-interaction-overlay[hidden] {
+    display: none;
+}
+
+.profile-photo-dialog,
+.profile-social-dialog {
+    width: min(100%, 380px);
+    padding: 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    border-radius: 16px;
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--glass-panel) 34%, transparent);
+    -webkit-backdrop-filter: blur(28px) saturate(135%);
+    backdrop-filter: blur(28px) saturate(135%);
+    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.18);
+}
+
+.profile-social-dialog {
+    border-color: color-mix(in srgb, var(--text-primary) 10%, transparent);
+    background: color-mix(in srgb, var(--glass-panel) 20%, transparent);
+    -webkit-backdrop-filter: blur(32px) saturate(125%);
+    backdrop-filter: blur(32px) saturate(125%);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.12);
+}
+
+.profile-photo-dialog h2,
+.profile-social-dialog h2 {
+    margin-bottom: 1.25rem;
+    color: inherit;
+    font-size: 1.05rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.profile-photo-preview-wrap {
+    position: relative;
+    width: min(68vw, 250px);
+    aspect-ratio: 1;
+    margin: 0 auto 1rem;
+}
+
+.profile-photo-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #242424;
+}
+
+.photo-edit-button {
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.25rem;
+    display: grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    color: #fff;
+    background: #292929;
+    font-size: 1.15rem;
+    cursor: pointer;
+}
+
+.profile-social-dialog label {
+    display: block;
+    margin: 0.85rem 0 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.profile-social-dialog input,
+.profile-social-dialog select {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
+    border-radius: 8px;
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--glass-panel) 12%, transparent);
+}
+
+.saved-social-links {
+    display: grid;
+    max-height: 11rem;
+    gap: 0.25rem;
+    overflow-y: auto;
+    margin-bottom: 0.75rem;
+}
+
+.saved-social-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.saved-social-link a {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.saved-social-remove {
+    display: inline-grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    background: transparent;
+    font: inherit;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.saved-social-remove:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+}
+
+.saved-social-remove:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.saved-social-links-empty {
+    margin: 0 0 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.profile-social-dialog select option {
+    color: #f5f5f5;
+    background: #202020;
+}
+
+.profile-interaction-message {
+    min-height: 1.35rem;
+    margin: 0.75rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.profile-interaction-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+}
+
+.profile-interaction-actions button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    border-radius: 9px;
+}
+
+.profile-photo-dialog .main-button,
+.profile-social-dialog .main-button {
+    border-color: var(--glass-border);
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--text-primary) 10%, transparent);
+}
+
+.profile-photo-dialog .main-button:hover:not(:disabled),
+.profile-social-dialog .main-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--text-primary) 16%, transparent);
+}
+
+.profile-photo-dialog .secondary-button,
+.profile-social-dialog .secondary-button {
+    border-color: transparent;
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.profile-interaction-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+:root[data-theme="dark"] .social-links a {
+    border: 0;
+    background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .social-add-button,
+    .profile-theme-toggle,
+    .profile-theme-toggle-thumb {
+        transition: none;
+    }
+}

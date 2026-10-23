@@ -43,7 +43,10 @@ function writeProfileCache(data) {
     }
 }
 
+let profileData = null;
+
 function renderProfile(data) {
+    profileData = data;
     const user = data.user;
     document.getElementById("profileName").textContent = user.name;
     document.getElementById("profileUsername").textContent = `@${user.username}`;
@@ -70,13 +73,21 @@ function renderProfile(data) {
     const hasProfileDetails = hasAge || hasHeight || hasWeight;
     document.getElementById("profileDetails").hidden = !hasProfileDetails;
     document.getElementById("profileIs").hidden = !hasProfileDetails;
+    document.querySelectorAll("[data-profile-metric]").forEach(button => {
+        button.disabled = false;
+    });
 
     const photo = document.getElementById("profilePhoto");
     photo.src = user.profilePicture
         ? optimizeCloudinaryImage(user.profilePicture)
         : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=200`;
+    document.getElementById("profilePhotoButton").disabled = false;
 
     displaySocials(user.socials);
+    const socialLinks = Array.isArray(user.socials)
+        ? user.socials
+        : Object.values(user.socials || {});
+    document.getElementById("addProfileSocial").disabled = socialLinks.filter(Boolean).length >= 10;
 }
 
 async function loadProfile() {
@@ -116,7 +127,7 @@ function displaySocials(socials) {
     container.innerHTML = "";
 
     if (!socials) {
-        container.textContent = "No social links added.";
+        container.textContent = "";
         return;
     }
 
@@ -138,8 +149,354 @@ function displaySocials(socials) {
     });
 
     if (!found) {
-        container.textContent = "No social links added.";
+        container.textContent = "";
     }
 }
+
+const profileThemeToggle = document.getElementById("profileThemeToggle");
+const profileThemeLabel = document.getElementById("profileThemeLabel");
+
+function syncProfileThemeToggle(theme = document.documentElement.dataset.theme) {
+    const isDark = theme === "dark";
+    profileThemeToggle.setAttribute("aria-checked", String(isDark));
+    profileThemeLabel.textContent = isDark ? "Dark mode" : "Light mode";
+}
+
+syncProfileThemeToggle();
+profileThemeToggle.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    window.setColorTheme(nextTheme);
+    syncProfileThemeToggle(nextTheme);
+});
+
+const metricRules = {
+    age: { min: 0, max: 120, step: "1", inputmode: "numeric" },
+    height: { min: 50, max: 300, step: "0.1", inputmode: "decimal" },
+    weight: { min: 20, max: 500, step: "0.1", inputmode: "decimal" }
+};
+
+function makeButton(label, className, text) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.setAttribute("aria-label", label);
+    button.textContent = text;
+    return button;
+}
+
+function closeMetricEditor(metric, focus = true) {
+    const section = document.getElementById(`profile${metric[0].toUpperCase()}${metric.slice(1)}Section`);
+    const trigger = section.querySelector(`[data-profile-metric="${metric}"]`);
+    const editor = section.querySelector(`[data-metric-editor="${metric}"]`);
+    editor.hidden = true;
+    editor.replaceChildren();
+    trigger.hidden = false;
+    if (focus) trigger.focus();
+}
+
+async function updateProfile(payload) {
+    const response = await fetch(`${window.API_URL}/api/profile`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.status === 401) {
+        logout();
+        throw new Error("Your session has expired.");
+    }
+    if (!response.ok) {
+        throw new Error(data.message || "Could not update profile.");
+    }
+
+    const updatedData = { ...profileData, ...data, user: data.user };
+    writeProfileCache(updatedData);
+    renderProfile(updatedData);
+    return data.user;
+}
+
+async function saveMetric(metric, input, saveButton, cancelButton, message) {
+    if (!input.reportValidity()) return;
+
+    saveButton.disabled = true;
+    cancelButton.disabled = true;
+    message.textContent = "Saving…";
+    try {
+        await updateProfile({ [metric]: input.value });
+        closeMetricEditor(metric);
+    } catch (error) {
+        console.error("Profile detail update error:", error);
+        message.textContent = error.message;
+        saveButton.disabled = false;
+        cancelButton.disabled = false;
+    }
+}
+
+function openMetricEditor(metric, trigger) {
+    document.querySelectorAll(".profile-metric-editor:not([hidden])").forEach(editor => {
+        const activeMetric = editor.dataset.metricEditor;
+        closeMetricEditor(activeMetric, false);
+    });
+
+    const section = trigger.closest(".social-sections");
+    const editor = section.querySelector(`[data-metric-editor="${metric}"]`);
+    const rules = metricRules[metric];
+    const input = document.createElement("input");
+    input.type = "number";
+    input.inputMode = rules.inputmode;
+    input.min = rules.min;
+    input.max = rules.max;
+    input.step = rules.step;
+    input.required = true;
+    input.value = profileData.user[metric] ?? "";
+    input.setAttribute("aria-label", `New ${metric}`);
+
+    const actions = document.createElement("span");
+    actions.className = "profile-metric-actions";
+    const saveButton = makeButton(`Save ${metric}`, "metric-confirm", "✓");
+    const cancelButton = makeButton(`Cancel ${metric} change`, "metric-cancel", "×");
+    const message = document.createElement("span");
+    message.className = "metric-status";
+    message.setAttribute("role", "status");
+    message.setAttribute("aria-live", "polite");
+
+    saveButton.addEventListener("click", () =>
+        saveMetric(metric, input, saveButton, cancelButton, message)
+    );
+    cancelButton.addEventListener("click", () => closeMetricEditor(metric));
+    input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            saveButton.click();
+        } else if (event.key === "Escape") {
+            closeMetricEditor(metric);
+        }
+    });
+
+    actions.append(saveButton, cancelButton);
+    editor.replaceChildren(input, actions, message);
+    editor.hidden = false;
+    trigger.hidden = true;
+    input.focus();
+    input.select();
+}
+
+document.getElementById("profileDetails").addEventListener("click", event => {
+    const trigger = event.target.closest("[data-profile-metric]");
+    if (trigger && !trigger.disabled) {
+        openMetricEditor(trigger.dataset.profileMetric, trigger);
+    }
+});
+
+const photoDialog = document.getElementById("profilePhotoDialog");
+const photoInput = document.getElementById("profilePhotoInput");
+const photoPreview = document.getElementById("profilePhotoPreview");
+const photoMessage = document.getElementById("profilePhotoMessage");
+const savePhotoButton = document.getElementById("saveProfilePhoto");
+let selectedPhotoData = "";
+
+function closePhotoDialog() {
+    photoDialog.hidden = true;
+    photoInput.value = "";
+    selectedPhotoData = "";
+    savePhotoButton.disabled = true;
+    photoMessage.textContent = "";
+    document.getElementById("profilePhotoButton").focus();
+}
+
+document.getElementById("profilePhotoButton").addEventListener("click", () => {
+    photoPreview.src = document.getElementById("profilePhoto").src;
+    photoDialog.hidden = false;
+    document.getElementById("chooseProfilePhoto").focus();
+});
+
+document.getElementById("chooseProfilePhoto").addEventListener("click", () => photoInput.click());
+photoInput.addEventListener("change", () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        photoMessage.textContent = "Choose a JPG, PNG or WebP image.";
+        selectedPhotoData = "";
+        savePhotoButton.disabled = true;
+        photoPreview.src = document.getElementById("profilePhoto").src;
+        photoInput.value = "";
+        return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        photoMessage.textContent = "The photo must be smaller than 2 MB.";
+        selectedPhotoData = "";
+        savePhotoButton.disabled = true;
+        photoPreview.src = document.getElementById("profilePhoto").src;
+        photoInput.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        if (typeof reader.result !== "string") {
+            photoMessage.textContent = "Could not preview this photo.";
+            selectedPhotoData = "";
+            savePhotoButton.disabled = true;
+            return;
+        }
+        selectedPhotoData = reader.result;
+        photoPreview.src = selectedPhotoData;
+        savePhotoButton.disabled = false;
+        photoMessage.textContent = "";
+    };
+    reader.onerror = () => {
+        photoMessage.textContent = "Could not preview this photo.";
+        selectedPhotoData = "";
+        savePhotoButton.disabled = true;
+    };
+    reader.readAsDataURL(file);
+});
+
+savePhotoButton.addEventListener("click", async () => {
+    if (!selectedPhotoData) return;
+    savePhotoButton.disabled = true;
+    document.getElementById("cancelProfilePhoto").disabled = true;
+    photoMessage.textContent = "Saving…";
+    try {
+        await updateProfile({ profilePicture: selectedPhotoData });
+        closePhotoDialog();
+    } catch (error) {
+        console.error("Profile photo update error:", error);
+        photoMessage.textContent = error.message;
+        savePhotoButton.disabled = false;
+        document.getElementById("cancelProfilePhoto").disabled = false;
+    }
+});
+
+document.getElementById("cancelProfilePhoto").addEventListener("click", closePhotoDialog);
+
+const socialDialog = document.getElementById("socialDialog");
+const socialUrlInput = document.getElementById("socialUrlInput");
+const socialMessage = document.getElementById("socialDialogMessage");
+const savedSocialLinks = document.getElementById("savedSocialLinks");
+
+function getProfileSocials() {
+    const socials = profileData.user.socials;
+    return (Array.isArray(socials) ? socials : Object.values(socials || {}))
+        .filter(value => typeof value === "string" && safeSocialUrl(value));
+}
+
+function renderSavedSocialLinks() {
+    savedSocialLinks.replaceChildren();
+    const links = getProfileSocials();
+    if (!links.length) {
+        const empty = document.createElement("p");
+        empty.className = "saved-social-links-empty";
+        empty.textContent = "";
+        savedSocialLinks.appendChild(empty);
+        return;
+    }
+
+    links.forEach((url, index) => {
+        const row = document.createElement("div");
+        row.className = "saved-social-link";
+        const link = document.createElement("a");
+        link.href = safeSocialUrl(url);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = url;
+        link.title = url;
+
+        const removeButton = makeButton(`Remove social link ${index + 1}`, "saved-social-remove", "×");
+        removeButton.addEventListener("click", async () => {
+            const buttons = savedSocialLinks.querySelectorAll("button");
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+            document.getElementById("saveProfileSocial").disabled = true;
+            document.getElementById("cancelProfileSocial").disabled = true;
+            socialMessage.textContent = "Removing link…";
+            try {
+                await updateProfile({ socials: links.filter((_, linkIndex) => linkIndex !== index) });
+                renderSavedSocialLinks();
+                socialMessage.textContent = "Link removed.";
+            } catch (error) {
+                console.error("Social link removal error:", error);
+                socialMessage.textContent = error.message;
+                buttons.forEach(button => {
+                    button.disabled = false;
+                });
+            } finally {
+                document.getElementById("saveProfileSocial").disabled = false;
+                document.getElementById("cancelProfileSocial").disabled = false;
+            }
+        });
+        row.append(link, removeButton);
+        savedSocialLinks.appendChild(row);
+    });
+}
+
+document.getElementById("addProfileSocial").addEventListener("click", () => {
+    socialUrlInput.value = "";
+    socialMessage.textContent = "";
+    renderSavedSocialLinks();
+    socialDialog.hidden = false;
+    socialUrlInput.focus();
+});
+
+document.getElementById("cancelProfileSocial").addEventListener("click", () => {
+    socialDialog.hidden = true;
+    document.getElementById("addProfileSocial").focus();
+});
+
+document.getElementById("saveProfileSocial").addEventListener("click", async () => {
+    const url = safeSocialUrl(socialUrlInput.value.trim());
+    if (!url) {
+        socialMessage.textContent = "Enter a valid HTTP or HTTPS URL.";
+        socialUrlInput.focus();
+        return;
+    }
+
+    const existing = getProfileSocials();
+    if (existing.some(value => safeSocialUrl(value) === url)) {
+        socialMessage.textContent = "That link is already on your profile.";
+        return;
+    }
+    if (existing.filter(Boolean).length >= 10) {
+        socialMessage.textContent = "You can add up to 10 social links.";
+        return;
+    }
+
+    const saveButton = document.getElementById("saveProfileSocial");
+    const cancelButton = document.getElementById("cancelProfileSocial");
+    saveButton.disabled = true;
+    cancelButton.disabled = true;
+    socialMessage.textContent = "Adding link…";
+    try {
+        await updateProfile({ socials: [...existing.filter(Boolean), url] });
+        socialDialog.hidden = true;
+        if (document.getElementById("addProfileSocial").disabled) {
+            document.querySelector("#socialLinks a:last-child")?.focus();
+        } else {
+            document.getElementById("addProfileSocial").focus();
+        }
+    } catch (error) {
+        console.error("Social link update error:", error);
+        socialMessage.textContent = error.message;
+    } finally {
+        saveButton.disabled = false;
+        cancelButton.disabled = false;
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (!photoDialog.hidden && !document.getElementById("cancelProfilePhoto").disabled) {
+        closePhotoDialog();
+    }
+    if (!socialDialog.hidden && !document.getElementById("cancelProfileSocial").disabled) {
+        socialDialog.hidden = true;
+        document.getElementById("addProfileSocial").focus();
+    }
+});
 
 loadProfile();

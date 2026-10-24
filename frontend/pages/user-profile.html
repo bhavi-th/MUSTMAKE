@@ -13,6 +13,7 @@
     <title>User Profile | MUSTMAKE</title>
     <script src="/js/shared/theme.js"></script>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/profiles.css">
 </head> 
 
 <body>
@@ -25,6 +26,16 @@
             <p class="no-workout">You get only if you go and get </p>
         </section>
     </main>
+
+    <div id="publicPhotoDialog" class="profile-interaction-overlay" hidden>
+        <section class="profile-photo-dialog" role="dialog" aria-modal="true" aria-labelledby="publicPhotoDialogTitle">
+            <h2 id="publicPhotoDialogTitle" class="visually-hidden">Profile photo</h2>
+            <button type="button" id="closePublicPhoto" class="photo-dialog-close" aria-label="Close profile photo preview">
+                <span aria-hidden="true">×</span>
+            </button>
+            <img id="publicPhotoPreview" class="profile-photo-preview" src="" alt="Profile photo preview">
+        </section>
+    </div>
 
     <script src="/js/shared/navbar.js"></script>
     <script src="/js/features/profile/user-profile.js"></script>

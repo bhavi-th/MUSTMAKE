@@ -1,6 +1,9 @@
 const profileRoot = document.getElementById("publicProfile");
 const profileToken = localStorage.getItem("token");
 const profileId = new URLSearchParams(window.location.search).get("id");
+const publicPhotoDialog = document.getElementById("publicPhotoDialog");
+const publicPhotoPreview = document.getElementById("publicPhotoPreview");
+const closePublicPhoto = document.getElementById("closePublicPhoto");
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -104,7 +107,9 @@ function displayProfile({ user, workoutHistory = [] }) {
 
     profileRoot.innerHTML = `
         <header class="public-profile-header">
-            <img class="public-profile-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(user.name || "User")}">
+            <button type="button" class="public-profile-photo-button" aria-label="View profile photo">
+                <img class="public-profile-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(user.name || "User")}">
+            </button>
             <h2>${escapeHtml(user.name || "User")}</h2>
             <p class="profile-username">${user.username ? `@${escapeHtml(user.username)}` : ""}</p>
         </header>
@@ -115,7 +120,25 @@ function displayProfile({ user, workoutHistory = [] }) {
             <div class="public-workout-list">${history}</div>
         </section>
     `;
+
+    profileRoot.querySelector(".public-profile-photo-button").addEventListener("click", event => {
+        publicPhotoPreview.src = event.currentTarget.querySelector("img").src;
+        publicPhotoDialog.hidden = false;
+        closePublicPhoto.focus();
+    });
 }
+
+function closePublicPhotoDialog() {
+    publicPhotoDialog.hidden = true;
+    profileRoot.querySelector(".public-profile-photo-button")?.focus();
+}
+
+closePublicPhoto.addEventListener("click", closePublicPhotoDialog);
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !publicPhotoDialog.hidden) {
+        closePublicPhotoDialog();
+    }
+});
 
 async function loadPublicProfile() {
     if (!profileToken) {

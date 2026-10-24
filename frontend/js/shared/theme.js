@@ -1,28 +1,8 @@
 (() => {
-    const themeStorageKey = "mustmake-theme";
-    const validThemes = ["light", "dark"];
-
-    function applyTheme(theme, persist = false) {
-        if (!validThemes.includes(theme)) return;
-
-        document.documentElement.dataset.theme = theme;
-        if (persist) {
-            try {
-                localStorage.setItem(themeStorageKey, theme);
-            } catch (error) {
-                console.error("Could not save theme preference:", error);
-            }
-        }
-    }
-
-    let savedTheme = "dark";
+    document.documentElement.dataset.theme = "dark";
     try {
-        const storedTheme = localStorage.getItem(themeStorageKey);
-        if (validThemes.includes(storedTheme)) savedTheme = storedTheme;
+        localStorage.removeItem("mustmake-theme");
     } catch (error) {
-        console.error("Could not load theme preference:", error);
+        console.error("Could not clear the saved theme preference:", error);
     }
-
-    applyTheme(savedTheme);
-    window.setColorTheme = theme => applyTheme(theme, true);
 })();

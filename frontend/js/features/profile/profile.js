@@ -153,22 +153,6 @@ function displaySocials(socials) {
     }
 }
 
-const profileThemeToggle = document.getElementById("profileThemeToggle");
-const profileThemeLabel = document.getElementById("profileThemeLabel");
-
-function syncProfileThemeToggle(theme = document.documentElement.dataset.theme) {
-    const isDark = theme === "dark";
-    profileThemeToggle.setAttribute("aria-checked", String(isDark));
-    profileThemeLabel.textContent = isDark ? "Dark mode" : "Light mode";
-}
-
-syncProfileThemeToggle();
-profileThemeToggle.addEventListener("click", () => {
-    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    window.setColorTheme(nextTheme);
-    syncProfileThemeToggle(nextTheme);
-});
-
 const metricRules = {
     age: { min: 0, max: 120, step: "1", inputmode: "numeric" },
     height: { min: 50, max: 300, step: "0.1", inputmode: "decimal" },
@@ -297,6 +281,7 @@ const photoInput = document.getElementById("profilePhotoInput");
 const photoPreview = document.getElementById("profilePhotoPreview");
 const photoMessage = document.getElementById("profilePhotoMessage");
 const savePhotoButton = document.getElementById("saveProfilePhoto");
+const closePhotoButton = document.getElementById("closeProfilePhoto");
 let selectedPhotoData = "";
 
 function closePhotoDialog() {
@@ -311,9 +296,10 @@ function closePhotoDialog() {
 document.getElementById("profilePhotoButton").addEventListener("click", () => {
     photoPreview.src = document.getElementById("profilePhoto").src;
     photoDialog.hidden = false;
-    document.getElementById("chooseProfilePhoto").focus();
+    closePhotoButton.focus();
 });
 
+closePhotoButton.addEventListener("click", closePhotoDialog);
 document.getElementById("chooseProfilePhoto").addEventListener("click", () => photoInput.click());
 photoInput.addEventListener("change", () => {
     const file = photoInput.files?.[0];
@@ -359,7 +345,7 @@ photoInput.addEventListener("change", () => {
 savePhotoButton.addEventListener("click", async () => {
     if (!selectedPhotoData) return;
     savePhotoButton.disabled = true;
-    document.getElementById("cancelProfilePhoto").disabled = true;
+    closePhotoButton.disabled = true;
     photoMessage.textContent = "Saving…";
     try {
         await updateProfile({ profilePicture: selectedPhotoData });
@@ -368,11 +354,9 @@ savePhotoButton.addEventListener("click", async () => {
         console.error("Profile photo update error:", error);
         photoMessage.textContent = error.message;
         savePhotoButton.disabled = false;
-        document.getElementById("cancelProfilePhoto").disabled = false;
+        closePhotoButton.disabled = false;
     }
 });
-
-document.getElementById("cancelProfilePhoto").addEventListener("click", closePhotoDialog);
 
 const socialDialog = document.getElementById("socialDialog");
 const socialUrlInput = document.getElementById("socialUrlInput");
@@ -490,7 +474,7 @@ document.getElementById("saveProfileSocial").addEventListener("click", async () 
 
 document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
-    if (!photoDialog.hidden && !document.getElementById("cancelProfilePhoto").disabled) {
+    if (!photoDialog.hidden && !closePhotoButton.disabled) {
         closePhotoDialog();
     }
     if (!socialDialog.hidden && !document.getElementById("cancelProfileSocial").disabled) {

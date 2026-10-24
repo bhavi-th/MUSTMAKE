@@ -116,7 +116,6 @@ function displayProfile({ user, workoutHistory = [] }) {
         ${profileDetails ? `<p id="publicProfileIs">is</p><div class="profile-details">${profileDetails}</div>` : ""}
         ${socials ? `<section class="profile-socials"><h3>Socials</h3>${socials}</section>` : ""}
         <section class="public-workout-history">
-            <h2>Workout history</h2>
             <div class="public-workout-list">${history}</div>
         </section>
     `;

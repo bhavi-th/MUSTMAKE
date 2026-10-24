@@ -127,7 +127,7 @@
         // Slide-out navigation: used on mobile only.
         const navigationLinksHTML = isAuthenticated
             ? `
-                ${navLink("/edit-profile", "Edit profile", currentPage)}
+                ${navLink("/edit-profile", "Edit details", currentPage)}
                 ${navLink("/pages/about-us.html", "About us", currentPage)}
                 <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
                 <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>

@@ -99,6 +99,43 @@
     color: var(--text-muted);
 }
 
+.password-input-wrap {
+    position: relative;
+}
+
+.auth-content .password-input-wrap input {
+    padding-right: 3.25rem;
+}
+
+.password-visibility-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: grid;
+    min-width: 44px;
+    min-height: 44px;
+    place-items: center;
+    padding: 0 2px;
+    border: 0;
+    color: var(--text-secondary);
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.password-visibility-toggle:hover {
+    color: var(--text-primary);
+    background: transparent;
+}
+
+.password-visibility-toggle:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
 .login-method-toggle {
     display: flex;
     gap: 4px;
@@ -267,4 +304,3 @@ small {
 .hidden {
     display: none !important;
 }
-

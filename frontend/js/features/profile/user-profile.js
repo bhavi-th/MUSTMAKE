@@ -3,7 +3,7 @@ const profileToken = localStorage.getItem("token");
 const profileId = new URLSearchParams(window.location.search).get("id");
 const publicPhotoDialog = document.getElementById("publicPhotoDialog");
 const publicPhotoPreview = document.getElementById("publicPhotoPreview");
-const closePublicPhoto = document.getElementById("closePublicPhoto");
+const publicPhotoPreviewHistoryKey = "mustmakePublicPhotoPreview";
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -122,20 +122,29 @@ function displayProfile({ user, workoutHistory = [] }) {
     `;
 
     profileRoot.querySelector(".public-profile-photo-button").addEventListener("click", event => {
+        window.history.pushState({ ...window.history.state, [publicPhotoPreviewHistoryKey]: true }, "", location.href);
         publicPhotoPreview.src = event.currentTarget.querySelector("img").src;
         publicPhotoDialog.hidden = false;
-        closePublicPhoto.focus();
+        publicPhotoPreview.focus();
     });
 }
 
 function closePublicPhotoDialog() {
     publicPhotoDialog.hidden = true;
     profileRoot.querySelector(".public-profile-photo-button")?.focus();
+    if (window.history.state?.[publicPhotoPreviewHistoryKey]) {
+        window.history.back();
+    }
 }
 
-closePublicPhoto.addEventListener("click", closePublicPhotoDialog);
+window.addEventListener("popstate", () => {
+    if (!publicPhotoDialog.hidden) {
+        closePublicPhotoDialog();
+    }
+});
+
 publicPhotoDialog.addEventListener("click", event => {
-    if (!event.target.closest("button")) {
+    if (event.target === publicPhotoDialog) {
         closePublicPhotoDialog();
     }
 });

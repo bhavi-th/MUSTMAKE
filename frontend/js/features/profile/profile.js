@@ -281,7 +281,7 @@ const photoInput = document.getElementById("profilePhotoInput");
 const photoPreview = document.getElementById("profilePhotoPreview");
 const photoMessage = document.getElementById("profilePhotoMessage");
 const savePhotoButton = document.getElementById("saveProfilePhoto");
-const closePhotoButton = document.getElementById("closeProfilePhoto");
+const photoPreviewHistoryKey = "mustmakeProfilePhotoPreview";
 let selectedPhotoData = "";
 
 function closePhotoDialog() {
@@ -291,17 +291,26 @@ function closePhotoDialog() {
     savePhotoButton.disabled = true;
     photoMessage.textContent = "";
     document.getElementById("profilePhotoButton").focus();
+    if (window.history.state?.[photoPreviewHistoryKey]) {
+        window.history.back();
+    }
 }
 
 document.getElementById("profilePhotoButton").addEventListener("click", () => {
+    window.history.pushState({ ...window.history.state, [photoPreviewHistoryKey]: true }, "", location.href);
     photoPreview.src = document.getElementById("profilePhoto").src;
     photoDialog.hidden = false;
-    closePhotoButton.focus();
+    photoPreview.focus();
 });
 
-closePhotoButton.addEventListener("click", closePhotoDialog);
+window.addEventListener("popstate", () => {
+    if (!photoDialog.hidden) {
+        closePhotoDialog();
+    }
+});
+
 photoDialog.addEventListener("click", event => {
-    if (!event.target.closest("button")) {
+    if (event.target === photoDialog) {
         closePhotoDialog();
     }
 });
@@ -350,7 +359,6 @@ photoInput.addEventListener("change", () => {
 savePhotoButton.addEventListener("click", async () => {
     if (!selectedPhotoData) return;
     savePhotoButton.disabled = true;
-    closePhotoButton.disabled = true;
     photoMessage.textContent = "Saving…";
     try {
         await updateProfile({ profilePicture: selectedPhotoData });
@@ -359,7 +367,6 @@ savePhotoButton.addEventListener("click", async () => {
         console.error("Profile photo update error:", error);
         photoMessage.textContent = error.message;
         savePhotoButton.disabled = false;
-        closePhotoButton.disabled = false;
     }
 });
 
@@ -479,7 +486,7 @@ document.getElementById("saveProfileSocial").addEventListener("click", async () 
 
 document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
-    if (!photoDialog.hidden && !closePhotoButton.disabled) {
+    if (!photoDialog.hidden) {
         closePhotoDialog();
     }
     if (!socialDialog.hidden && !document.getElementById("cancelProfileSocial").disabled) {

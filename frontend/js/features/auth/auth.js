@@ -9,6 +9,7 @@ const otpLoginStatus = document.getElementById("otpLoginStatus");
 const loginIdentifier = document.getElementById("login");
 const loginLabel = document.getElementById("loginLabel");
 const loginPassword = document.getElementById("password");
+const loginPasswordGroup = document.getElementById("loginPasswordGroup");
 const passwordLabel = document.getElementById("passwordLabel");
 const loginSubmitButton = document.getElementById("loginSubmitButton");
 const loginModeButtons = document.querySelectorAll("[data-login-mode]");
@@ -104,7 +105,7 @@ function setLoginMode(mode) {
     loginLabel.textContent = usingOtp ? "Email" : "Username or Email";
 
     passwordLabel.hidden = usingOtp;
-    loginPassword.hidden = usingOtp;
+    loginPasswordGroup.hidden = usingOtp;
     loginPassword.required = !usingOtp;
     loginSubmitButton.textContent = usingOtp ? "Send sign-in code" : "Login";
 

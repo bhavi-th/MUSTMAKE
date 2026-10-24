@@ -55,6 +55,16 @@ function writeCompetitionCache(competitions) {
     }
 }
 
+function getCompetitorId(competitor) {
+    return String(competitor.id ?? competitor._id ?? "");
+}
+
+const addedCompetitorIds = new Set(
+    (readCompetitionCache() || [])
+        .map(getCompetitorId)
+        .filter(Boolean)
+);
+
 function escapeHTML(value) {
     const div = document.createElement("div");
     div.textContent = value ?? "";
@@ -111,12 +121,16 @@ async function searchUsers(username) {
 }
 
 function displaySearchResults(users) {
-    if (!users || users.length === 0) {
+    const availableUsers = (users || []).filter(user =>
+        !addedCompetitorIds.has(String(user._id))
+    );
+
+    if (availableUsers.length === 0) {
         searchResults.innerHTML = `<p class="search-status">Tell them to use mustmake</p>`;
         return;
     }
 
-    searchResults.innerHTML = users.map(user => {
+    searchResults.innerHTML = availableUsers.map(user => {
         const name = escapeHTML(user.name);
         const username = escapeHTML(user.username);
 
@@ -170,8 +184,11 @@ async function addCompetitor(competitorId, button) {
             return;
         }
 
-        button.textContent = "-";
+        addedCompetitorIds.add(String(competitorId));
         await loadCompetition({ renderCache: false });
+        if (usernameSearch.value.trim()) {
+            searchUsers(usernameSearch.value.trim());
+        }
     } catch (error) {
         console.error("Add competitor error:", error);
         button.disabled = false;
@@ -204,6 +221,7 @@ async function removeCompetitor(competitorId, button) {
             return;
         }
 
+        addedCompetitorIds.delete(String(competitorId));
         searchResults.querySelectorAll(".add-competitor-button").forEach(addButton => {
             if (addButton.dataset.userId === competitorId) {
                 addButton.textContent = "+";
@@ -211,6 +229,9 @@ async function removeCompetitor(competitorId, button) {
         });
 
         await loadCompetition({ renderCache: false });
+        if (usernameSearch.value.trim()) {
+            searchUsers(usernameSearch.value.trim());
+        }
     } catch (error) {
         console.error("Remove competitor error:", error);
         button.disabled = false;
@@ -238,6 +259,11 @@ async function loadCompetition({ renderCache = true } = {}) {
         }
 
         const competitions = await response.json();
+        addedCompetitorIds.clear();
+        competitions.forEach(competitor => {
+            const competitorId = getCompetitorId(competitor);
+            if (competitorId) addedCompetitorIds.add(competitorId);
+        });
         writeCompetitionCache(competitions);
         renderCompetition(competitions);
     } catch (error) {

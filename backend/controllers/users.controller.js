@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Competition = require("../models/Competition");
 const Workout = require("../models/Workout");
 const connectDB = require("../config/database");
 const { escapeRegex } = require("../utils/validation");
@@ -67,6 +68,10 @@ const searchUsers = async (req, res) => {
 
             }
 
+            const existingCompetitorIds = await Competition.distinct("competitor", {
+                owner: req.userId
+            });
+
             const users =
                 await User.find({
 
@@ -87,7 +92,7 @@ const searchUsers = async (req, res) => {
                         }
 
                     ],
-                    _id: { $ne: req.userId }
+                    _id: { $nin: [req.userId, ...existingCompetitorIds] }
                 })
                 .select(
                     "name username profilePicture"

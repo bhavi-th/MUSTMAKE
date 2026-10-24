@@ -128,7 +128,7 @@
         const navigationLinksHTML = isAuthenticated
             ? `
                 ${navLink("/edit-profile", "Edit details", currentPage)}
-                ${navLink("/pages/about-us.html", "About us", currentPage)}
+                ${navLink("/pages/about-us.html", "About", currentPage)}
                 <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
                 <a href="mailto:tejas49167@gmail.com?subject=Suggestion" target="_blank" rel="noopener noreferrer">Suggestions</a>
                 <button class="mobile-nav-delete-account"

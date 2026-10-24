@@ -300,6 +300,11 @@ document.getElementById("profilePhotoButton").addEventListener("click", () => {
 });
 
 closePhotoButton.addEventListener("click", closePhotoDialog);
+photoDialog.addEventListener("click", event => {
+    if (!event.target.closest("button")) {
+        closePhotoDialog();
+    }
+});
 document.getElementById("chooseProfilePhoto").addEventListener("click", () => photoInput.click());
 photoInput.addEventListener("change", () => {
     const file = photoInput.files?.[0];

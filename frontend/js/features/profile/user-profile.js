@@ -134,6 +134,11 @@ function closePublicPhotoDialog() {
 }
 
 closePublicPhoto.addEventListener("click", closePublicPhotoDialog);
+publicPhotoDialog.addEventListener("click", event => {
+    if (!event.target.closest("button")) {
+        closePublicPhotoDialog();
+    }
+});
 document.addEventListener("keydown", event => {
     if (event.key === "Escape" && !publicPhotoDialog.hidden) {
         closePublicPhotoDialog();

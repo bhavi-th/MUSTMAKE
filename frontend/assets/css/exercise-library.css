@@ -192,10 +192,16 @@
 .exercise-card {
     padding: 0;
     overflow: hidden;
-    border: 1px solid var(--glass-border);
+    border: 0;
     border-radius: clamp(16px, 1.5vw, 18px);
-    background: var(--glass-panel);
-    box-shadow: var(--shadow-soft);
+    background: rgba(17, 24, 39, 0.72);
+    box-shadow: none;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.exercise-card:hover {
+    transform: translateY(-2px);
+    background: rgba(17, 24, 39, 0.82);
 }
 
 .library-heading h2 {
@@ -215,7 +221,8 @@
     place-items: center;
     height: clamp(136px, 17.75vw, 156px);
     overflow: hidden;
-    background: var(--glass-subtle);
+    background: linear-gradient(180deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.8));
+    border-bottom: none;
 }
 
 .exercise-card-media > svg {

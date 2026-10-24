@@ -5584,6 +5584,19 @@ body.mobile-nav-open {
     background: transparent;
 }
 
+body.app-page .exercise-library-page .exercise-card,
+body.app-page .exercise-library-page .exercise-card:hover {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+body.app-page .exercise-library-page .exercise-card-media {
+    background: transparent;
+}
+
 :root[data-theme="dark"] .competition-search-area {
     width: 100%;
 }

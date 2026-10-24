@@ -119,9 +119,3 @@ MUSTMAKE/
 ├── Readme.md
 └── SECURITY.md
 ```
-
-The frontend Vercel project should use `frontend/` as its root directory so it loads `frontend/vercel.json`.
-
-## Exercise Library
-
-Exercise pages live at `frontend/pages/exercises/<slug>.html`; Vercel and the backend serve these files through clean URLs such as `/exercises/push-ups`. Their details are configured in `backend/config/exercises.json` and exposed through the public `GET /api/exercises` endpoint. The frontend also keeps a static copy at `frontend/data/exercises.json` so the library and detail pages can still render while the backend endpoint is unavailable; keep both catalogs in sync when changing exercises. Each entry defines its clean URL slug, demonstration media, available modes, and manual-entry fields. Set `modes` to `["manual"]` for exercises without AI Mode; AI Mode is currently a static Coming Soon screen. `manualType` controls how the existing workout API validates and stores the submitted fields.

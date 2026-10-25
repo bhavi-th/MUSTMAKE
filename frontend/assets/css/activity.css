@@ -91,8 +91,7 @@
 .competition-result,
 .profile-detail,
 .profile-upload,
-.public-workout,
-.total-display {
+.public-workout {
     background: var(--glass-subtle);
 
     border: 1px solid rgba(255, 255, 255, 0.24);
@@ -195,10 +194,6 @@
 
 /* FORMS */
 
-.workout-form {
-    padding: 30px;
-}
-
 .auth-content [hidden] {
     display: none !important;
 }
@@ -207,8 +202,7 @@
     margin-bottom: 23px;
 }
 
-.form-group label,
-.field label {
+.form-group label {
     display: block;
 
     color: #aaa;
@@ -265,62 +259,6 @@ textarea {
     resize: vertical;
 }
 
-/* DYNAMIC FORM */
-
-#exerciseFields {
-    margin-top: 5px;
-}
-
-.dynamic-grid {
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 15px;
-}
-
-.field {
-    margin-bottom: 15px;
-}
-
-/* TOTAL */
-
-.total-display {
-    background: rgba(22, 10, 12, 0.34);
-
-    border: 1px solid rgba(255, 255, 255, 0.16);
-
-    border-radius: 8px;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    color: #fff;
-
-    font-size: 14px;
-
-    font-weight: 600;
-}
-
-/* FORM MESSAGE */
-
-.form-message {
-    min-height: 20px;
-
-    margin-top: 15px;
-
-    color: #888;
-
-    font-size: 13px;
-
-    text-align: center;
-}
-
-.workout-form .submit-button {
-    width: 100%;
-}
-
 /* HISTORY */
 
 .history-day {
@@ -344,4 +282,3 @@ textarea {
 .history-workout {
     margin-bottom: 8px;
 }
-

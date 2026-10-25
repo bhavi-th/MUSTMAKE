@@ -27,7 +27,6 @@ body {
 .card,
 .person-card,
 .profile-card,
-.workout-form,
 .competition-search,
 .competition-section,
 .competition-card,
@@ -38,7 +37,6 @@ body {
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .google-button {
     background: var(--glass-subtle);
@@ -55,7 +53,6 @@ body {
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .google-button {
     color: var(--text-primary);
@@ -387,7 +384,6 @@ body,
 .card,
 .person-card,
 .profile-card,
-.workout-form,
 .competition-search,
 .competition-section,
 .competition-card,
@@ -397,7 +393,6 @@ body,
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .main-button,
 .secondary-button,
@@ -493,7 +488,6 @@ textarea:focus {
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .google-button {
     background: var(--glass-subtle);
@@ -547,16 +541,9 @@ textarea:focus {
         max-width: 100%;
     }
 
-    .workout-form {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-    }
-
     input,
     select,
-    textarea,
-    .workout-form .submit-button {
+    textarea {
         min-width: 0;
         max-width: 100%;
     }

@@ -70,8 +70,7 @@ nav button,
 }
 
 
-.main-button,
-.workout-form .submit-button {
+.main-button {
     color: var(--text-on-accent) !important;
     background: var(--accent) !important;
     border-color: var(--accent) !important;
@@ -380,8 +379,7 @@ nav button,
     }
 }
 
-.main-button:hover,
-.workout-form .submit-button:hover {
+.main-button:hover {
     background: var(--accent-hover) !important;
     border-color: var(--accent-hover) !important;
 }
@@ -831,7 +829,6 @@ body.mobile-nav-open {
 }
 
 .main-button,
-.workout-form .submit-button,
 #firstSetupPage .save-button {
     color: #fff !important;
     background: #202124 !important;
@@ -840,7 +837,6 @@ body.mobile-nav-open {
 }
 
 .main-button:hover,
-.workout-form .submit-button:hover,
 #firstSetupPage .save-button:hover {
     color: #fff !important;
     background: #3f4348 !important;
@@ -861,7 +857,6 @@ body.mobile-nav-open {
 
 .main-button:focus-visible,
 .secondary-button:focus-visible,
-.workout-form .submit-button:focus-visible,
 #firstSetupPage .save-button:focus-visible {
     outline: 3px solid rgba(55, 65, 81, 0.28);
     outline-offset: 3px;

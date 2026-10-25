@@ -8,7 +8,6 @@
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .google-button {
     background: var(--glass-subtle);
@@ -121,7 +120,6 @@ small,
 
     .person-card,
     .profile-card,
-    .workout-form,
     .competition-search,
     .competition-section {
         padding: 22px;
@@ -133,10 +131,6 @@ small,
 
     .person-top h2 {
         font-size: 24px;
-    }
-
-    .dynamic-grid {
-        grid-template-columns: 1fr;
     }
 
     .actions {

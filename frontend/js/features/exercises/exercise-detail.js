@@ -78,9 +78,6 @@ function renderMedia(exercise) {
     function renderManualMode(exercise) {
         return `
             <div class="exercise-mode-content">
-                <div class="exercise-mode-intro">
-                    
-                </div>
                 <form id="manualWorkoutForm" class="exercise-workout-form">
                     <div class="exercise-form-grid">
                         ${exercise.fields.map(renderField).join("")}

@@ -69,8 +69,6 @@ p,
 .workout-details,
 .no-workout,
 .form-group label,
-.field label,
-.form-message,
 .competition-user-info span,
 .competition-card-header p,
 .recent-workouts,
@@ -91,7 +89,6 @@ p,
 .card,
 .person-card,
 .profile-card,
-.workout-form,
 .competition-search,
 .competition-section,
 .competition-card,
@@ -102,7 +99,6 @@ p,
 .profile-detail,
 .profile-upload,
 .public-workout,
-.total-display,
 .social-links a,
 .google-button {
     color: var(--text-primary);
@@ -216,8 +212,7 @@ p,
     background: var(--glass-subtle);
 }
 
-.form-group label,
-.field label {
+.form-group label {
     font-size: 14px;
     font-weight: 500;
 }
@@ -298,7 +293,6 @@ textarea:focus {
     line-height: 1.4;
 }
 
-.total-display,
 .streak strong,
 .profile-detail strong {
     font-variant-numeric: tabular-nums;
@@ -313,7 +307,6 @@ small,
 }
 
 .no-workout,
-.form-message,
 .auth-message,
 .auth-footer,
 .loading,

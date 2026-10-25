@@ -53,7 +53,6 @@
 .card,
 .person-card,
 .profile-card,
-.workout-form,
 .competition-search,
 .competition-section,
 .competition-card {
@@ -65,13 +64,6 @@
     -webkit-backdrop-filter: none;
 }
 
-.workout-form {
-    padding: 12px 0 0;
-}
-
-.workout-form input,
-.workout-form select,
-.workout-form textarea,
 .profile-container .profile-card input,
 .profile-container .profile-card select,
 .profile-container .profile-card textarea {
@@ -86,9 +78,6 @@
     -webkit-backdrop-filter: none;
 }
 
-.workout-form input:focus,
-.workout-form select:focus,
-.workout-form textarea:focus,
 .profile-container .profile-card input:focus,
 .profile-container .profile-card select:focus,
 .profile-container .profile-card textarea:focus {
@@ -165,19 +154,6 @@
     .history-workout .workout-details {
         text-align: left;
     }
-}
-
-.total-display {
-    padding: 15px 0;
-    margin-bottom: 20px;
-    background: transparent;
-    border: 0;
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-    border-radius: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
 }
 
 .competition-search,

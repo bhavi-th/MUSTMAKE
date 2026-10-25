@@ -39,10 +39,6 @@ function getUserId(user) {
     return id == null ? null : String(id);
 }
 
-function saveAuth(token, user) {
-    window.saveAuthenticatedSession(token, user);
-}
-
 function logout(redirectToLogin = true) {
     window.clearPrivateCaches();
     localStorage.removeItem("token");
@@ -52,14 +48,6 @@ function logout(redirectToLogin = true) {
     } else {
         window.location.reload();
     }
-}
-
-function authHeaders() {
-    const token = getToken();
-    return {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-    };
 }
 
 function formatDate(dateString) {
@@ -89,12 +77,6 @@ function getToday() {
     });
 
     return `${values.year}-${values.month}-${values.day}`;
-}
-
-function getPreviousDate(dateString) {
-    const date = new Date(`${dateString}T00:00:00.000Z`);
-    date.setUTCDate(date.getUTCDate() - 1);
-    return date.toISOString().split("T")[0];
 }
 
 function escapeHTML(value) {
@@ -253,191 +235,6 @@ async function loadStreaks(cacheKey) {
         streakElement.textContent = streak;
     } catch (error) {
         console.error("Streak error:", error);
-    }
-}
-
-const exerciseSelect = document.getElementById("exercise");
-const exerciseFields = document.getElementById("exerciseFields");
-const totalDisplay = document.getElementById("totalDisplay");
-
-if (exerciseSelect) {
-    exerciseSelect.addEventListener("change", updateExerciseFields);
-}
-
-function updateExerciseFields() {
-    const exercise = exerciseSelect.value;
-    exerciseFields.innerHTML = "";
-    totalDisplay.style.display = "none";
-
-    if (!exercise) return;
-
-    if (exercise === "Push-ups" || exercise === "Pull-ups" || exercise === "Squats") {
-        exerciseFields.innerHTML = `
-            <div class="dynamic-grid">
-                <div class="field">
-                    <label>Reps</label>
-                    <input type="number" id="reps" min="1" placeholder="Example: 20" required>
-                </div>
-                <div class="field">
-                    <label>Sets</label>
-                    <input type="number" id="sets" min="1" placeholder="Example: 3" required>
-                </div>
-            </div>
-        `;
-        addTotalListeners();
-        return;
-    }
-
-    if (exercise === "Dumbbell") {
-        exerciseFields.innerHTML = `
-            <div class="field">
-                <label>Weight per hand (kg)</label>
-                <input type="number" id="weight" min="0" step="0.5" placeholder="Example: 5" required>
-            </div>
-            <div class="dynamic-grid">
-                <div class="field">
-                    <label>Reps</label>
-                    <input type="number" id="reps" min="1" placeholder="Example: 15" required>
-                </div>
-                <div class="field">
-                    <label>Sets</label>
-                    <input type="number" id="sets" min="1" placeholder="Example: 3" required>
-                </div>
-            </div>
-        `;
-        addTotalListeners();
-        return;
-    }
-
-    if (exercise === "Skipping Rope") {
-        exerciseFields.innerHTML = `
-            <div class="field">
-                <label>Number of jumps</label>
-                <input type="number" id="amount" min="1" placeholder="Example: 100" required>
-            </div>
-        `;
-        return;
-    }
-
-    if (exercise === "Running" || exercise === "Walking") {
-        exerciseFields.innerHTML = `
-            <div class="field">
-                <label>Distance (km)</label>
-                <input type="number" id="amount" min="0" step="0.01" placeholder="Example: 5" required>
-            </div>
-        `;
-    }
-}
-
-function addTotalListeners() {
-    const reps = document.getElementById("reps");
-    const sets = document.getElementById("sets");
-    if (!reps || !sets) return;
-
-    function updateTotal() {
-        const repsValue = Number(reps.value);
-        const setsValue = Number(sets.value);
-
-        if (repsValue > 0 && setsValue > 0) {
-            totalDisplay.style.display = "block";
-            totalDisplay.textContent = `Total: ${repsValue * setsValue} reps`;
-        } else {
-            totalDisplay.style.display = "none";
-        }
-    }
-
-    reps.addEventListener("input", updateTotal);
-    sets.addEventListener("input", updateTotal);
-}
-
-const workoutForm = document.getElementById("workoutForm");
-if (workoutForm) {
-    workoutForm.addEventListener("submit", saveWorkout);
-}
-
-async function saveWorkout(event) {
-    event.preventDefault();
-
-    const message = document.getElementById("formMessage");
-    const exercise = document.getElementById("exercise").value;
-
-    if (!exercise) {
-        message.textContent = "Select an exercise.";
-        return;
-    }
-
-    let reps = null;
-    let sets = null;
-    let weight = null;
-    let amount = null;
-    let unit = null;
-
-    if (exercise === "Push-ups" || exercise === "Pull-ups" || exercise === "Squats") {
-        reps = Number(document.getElementById("reps").value);
-        sets = Number(document.getElementById("sets").value);
-    }
-
-    if (exercise === "Dumbbell") {
-        weight = Number(document.getElementById("weight").value);
-        reps = Number(document.getElementById("reps").value);
-        sets = Number(document.getElementById("sets").value);
-    }
-
-    if (exercise === "Skipping Rope") {
-        amount = Number(document.getElementById("amount").value);
-        unit = "jumps";
-    }
-
-    if (exercise === "Running" || exercise === "Walking") {
-        amount = Number(document.getElementById("amount").value);
-        unit = "km";
-    }
-
-    message.textContent = "Saving...";
-
-    try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            message.textContent = "Please login first.";
-            window.location.href = "/login";
-            return;
-        }
-
-        const response = await fetch(`${window.API_URL}/api/workouts`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                exercise,
-                reps,
-                sets,
-                weight,
-                amount,
-                unit
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            message.textContent = data.message || "Could not save workout.";
-            return;
-        }
-
-        message.textContent = "Workout saved successfully!";
-        document.getElementById("workoutForm").reset();
-        document.getElementById("exerciseFields").innerHTML = "";
-
-        const totalDisplayEl = document.getElementById("totalDisplay");
-        if (totalDisplayEl) {
-            totalDisplayEl.style.display = "none";
-            totalDisplayEl.textContent = "";
-        }
-    } catch (error) {
-        console.error("Save workout error:", error);
-        message.textContent = "Could not connect to server.";
     }
 }
 

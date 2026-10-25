@@ -75,7 +75,6 @@
 :root[data-theme="dark"] .profile-detail,
 :root[data-theme="dark"] .profile-upload,
 :root[data-theme="dark"] .public-workout,
-:root[data-theme="dark"] .total-display,
 :root[data-theme="dark"] .social-links a,
 :root[data-theme="dark"] .google-button,
 :root[data-theme="dark"] .exercise-card,
@@ -349,7 +348,6 @@
     .card,
     .person-card,
     .profile-card,
-    .workout-form,
     .profile-upload,
     .exercise-detail-page .exercise-demo-panel,
     .exercise-detail-page .exercise-workout-panel
@@ -375,7 +373,6 @@
     .competition-card,
     .profile-detail,
     .public-workout,
-    .total-display,
     .exercise-mode-tabs
 ) {
     border-color: var(--glass-border);

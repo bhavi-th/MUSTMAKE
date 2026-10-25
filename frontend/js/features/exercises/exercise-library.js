@@ -1,6 +1,8 @@
 (() => {
     "use strict";
 
+    const EXERCISE_CACHE_KEY = "mustmake_exercises_v2";
+    const LEGACY_EXERCISE_CACHE_KEY = "mustmake_exercises";
     const groups = [
         { key: "bodyweight" },
         { key: "dumbbells"}
@@ -19,7 +21,8 @@
 
     function cacheExercises(exercises) {
         try {
-            sessionStorage.setItem("mustmake_exercises", JSON.stringify(exercises));
+            sessionStorage.setItem(EXERCISE_CACHE_KEY, JSON.stringify(exercises));
+            sessionStorage.removeItem(LEGACY_EXERCISE_CACHE_KEY);
         } catch (error) {
             console.warn("Could not cache the exercise catalog.", error);
         }
@@ -85,7 +88,11 @@
     async function loadExercises() {
         let cachedExercises;
         try {
-            cachedExercises = JSON.parse(sessionStorage.getItem("mustmake_exercises") || "null");
+            cachedExercises = JSON.parse(sessionStorage.getItem(EXERCISE_CACHE_KEY) || "null");
+            if (!Array.isArray(cachedExercises)) {
+                sessionStorage.removeItem(LEGACY_EXERCISE_CACHE_KEY);
+                sessionStorage.removeItem(EXERCISE_CACHE_KEY);
+            }
         } catch (error) {
             console.warn("Could not read the cached exercise catalog.", error);
         }

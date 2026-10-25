@@ -1,6 +1,8 @@
 (() => {
     "use strict";
 
+    const EXERCISE_CACHE_KEY = "mustmake_exercises_v2";
+    const LEGACY_EXERCISE_CACHE_KEY = "mustmake_exercises";
     const root = document.getElementById("exerciseDetail");
     const slug = document.body.dataset.exerciseSlug;
     if (!root || !slug) return;
@@ -16,7 +18,8 @@
 
     function cacheExercises(exercises) {
         try {
-            sessionStorage.setItem("mustmake_exercises", JSON.stringify(exercises));
+            sessionStorage.setItem(EXERCISE_CACHE_KEY, JSON.stringify(exercises));
+            sessionStorage.removeItem(LEGACY_EXERCISE_CACHE_KEY);
         } catch (error) {
             console.warn("Could not cache the exercise catalog.", error);
         }
@@ -109,10 +112,7 @@
         return `
             <div class="exercise-monitor">
 
-                <!-- Form Feedback moved to the top -->
-                <section class="monitor-feedback" aria-labelledby="monitorFeedbackTitle" aria-live="polite">
-                    <p id="monitorFeedback">The pose model loads only after you enter AI Mode. Stand in view when tracking starts.</p>
-                </section>
+                <p id="monitorFeedback" aria-live="polite">The pose model loads only after you enter AI Mode. Stand in view when tracking starts.</p>
 
                 <div class="monitor-heading">
                     <span id="monitorStatus" class="monitor-status" role="status" aria-live="polite">Camera off</span>
@@ -520,8 +520,12 @@
 
         try {
             cachedExercises = JSON.parse(
-                sessionStorage.getItem("mustmake_exercises") || "null"
+                sessionStorage.getItem(EXERCISE_CACHE_KEY) || "null"
             );
+            if (!Array.isArray(cachedExercises)) {
+                sessionStorage.removeItem(LEGACY_EXERCISE_CACHE_KEY);
+                sessionStorage.removeItem(EXERCISE_CACHE_KEY);
+            }
         } catch (error) {
             console.warn("Could not read the cached exercise catalog.", error);
         }

@@ -209,10 +209,11 @@
 .monitor-stat {
     display: grid;
     gap: 5px;
-    padding: 13px 15px;
-    border: 1px solid var(--glass-border);
-    border-radius: 13px;
-    background: var(--glass-subtle);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .monitor-stat span {
@@ -228,7 +229,13 @@
     line-height: 1.1;
 }
 
-.monitor-feedback,
+#monitorFeedback {
+    margin: 0 0 8px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
 .monitor-summary {
     padding: 15px;
     border: 1px solid var(--glass-border);
@@ -244,8 +251,7 @@
     font-size: 13px;
 }
 
-.monitor-section-heading p,
-.monitor-feedback > p {
+.monitor-section-heading p {
     margin: 5px 0 0;
     color: var(--text-secondary);
     font-size: 11px;

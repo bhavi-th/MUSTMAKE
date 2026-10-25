@@ -129,9 +129,13 @@
 
             grid.innerHTML = groups.map(group => {
                 const groupExercises = exercises.filter(exercise => exercise.group === group.key);
+                if (groupExercises.length === 0) return "";
+
                 return `
                     <section class="exercise-section" aria-labelledby="exerciseGroup-${group.key}">
-                        
+                        <div class="exercise-section-heading">
+                            <h2 id="exerciseGroup-${group.key}">${escapeHTML(group.key)}</h2>
+                        </div>
                         <div class="exercise-list exercise-grid">
                             ${groupExercises.map(renderExercise).join("")}
                         </div>

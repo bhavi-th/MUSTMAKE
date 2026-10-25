@@ -4034,9 +4034,7 @@ body {
     position: relative;
     display: grid;
     place-items: center;
-    height: clamp(136px, 17.75vw, 156px);
     overflow: hidden;
-    background: var(--glass-subtle);
 }
 
 .exercise-card-media > svg {
@@ -4331,7 +4329,7 @@ nav button,
     object-fit: contain;
     margin: 0 auto;
     border-radius: 12px;
-    background: #111;
+    background: #000;
 }
 
 .exercise-demo {

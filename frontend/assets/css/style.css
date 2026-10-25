@@ -4095,6 +4095,10 @@ body {
     font-size: clamp(15px, 1.15vw, 17px);
 }
 
+body.app-page .exercise-library-page .exercise-card h3 {
+    text-align: center;
+}
+
 .exercise-card .exercise-card-topline { margin-bottom: 8px; }
 .exercise-card .exercise-category,
 .exercise-card .exercise-level { font-size: 10px; font-weight: 650; }

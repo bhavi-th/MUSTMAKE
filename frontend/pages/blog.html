@@ -72,23 +72,32 @@
         }
 
         .blog-page .exercise-card {
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            background: var(--glass-panel);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 200ms ease;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            transition: none;
             overflow: hidden;
         }
 
         .blog-page .exercise-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            border-color: var(--accent);
+            transform: none;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
         }
 
         .blog-page .exercise-card-media {
-            background: var(--glass-subtle);
-            border-radius: 16px 16px 0 0;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        .blog-page .exercise-media {
+            background: transparent;
+        }
+
+        .blog-page .exercise-card-link:hover h3 {
+            color: inherit;
         }
 
         .blog-page .exercise-card-content {
@@ -105,19 +114,20 @@
         }
 
         :root[data-theme="dark"] body.blog-page .exercise-card {
-            border-color: var(--glass-border);
-            background: #1a1a1a;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 0;
+            background: transparent;
+            box-shadow: none;
         }
 
         :root[data-theme="dark"] body.blog-page .exercise-card:hover {
-            border-color: var(--accent);
-            background: #222;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            transform: none;
         }
 
         :root[data-theme="dark"] body.blog-page .exercise-card-media {
-            background: #000;
+            background: transparent;
         }
 
         .section-title {
@@ -184,14 +194,6 @@
                 font-size: 1.25rem;
             }
 
-            .blog-page .exercise-card {
-                border-radius: 12px;
-            }
-
-            .blog-page .exercise-card:hover {
-                transform: translateY(-2px);
-            }
-
             .blog-page .exercise-card-content {
                 padding: 12px;
             }
@@ -218,7 +220,7 @@
         </section>
 
         <section id="exercises" class="blog-section">
-            <h2 class="section-title">what you do here</h2>
+            <h2 class="section-title">it's just you</h2>
             <section class="exercise-library" aria-label="Exercise library">
                 <div id="exerciseGrid" class="exercise-library-groups" aria-live="polite"></div>
             </section>

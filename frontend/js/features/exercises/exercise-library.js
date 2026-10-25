@@ -3,10 +3,6 @@
 
     const EXERCISE_CACHE_KEY = "mustmake_exercises_v2";
     const LEGACY_EXERCISE_CACHE_KEY = "mustmake_exercises";
-    const groups = [
-        { key: "bodyweight" },
-        { key: "dumbbells"}
-    ];
     const grid = document.getElementById("exerciseGrid");
     if (!grid) return;
 
@@ -127,21 +123,11 @@
         try {
             const exercises = await loadExercises();
 
-            grid.innerHTML = groups.map(group => {
-                const groupExercises = exercises.filter(exercise => exercise.group === group.key);
-                if (groupExercises.length === 0) return "";
-
-                return `
-                    <section class="exercise-section" aria-labelledby="exerciseGroup-${group.key}">
-                        <div class="exercise-section-heading">
-                            <h2 id="exerciseGroup-${group.key}">${escapeHTML(group.key)}</h2>
-                        </div>
-                        <div class="exercise-list exercise-grid">
-                            ${groupExercises.map(renderExercise).join("")}
-                        </div>
-                    </section>
-                `;
-            }).join("");
+            grid.innerHTML = `
+                <div class="exercise-list exercise-grid">
+                    ${exercises.map(renderExercise).join("")}
+                </div>
+            `;
 
             observeVideos();
         } catch (error) {

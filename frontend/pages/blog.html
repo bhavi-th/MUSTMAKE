@@ -51,32 +51,73 @@
             margin: 60px 0;
         }
 
-        .blog-page .exercise-card,
+        .blog-page .exercise-section {
+            margin-bottom: 40px;
+        }
+
+        .blog-page .exercise-section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        .blog-page .exercise-section-heading h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            text-transform: capitalize;
+        }
+
+        .blog-page .exercise-card {
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            background: var(--glass-panel);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 200ms ease;
+            overflow: hidden;
+        }
+
         .blog-page .exercise-card:hover {
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            box-shadow: none;
-            transform: none;
-            transition: none;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
         }
 
         .blog-page .exercise-card-media {
-            background: transparent;
+            background: var(--glass-subtle);
+            border-radius: 16px 16px 0 0;
         }
 
-        :root[data-theme="dark"] body.blog-page .exercise-card,
+        .blog-page .exercise-card-content {
+            padding: 16px;
+            min-height: auto;
+        }
+
+        .blog-page .exercise-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        :root[data-theme="dark"] body.blog-page .exercise-card {
+            border-color: var(--glass-border);
+            background: #1a1a1a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
         :root[data-theme="dark"] body.blog-page .exercise-card:hover {
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            box-shadow: none;
-            transform: none;
-            transition: none;
+            border-color: var(--accent);
+            background: #222;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
         :root[data-theme="dark"] body.blog-page .exercise-card-media {
-            background: transparent;
+            background: #000;
         }
 
         .section-title {
@@ -132,6 +173,30 @@
             }
 
             .blog-hero p {
+                font-size: 1rem;
+            }
+
+            .blog-page .exercise-section {
+                margin-bottom: 32px;
+            }
+
+            .blog-page .exercise-section-heading h2 {
+                font-size: 1.25rem;
+            }
+
+            .blog-page .exercise-card {
+                border-radius: 12px;
+            }
+
+            .blog-page .exercise-card:hover {
+                transform: translateY(-2px);
+            }
+
+            .blog-page .exercise-card-content {
+                padding: 12px;
+            }
+
+            .blog-page .exercise-card h3 {
                 font-size: 1rem;
             }
         }

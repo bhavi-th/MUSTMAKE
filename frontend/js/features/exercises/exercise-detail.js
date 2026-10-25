@@ -89,40 +89,187 @@ function renderMedia(exercise) {
         `;
     }
 
-    function renderAiMode() {
+    function renderAiMode(exercise) {
+        const isPlank = exercise.slug === "plank";
+        const isJumpCount = exercise.slug === "skipping-rope";
+        const weightField = exercise.fields.find(field => field.name === "weight");
+        const displayMetric = isPlank
+            ? "correct plank time"
+            : isJumpCount
+                ? "detected jumps"
+                : "detected reps";
+        const correctionLabel = isPlank
+            ? "Correct plank seconds to save"
+            : isJumpCount
+                ? "Jumps to save"
+                : "Repetitions to save";
+
         return `
-            <p>Still in development , sorry for any inconvenience caused</p>
+            <div class="exercise-monitor">
+                <div class="monitor-heading">
+                    <div>
+                        <h2>${escapeHTML(exercise.name)} session</h2>
+                    </div>
+                    <span id="monitorStatus" class="monitor-status" role="status" aria-live="polite">Camera off</span>
+                </div>
+
+                <div class="monitor-preview">
+                    <video id="monitorVideo" playsinline muted hidden aria-label="Live camera preview"></video>
+                    <canvas id="monitorCanvas" width="640" height="480" aria-label="Detected body landmarks and skeleton overlay"></canvas>
+                    <div class="monitor-preview-placeholder" aria-hidden="true">
+                        <span class="monitor-camera-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 7.5h3l1.5-2h7l1.5 2h3A1.5 1.5 0 0 1 21.5 9v9A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z" />
+                                <circle cx="12" cy="13.5" r="3.5" />
+                            </svg>
+                        </span>
+                        <strong>Camera preview</strong>
+                        <span>Camera access is requested when you open AI Mode.</span>
+                    </div>
+                    <span class="monitor-preview-label">LIVE PREVIEW</span>
+                </div>
+                <p id="monitorCameraStatus" class="monitor-camera-status" role="status" aria-live="polite">Camera off</p>
+
+                <div class="monitor-controls" aria-label="Monitoring controls">
+                    <button id="monitorFinish" class="secondary-button" type="button" disabled>Finish Session</button>
+                </div>
+
+                <div class="monitor-stats monitor-stats-single" aria-label="Live session statistics">
+                    ${isPlank ? "" : `
+                        <div class="monitor-stat">
+                            <span>Repetitions</span>
+                            <strong id="monitorRepCount" aria-live="polite">0</strong>
+                        </div>
+                    `}
+                    ${isPlank ? `
+                        <div class="monitor-stat">
+                            <span>Correct plank time</span>
+                            <strong id="monitorSessionTime">00:00</strong>
+                        </div>
+                    ` : ""}
+                </div>
+
+                <section class="monitor-feedback" aria-labelledby="monitorFeedbackTitle" aria-live="polite">
+                    <div class="monitor-section-heading">
+                        <span class="monitor-feedback-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 3v4m0 10v4M3 12h4m10 0h4M5.64 5.64l2.83 2.83m7.06 7.06 2.83 2.83m0-12.72-2.83 2.83m-7.06 7.06-2.83 2.83" />
+                            </svg>
+                        </span>
+                        <h3 id="monitorFeedbackTitle">Form feedback</h3>
+                    </div>
+                    <p id="monitorFeedback">The pose model loads only after you enter AI Mode. Stand in view when tracking starts.</p>
+                </section>
+                <p class="monitor-privacy-note">Counts are heuristic and do not assess exercise safety. Camera video is processed on this device and is not uploaded or stored by this feature. MediaPipe loads on demand from jsDelivr and the pose model from Google Cloud Storage.</p>
+
+                <section id="monitorSummary" class="monitor-summary" aria-labelledby="monitorSummaryTitle" hidden>
+                    <div class="monitor-section-heading">
+                        <div>
+                            <h3 id="monitorSummaryTitle">Workout summary</h3>
+                            <p><span id="monitorSummaryExercise"></span> · <span id="monitorSummaryMetric"></span> ${displayMetric}</p>
+                        </div>
+                    </div>
+                    ${weightField ? `<div class="monitor-exercise-fields">${renderField(weightField)}</div>` : ""}
+                    <div class="exercise-form-field monitor-exercise-fields">
+                        <label for="monitorCorrection">${correctionLabel}</label>
+                        <input id="monitorCorrection" name="${isPlank ? "reviewedDuration" : isJumpCount ? "reviewedJumps" : "reviewedReps"}" type="number" min="${isPlank || isJumpCount ? "1" : "0"}" max="${isPlank ? "86400" : "10000"}" step="1" inputmode="numeric" required aria-describedby="monitorCorrectionError">
+                        <p id="monitorCorrectionError" class="exercise-form-message" role="alert"></p>
+                    </div>
+                    <p id="monitorSaveMessage" class="exercise-form-message" role="status" aria-live="polite"></p>
+                    <div class="monitor-review-controls">
+                        <button id="monitorSave" class="main-button monitor-save" type="button" disabled>Save Workout</button>
+                        <button id="monitorDiscard" class="secondary-button monitor-discard" type="button" disabled>Discard Session</button>
+                    </div>
+                </section>
+            </div>
         `;
     }
 
     function render(exercise) {
+        const detectorSupported = [
+            "squats",
+            "push-ups",
+            "plank",
+            "pull-ups",
+            "jumping-jacks",
+            "skipping-rope",
+            "biceps-curls",
+            "shoulder-press",
+            "lateral-raises",
+            "triceps-extension"
+        ].includes(exercise.slug);
         const supportedModes = Array.isArray(exercise.modes)
             ? exercise.modes.filter(mode => mode === "ai" || mode === "manual")
             : ["manual"];
-        const hasAiMode = supportedModes.includes("ai");
-        const hasManualMode = supportedModes.includes("manual");
+        const availableModes = supportedModes.filter(mode => mode !== "ai" || detectorSupported);
+        const hasAiMode = availableModes.includes("ai");
+        const hasManualMode = availableModes.includes("manual");
         const selectedMode = hasManualMode ? "manual" : hasAiMode ? "ai" : null;
         const modeLabel = mode => mode === "ai" ? "AI Mode" : "Manual Entry";
-        const modeButtons = supportedModes.length > 1
+        const modeButtons = availableModes.length > 1
             ? `
                 <div class="exercise-mode-tabs" role="tablist" aria-label="Workout mode">
-                    ${supportedModes.map(mode => `
+                    ${availableModes.map(mode => `
                         <button type="button" role="tab" id="${mode}ModeTab" tabindex="${mode === selectedMode ? "0" : "-1"}" aria-selected="${mode === selectedMode}" aria-controls="exerciseModeContent" data-exercise-mode="${mode}">${modeLabel(mode)}</button>
                     `).join("")}
                 </div>
             `
             : "";
 
+        let monitorModulePromise = null;
+        let currentMonitor = null;
+        let savedMonitorSnapshot = null;
+        let renderGeneration = 0;
+
+        function loadAiMonitor() {
+            const generation = ++renderGeneration;
+            if (!monitorModulePromise) {
+                monitorModulePromise = import("./ai-monitor.js");
+            }
+            modeContent.dataset.mode = "ai";
+            modeContent.querySelector("#monitorStatus").textContent = "Loading AI monitor…";
+            modeContent.querySelector("#monitorFeedback").textContent = "Loading the camera and pose-monitor controls…";
+            monitorModulePromise.then(({ mountAiMonitor }) => {
+                if (generation !== renderGeneration || modeContent.dataset.mode !== "ai") return;
+                currentMonitor = mountAiMonitor(modeContent, exercise, savedMonitorSnapshot);
+                savedMonitorSnapshot = null;
+            }).catch(error => {
+                console.error("Could not load the AI monitor:", error);
+                if (generation !== renderGeneration || modeContent.dataset.mode !== "ai") return;
+                modeContent.querySelector("#monitorStatus").textContent = "AI monitor unavailable";
+                modeContent.querySelector("#monitorFeedback").textContent =
+                    "The AI monitor could not be loaded. Manual Entry remains available; reload this page to retry.";
+            });
+        }
+
+        function renderMode(mode) {
+            if (currentMonitor?.canSwitch && !currentMonitor.canSwitch()) return false;
+            if (currentMonitor) {
+                savedMonitorSnapshot = currentMonitor.dispose();
+                currentMonitor = null;
+            }
+            renderGeneration += 1;
+            modeContent.dataset.mode = mode;
+            modeContent.setAttribute("aria-labelledby", mode === "ai" ? "aiModeTab" : "manualModeTab");
+            modeContent.innerHTML = mode === "ai" ? renderAiMode(exercise) : renderManualMode(exercise);
+            if (mode === "ai") loadAiMonitor();
+            else bindManualForm(exercise);
+            return true;
+        }
+
         const initialModeContent = selectedMode === "ai"
-            ? renderAiMode()
+            ? renderAiMode(exercise)
             : selectedMode === "manual"
                 ? renderManualMode(exercise)
                 : '<p class="no-workout">No workout modes are configured for this exercise.</p>';
-        const panelAttributes = supportedModes.length > 1
+        const panelAttributes = availableModes.length > 1
             ? `role="tabpanel" aria-labelledby="${selectedMode}ModeTab" tabindex="0"`
             : selectedMode
                 ? `aria-labelledby="${selectedMode === "ai" ? "aiModeTitle" : "exerciseModeTitle"}"`
                 : "";
+        const unsupportedAiMessage = supportedModes.includes("ai") && !detectorSupported
+            ? '<p class="monitor-unavailable-note" role="note">AI monitoring is not available for this exercise yet. Manual Entry is still available.</p>'
+            : "";
 
         document.title = `${exercise.name} | MUSTMAKE`;
         root.innerHTML = `
@@ -135,26 +282,26 @@ function renderMedia(exercise) {
                 </section>
                 <section class="exercise-workout-panel" aria-label="Workout modes">
                     ${modeButtons}
+                    ${unsupportedAiMessage}
                     <div id="exerciseModeContent" class="exercise-mode-panel" ${panelAttributes}>
                         ${initialModeContent}
                     </div>
                 </section>
             </div>
         `;
-
+        root.removeAttribute("aria-live");
         const modeContent = root.querySelector("#exerciseModeContent");
+        modeContent.dataset.mode = selectedMode || "";
         const tabs = [...root.querySelectorAll("[data-exercise-mode]")];
         tabs.forEach(tab => {
             tab.addEventListener("click", () => {
+                const mode = tab.dataset.exerciseMode;
+                if (!renderMode(mode)) return;
                 tabs.forEach(item => {
                     const selected = item === tab;
                     item.setAttribute("aria-selected", String(selected));
                     item.tabIndex = selected ? 0 : -1;
                 });
-                const mode = tab.dataset.exerciseMode;
-                modeContent.setAttribute("aria-labelledby", mode === "ai" ? "aiModeTab" : "manualModeTab");
-                modeContent.innerHTML = mode === "ai" ? renderAiMode() : renderManualMode(exercise);
-                bindManualForm(exercise);
             });
 
             tab.addEventListener("keydown", event => {
@@ -173,6 +320,7 @@ function renderMedia(exercise) {
         });
 
         if (selectedMode === "manual") bindManualForm(exercise);
+        else if (selectedMode === "ai") loadAiMonitor();
     }
 
     function buildWorkoutPayload(exercise, form) {

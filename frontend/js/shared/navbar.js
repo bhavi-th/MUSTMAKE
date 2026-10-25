@@ -154,7 +154,6 @@
             ? ""
             : `
                 <nav class="guest-actions" aria-label="Account">
-                    ${navLink("/blog", "Blog", currentPage)}
                     ${navLink("/login", "Login", currentPage)}
                     ${navLink("/signup", "Sign up", currentPage)}
                 </nav>
@@ -164,7 +163,6 @@
         const desktopNavigationHTML = isAuthenticated
             ? `
                 <nav class="desktop-navigation" aria-label="Desktop navigation">
-                    ${navLink("/blog", "Blog", currentPage)}
                     ${navLink("/today", "Exercises", currentPage)}
                     ${navLink("/competition", "Community", currentPage)}
                     ${navLink("/profile", "Profile", currentPage)}
@@ -187,7 +185,6 @@
         // Slide-out navigation: used on mobile only.
         const navigationLinksHTML = isAuthenticated
             ? `
-                ${navLink("/blog", "Blog", currentPage)}
                 ${navLink("/edit-profile", "Edit details", currentPage)}
                 ${navLink("/pages/about-us.html", "About", currentPage)}
                 <a href="mailto:tejas49167@gmail.com?subject=Bug%20Report" target="_blank" rel="noopener noreferrer">Report Bug</a>
@@ -206,8 +203,7 @@
                 </button>
             `
             : `
-                ${navLink("/blog", "Blog", currentPage)}
-                ${navLink("/pages/gst.html", "Exercises", currentPage)}
+                ${navLink("/exercises", "Exercises", currentPage)}
                 ${navLink("/pages/about-us.html", "About us", currentPage)}
                 ${navLink("/login", "Login", currentPage)}
                 ${navLink("/signup", "Sign up", currentPage)}
@@ -245,14 +241,6 @@
         const bottomNavigationHTML = isAuthenticated
             ? `
                 <nav class="bottom-navigation" aria-label="Main navigation">
-
-                    ${bottomNavLink(
-                        "/blog",
-                        "Blog",
-                        '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
-                        currentPage
-                    )}
-
                     ${bottomNavLink(
                         "/today",
                         "Exercises",

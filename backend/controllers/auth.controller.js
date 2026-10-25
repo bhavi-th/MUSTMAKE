@@ -3,16 +3,122 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const OTP = require("../models/OTP");
+const OTPGuard = require("../models/OTPGuard");
 const connectDB = require("../config/database");
 const { isPlainObject, isValidEmail } = require("../utils/validation");
 const {
     OTP_EXPIRY_MINUTES,
     OTP_MAX_ATTEMPTS,
+    OTP_RESEND_COOLDOWN_MS,
+    OTP_ATTEMPT_WINDOW_MS,
     generateOTP,
     hashOTP,
     createAuthSession
 } = require("../services/auth.service");
 const { sendOTPEmail } = require("../services/email.service");
+
+function isOtpLocked(guard, now = new Date()) {
+    return Boolean(
+        guard &&
+        guard.failedAttempts >= OTP_MAX_ATTEMPTS &&
+        guard.attemptWindowStartedAt &&
+        guard.attemptWindowStartedAt.getTime() > now.getTime() - OTP_ATTEMPT_WINDOW_MS
+    );
+}
+
+async function claimOtpSend(email, purpose, now) {
+    try {
+        return await OTPGuard.findOneAndUpdate(
+            {
+                email,
+                purpose,
+                $and: [
+                    {
+                        $or: [
+                            { lastSentAt: { $exists: false } },
+                            { lastSentAt: { $lte: new Date(now.getTime() - OTP_RESEND_COOLDOWN_MS) } }
+                        ]
+                    },
+                    {
+                        $or: [
+                            { attemptWindowStartedAt: { $exists: false } },
+                            { attemptWindowStartedAt: { $lte: new Date(now.getTime() - OTP_ATTEMPT_WINDOW_MS) } },
+                            { failedAttempts: { $lt: OTP_MAX_ATTEMPTS } }
+                        ]
+                    }
+                ]
+            },
+            {
+                $set: { lastSentAt: now },
+                $setOnInsert: { email, purpose }
+            },
+            { new: true, upsert: true }
+        );
+    } catch (error) {
+        if (error.code === 11000) {
+            return null;
+        }
+
+        throw error;
+    }
+}
+
+async function incrementOtpFailures(email, purpose, now) {
+    const activeWindow = {
+        email,
+        purpose,
+        attemptWindowStartedAt: {
+            $gt: new Date(now.getTime() - OTP_ATTEMPT_WINDOW_MS)
+        }
+    };
+
+    const incremented = await OTPGuard.findOneAndUpdate(
+        activeWindow,
+        { $inc: { failedAttempts: 1 } },
+        { new: true }
+    );
+
+    if (incremented) {
+        return incremented;
+    }
+
+    try {
+        return await OTPGuard.findOneAndUpdate(
+            {
+                email,
+                purpose,
+                $or: [
+                    { attemptWindowStartedAt: { $exists: false } },
+                    { attemptWindowStartedAt: { $lte: new Date(now.getTime() - OTP_ATTEMPT_WINDOW_MS) } }
+                ]
+            },
+            {
+                $set: {
+                    failedAttempts: 1,
+                    attemptWindowStartedAt: now
+                },
+                $setOnInsert: { email, purpose }
+            },
+            { new: true, upsert: true }
+        );
+    } catch (error) {
+        if (error.code !== 11000) {
+            throw error;
+        }
+
+        const retried = await OTPGuard.findOneAndUpdate(
+            activeWindow,
+            { $inc: { failedAttempts: 1 } },
+            { new: true }
+        );
+
+        if (!retried) {
+            throw error;
+        }
+
+        return retried;
+    }
+}
 
 const sendOtp = async (req, res) => {
 
@@ -149,14 +255,30 @@ const sendOtp = async (req, res) => {
                 }
             }
 
-            // Keep the existing code valid during the resend cooldown. A
-            // signup form retry can refresh its saved details without sending
-            // another email, which also lets a refreshed page resume signup.
-            const recentOTP = previousOTP &&
-                previousOTP.createdAt > new Date(Date.now() - 60 * 1000);
+            const now = new Date();
+            const guard = await OTPGuard.findOne({
+                email: cleanEmail,
+                purpose
+            });
 
-            if (recentOTP) {
-                if (purpose === "signup" && signupData) {
+            if (isOtpLocked(guard, now)) {
+                return res.status(429).json({
+                    message: "Too many incorrect attempts. Please wait five minutes before requesting another OTP."
+                });
+            }
+
+            // Keep the current code valid during the cooldown. Signup retries
+            // may update the saved draft without sending another email.
+            const cooldownStartedAt = guard?.lastSentAt || previousOTP?.createdAt;
+            const withinCooldown = cooldownStartedAt &&
+                cooldownStartedAt.getTime() > now.getTime() - OTP_RESEND_COOLDOWN_MS;
+
+            if (withinCooldown) {
+                if (
+                    purpose === "signup" &&
+                    signupData &&
+                    previousOTP?.expiresAt > now
+                ) {
                     if (hasSignupFields) {
                         previousOTP.signupData = signupData;
                         await previousOTP.save();
@@ -165,7 +287,7 @@ const sendOtp = async (req, res) => {
                     return res.json({
                         success: true,
                         codeAlreadySent: true,
-                        sentAt: previousOTP.createdAt.getTime(),
+                        sentAt: cooldownStartedAt.getTime(),
                         message: "A code was sent recently. Use the current code from your email."
                     });
                 }
@@ -173,6 +295,20 @@ const sendOtp = async (req, res) => {
                 return res.status(429).json({
                     message:
                         "Please wait 60 seconds before requesting another OTP."
+                });
+            }
+
+            const sendClaim = await claimOtpSend(cleanEmail, purpose, now);
+            if (!sendClaim) {
+                const latestGuard = await OTPGuard.findOne({
+                    email: cleanEmail,
+                    purpose
+                });
+
+                return res.status(429).json({
+                    message: isOtpLocked(latestGuard, now)
+                        ? "Too many incorrect attempts. Please wait five minutes before requesting another OTP."
+                        : "Please wait 60 seconds before requesting another OTP."
                 });
             }
 
@@ -190,9 +326,7 @@ const sendOtp = async (req, res) => {
                     1000
                 );
 
-            if (previousOTP) {
-                await OTP.deleteOne({ _id: previousOTP._id });
-            }
+            await OTP.deleteMany({ email: cleanEmail, purpose });
 
             const otpRecord = await OTP.create({
                 email: cleanEmail,
@@ -205,12 +339,13 @@ const sendOtp = async (req, res) => {
             try {
                 await sendOTPEmail(cleanEmail, otp, purpose);
             } catch (error) {
-                await OTP.deleteOne({ _id: otpRecord._id });
+                await OTP.deleteOne({ _id: otpRecord._id, otpHash });
                 throw error;
             }
 
             return res.json({
                 success: true,
+                sentAt: now.getTime(),
                 message:
                     "OTP sent successfully."
             });
@@ -281,6 +416,17 @@ const verifyOtp = async (req, res) => {
                 });
             }
 
+            const guard = await OTPGuard.findOne({
+                email: cleanEmail,
+                purpose
+            });
+
+            if (isOtpLocked(guard)) {
+                return res.status(429).json({
+                    message: "Too many incorrect attempts. Please wait five minutes before requesting another OTP."
+                });
+            }
+
             const otpRecord = await OTP.findOne({ email: cleanEmail, purpose });
 
             if (!otpRecord) {
@@ -342,8 +488,31 @@ const verifyOtp = async (req, res) => {
                     { new: true }
                 );
 
-                if (updatedRecord?.attempts >= OTP_MAX_ATTEMPTS) {
-                    await OTP.deleteOne({ _id: updatedRecord._id });
+                if (!updatedRecord) {
+                    const currentRecord = await OTP.findById(otpRecord._id);
+                    if (currentRecord?.attempts >= OTP_MAX_ATTEMPTS) {
+                        await OTP.deleteOne({ _id: currentRecord._id });
+                        return res.status(429).json({
+                            message: "Too many incorrect attempts. Please request a new OTP."
+                        });
+                    }
+
+                    return res.status(400).json({
+                        message: "OTP expired or already used. Please request a new OTP."
+                    });
+                }
+
+                const updatedGuard = await incrementOtpFailures(
+                    cleanEmail,
+                    purpose,
+                    new Date()
+                );
+
+                if (
+                    updatedRecord.attempts >= OTP_MAX_ATTEMPTS ||
+                    updatedGuard.failedAttempts >= OTP_MAX_ATTEMPTS
+                ) {
+                    await OTP.deleteMany({ email: cleanEmail, purpose });
                     return res.status(429).json({
                         message: "Too many incorrect attempts. Please request a new OTP."
                     });
@@ -365,6 +534,16 @@ const verifyOtp = async (req, res) => {
                     message: "OTP expired or already used. Please request a new OTP."
                 });
             }
+
+            await OTPGuard.updateOne(
+                { email: cleanEmail, purpose },
+                {
+                    $set: {
+                        failedAttempts: 0
+                    },
+                    $unset: { attemptWindowStartedAt: 1 }
+                }
+            );
 
             let user;
 

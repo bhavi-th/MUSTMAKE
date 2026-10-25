@@ -2,6 +2,64 @@
 (function () {
     "use strict";
 
+    const privateCachePrefixes = [
+        "mustmake_today_workouts",
+        "mustmake_streak",
+        "mustmake_profile",
+        "mustmake_competition_"
+    ];
+
+    window.clearPrivateCaches = function () {
+        try {
+            Object.keys(sessionStorage).forEach(key => {
+                if (privateCachePrefixes.some(prefix => key.startsWith(prefix))) {
+                    sessionStorage.removeItem(key);
+                }
+            });
+        } catch (error) {
+            console.warn("Could not clear private session caches.", error);
+        }
+    };
+
+    function getUserId(user) {
+        const id = user?._id ?? user?.id;
+        return id == null ? null : String(id);
+    }
+
+    window.addEventListener("storage", event => {
+        if (event.key !== "user") return;
+
+        const parseUserId = value => {
+            try {
+                return getUserId(JSON.parse(value || "null"));
+            } catch {
+                return null;
+            }
+        };
+
+        if (parseUserId(event.oldValue) !== parseUserId(event.newValue)) {
+            window.clearPrivateCaches();
+        }
+    });
+
+    window.saveAuthenticatedSession = function (token, user) {
+        let previousUserId;
+        try {
+            const previousUser = JSON.parse(localStorage.getItem("user") || "null");
+            previousUserId = getUserId(previousUser);
+        } catch {
+            // A malformed previous identity cannot safely be treated as the same account.
+        }
+
+        const nextUserId = getUserId(user);
+        if (!previousUserId || !nextUserId || previousUserId !== nextUserId) {
+            window.clearPrivateCaches();
+        }
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+    };
+
     function getCurrentPage() {
         const path = window.location.pathname
             .replace(/\.html$/, "")
@@ -467,6 +525,7 @@
 
         container.querySelectorAll("[data-auth-logout], #logoutButton").forEach(button => {
             button.addEventListener("click", () => {
+                window.clearPrivateCaches();
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
                 window.location.href = "/login";
@@ -494,6 +553,7 @@
                 const data = await response.json().catch(() => ({}));
 
                 if (response.status === 401) {
+                    window.clearPrivateCaches();
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
                     window.location.href = "/login";
@@ -503,6 +563,7 @@
                     throw new Error(data.message || "Could not delete your account.");
                 }
 
+                window.clearPrivateCaches();
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
                 deleteAccountMessage.textContent = "Account deleted. Redirecting...";

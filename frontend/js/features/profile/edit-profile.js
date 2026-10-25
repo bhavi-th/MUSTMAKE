@@ -3,6 +3,7 @@ function getToken() {
 }
 
 function logout() {
+    window.clearPrivateCaches();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/login";

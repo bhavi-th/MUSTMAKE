@@ -42,8 +42,7 @@ async function postAuth(path, payload) {
 }
 
 function saveSession(data) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    window.saveAuthenticatedSession(data.token, data.user);
     sessionStorage.removeItem(SIGNUP_EMAIL_KEY);
     sessionStorage.removeItem(SIGNUP_SENT_AT_KEY);
     window.redirectAfterAuthentication(data.user);

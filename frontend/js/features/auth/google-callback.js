@@ -13,8 +13,7 @@ try {
 
     const user = JSON.parse(userData);
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    window.saveAuthenticatedSession(token, user);
 
     // Let the original login tab replace itself so OAuth pages stay out of its history.
     localStorage.setItem("googleLoginComplete", `${Date.now()}-${Math.random()}`);

@@ -6,8 +6,7 @@ const otpSchema = new mongoose.Schema(
             type: String,
             required: true,
             lowercase: true,
-            trim: true,
-            index: true
+            trim: true
         },
 
         otpHash: {
@@ -42,5 +41,7 @@ const otpSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+otpSchema.index({ email: 1, purpose: 1 });
 
 module.exports = mongoose.model("OTP", otpSchema);

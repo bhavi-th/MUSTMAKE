@@ -123,8 +123,7 @@ function setOtpStatus(message) {
 }
 
 function finishLogin(data) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    window.saveAuthenticatedSession(data.token, data.user);
     sessionStorage.removeItem(LOGIN_EMAIL_KEY);
     sessionStorage.removeItem(LOGIN_SENT_AT_KEY);
     window.redirectAfterAuthentication(data.user);

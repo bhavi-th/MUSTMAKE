@@ -4,6 +4,7 @@ const Competition = require("../models/Competition");
 const Workout = require("../models/Workout");
 const connectDB = require("../config/database");
 const { escapeRegex } = require("../utils/validation");
+const { getWorkoutHistoryPage } = require("../services/workout-history.service");
 
 const currentUser = async (req, res) => {
 
@@ -148,15 +149,16 @@ const getPublicProfile = async (req, res) => {
 
             }
 
-            const workoutHistory = await Workout.find({ user: user._id })
-                .select("exercise reps sets weight amount duration unit date createdAt")
-                .sort({ date: -1, createdAt: -1 })
-                .lean();
+            const historyPage = await getWorkoutHistoryPage(user._id, req.query);
+            if (historyPage.invalidCursor) {
+                return res.status(400).json({ message: "Invalid workout history cursor." });
+            }
 
             res.json({
                 success: true,
                 user,
-                workoutHistory
+                workoutHistory: historyPage.workouts,
+                workoutHistoryNextCursor: historyPage.nextCursor
             });
 
 

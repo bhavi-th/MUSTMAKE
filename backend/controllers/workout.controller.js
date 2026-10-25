@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const Workout = require("../models/Workout");
 const connectDB = require("../config/database");
-const { getDateString, calculateStreak } = require("../utils/date");
+const { getDateString, previousDateString } = require("../utils/date");
 const { isPlainObject, parseWorkoutNumber } = require("../utils/validation");
 const { createWorkoutRecord } = require("../services/workout.service");
+const { getWorkoutHistoryPage } = require("../services/workout-history.service");
 const exercises = require("../config/exercises.json");
 
 const exercisesByName = new Map(exercises.map(exercise => [exercise.name, exercise]));
@@ -150,30 +151,113 @@ const getStreak = async (req, res) => {
 
             await connectDB();
 
-
-            const workouts =
-                await Workout.find(
-
-                    {
-                        user:
-                            req.userId
-                    },
-
-                    {
-                        date:
-                            1
+            const today = getDateString();
+            const yesterday = previousDateString(today);
+            const [result] = await Workout.aggregate([
+                {
+                    $match: {
+                        user: new mongoose.Types.ObjectId(req.userId),
+                        date: {
+                            $lte: `${today}\uffff`,
+                            $regex: /^\d{4}-\d{2}-\d{2}/
+                        }
                     }
-                );
-
-
-            const streak =
-                calculateStreak(
-                    workouts
-                );
+                },
+                { $group: { _id: { $substrBytes: ["$date", 0, 10] } } },
+                {
+                    $set: {
+                        dateValue: {
+                            $dateFromString: {
+                                dateString: "$_id",
+                                format: "%Y-%m-%d",
+                                onError: null
+                            }
+                        }
+                    }
+                },
+                { $match: { dateValue: { $ne: null } } },
+                { $sort: { dateValue: -1 } },
+                {
+                    $setWindowFields: {
+                        sortBy: { dateValue: -1 },
+                        output: {
+                            newerDate: {
+                                $shift: {
+                                    output: "$dateValue",
+                                    by: -1,
+                                    default: null
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        hasGap: {
+                            $cond: [
+                                { $eq: ["$newerDate", null] },
+                                0,
+                                {
+                                    $cond: [
+                                        {
+                                            $eq: [
+                                                {
+                                                    $dateDiff: {
+                                                        startDate: "$dateValue",
+                                                        endDate: "$newerDate",
+                                                        unit: "day"
+                                                    }
+                                                },
+                                                1
+                                            ]
+                                        },
+                                        0,
+                                        1
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    $setWindowFields: {
+                        sortBy: { dateValue: -1 },
+                        output: {
+                            cumulativeGaps: {
+                                $sum: "$hasGap",
+                                window: { documents: ["unbounded", "current"] }
+                            }
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        streak: {
+                            $sum: {
+                                $cond: [{ $eq: ["$cumulativeGaps", 0] }, 1, 0]
+                            }
+                        },
+                        hasActiveDay: {
+                            $max: {
+                                $cond: [{ $in: ["$_id", [today, yesterday]] }, 1, 0]
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        streak: {
+                            $cond: ["$hasActiveDay", "$streak", 0]
+                        }
+                    }
+                }
+            ]);
 
 
             res.json({
-                streak
+                streak: result?.streak || 0
             });
 
 
@@ -198,26 +282,12 @@ const getWorkoutHistory = async (req, res) => {
 
             await connectDB();
 
+            const page = await getWorkoutHistoryPage(req.userId, req.query);
+            if (page.invalidCursor) {
+                return res.status(400).json({ message: "Invalid workout history cursor." });
+            }
 
-            const workouts =
-                await Workout.find({
-
-                    user:
-                        req.userId
-
-                }).sort({
-
-                    date:
-                        -1,
-
-                    createdAt:
-                        -1
-                });
-
-
-            res.json(
-                workouts
-            );
+            res.json({ workouts: page.workouts, nextCursor: page.nextCursor });
 
 
         } catch (error) {

@@ -4,6 +4,8 @@ const profileId = new URLSearchParams(window.location.search).get("id");
 const publicPhotoDialog = document.getElementById("publicPhotoDialog");
 const publicPhotoPreview = document.getElementById("publicPhotoPreview");
 const publicPhotoPreviewHistoryKey = "mustmakePublicPhotoPreview";
+let publicHistoryCursor = null;
+let publicHistoryLoading = false;
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -68,7 +70,75 @@ function safeImageUrl(value) {
     }
 }
 
-function displayProfile({ user, workoutHistory = [] }) {
+function publicWorkoutMarkup(workout) {
+    return `
+        <article class="public-workout">
+            <div><strong>${escapeHtml(workout.exercise)}</strong><time>${formatWorkoutDate(workout.date)}</time></div>
+            <p>${workoutDetails(workout)}</p>
+        </article>
+    `;
+}
+
+function setPublicHistoryCursor(list, cursor) {
+    publicHistoryCursor = cursor;
+    list.querySelector(".history-load-more")?.remove();
+    if (!publicHistoryCursor) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "main-button history-load-more";
+    button.textContent = "Load older workouts";
+    button.addEventListener("click", loadMorePublicHistory);
+    list.appendChild(button);
+}
+
+async function loadMorePublicHistory(event) {
+    if (publicHistoryLoading || !publicHistoryCursor) return;
+
+    const button = event.currentTarget;
+    publicHistoryLoading = true;
+    button.disabled = true;
+    button.textContent = "Loading workouts...";
+
+    try {
+        const query = new URLSearchParams({
+            cursor: publicHistoryCursor,
+            limit: "25"
+        });
+        const response = await fetch(
+            `${window.API_URL}/api/users/${encodeURIComponent(profileId)}?${query}`,
+            { headers: { Authorization: "Bearer " + profileToken } }
+        );
+
+        if (response.status === 401) {
+            window.clearPrivateCaches();
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+            return;
+        }
+
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.workoutHistory)) {
+            throw new Error(data.message || "Could not load older workouts.");
+        }
+
+        const list = profileRoot.querySelector(".public-workout-list");
+        list.insertAdjacentHTML(
+            "beforeend",
+            data.workoutHistory.map(publicWorkoutMarkup).join("")
+        );
+        setPublicHistoryCursor(list, data.workoutHistoryNextCursor);
+    } catch (error) {
+        console.error("Public workout history error:", error);
+        button.disabled = false;
+        button.textContent = "Could not load older workouts. Retry";
+    } finally {
+        publicHistoryLoading = false;
+    }
+}
+
+function displayProfile({ user, workoutHistory = [], workoutHistoryNextCursor = null }) {
     const photo = safeImageUrl(user.profilePicture) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=181818&color=ffffff`;
     const age = Number.isInteger(user.age) ? user.age : null;
     const hasHeight = user.height !== null && user.height !== undefined &&
@@ -97,12 +167,7 @@ function displayProfile({ user, workoutHistory = [] }) {
         .filter(Boolean)
         .join("");
     const history = workoutHistory.length
-        ? workoutHistory.map(workout => `
-            <article class="public-workout">
-                <div><strong>${escapeHtml(workout.exercise)}</strong><time>${formatWorkoutDate(workout.date)}</time></div>
-                <p>${workoutDetails(workout)}</p>
-            </article>
-        `).join("")
+        ? workoutHistory.map(publicWorkoutMarkup).join("")
         : '<p class="no-workout">No workouts recorded yet.</p>';
 
     profileRoot.innerHTML = `
@@ -119,6 +184,11 @@ function displayProfile({ user, workoutHistory = [] }) {
             <div class="public-workout-list">${history}</div>
         </section>
     `;
+
+    setPublicHistoryCursor(
+        profileRoot.querySelector(".public-workout-list"),
+        workoutHistoryNextCursor
+    );
 
     profileRoot.querySelector(".public-profile-photo-button").addEventListener("click", event => {
         window.history.pushState({ ...window.history.state, [publicPhotoPreviewHistoryKey]: true }, "", location.href);
@@ -168,6 +238,7 @@ async function loadPublicProfile() {
             headers: { Authorization: `Bearer ${profileToken}` }
         });
         if (response.status === 401) {
+            window.clearPrivateCaches();
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             window.location.href = "/login";

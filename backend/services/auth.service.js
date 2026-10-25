@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_MAX_ATTEMPTS = 5;
+const OTP_RESEND_COOLDOWN_MS = 60 * 1000;
+const OTP_ATTEMPT_WINDOW_MS = OTP_EXPIRY_MINUTES * 60 * 1000;
 
 function generateOTP() {
     return crypto.randomInt(100000, 1000000).toString();
@@ -47,6 +49,8 @@ function createAuthSession(user) {
 module.exports = {
     OTP_EXPIRY_MINUTES,
     OTP_MAX_ATTEMPTS,
+    OTP_RESEND_COOLDOWN_MS,
+    OTP_ATTEMPT_WINDOW_MS,
     generateOTP,
     hashOTP,
     createAuthSession

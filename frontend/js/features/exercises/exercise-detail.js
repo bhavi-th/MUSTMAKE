@@ -227,6 +227,7 @@ function renderMedia(exercise) {
                 const data = await response.json().catch(() => ({}));
 
                 if (response.status === 401) {
+                    window.clearPrivateCaches();
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
                     message.innerHTML = 'Your session expired. Please <a href="/login">sign in</a> again.';

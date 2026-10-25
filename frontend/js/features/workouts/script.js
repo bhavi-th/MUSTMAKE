@@ -5,6 +5,7 @@ function getToken() {
 }
 
 function readSessionCache(key) {
+    if (!key) return null;
     try {
         return JSON.parse(sessionStorage.getItem(key) || "null");
     } catch (error) {
@@ -14,6 +15,7 @@ function readSessionCache(key) {
 }
 
 function writeSessionCache(key, value) {
+    if (!key) return;
     try {
         sessionStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -32,12 +34,17 @@ function getCurrentUser() {
     }
 }
 
+function getUserId(user) {
+    const id = user?._id ?? user?.id;
+    return id == null ? null : String(id);
+}
+
 function saveAuth(token, user) {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    window.saveAuthenticatedSession(token, user);
 }
 
 function logout(redirectToLogin = true) {
+    window.clearPrivateCaches();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     if (redirectToLogin) {
@@ -143,6 +150,8 @@ async function loadToday() {
         window.location.replace("/pages/gst.html");
         return;
     }
+    const userId = getUserId(user);
+    const cacheSuffix = userId ? `_${encodeURIComponent(userId)}` : null;
 
     personalDashboard.hidden = false;
     if (guestCta) guestCta.hidden = true;
@@ -155,17 +164,23 @@ async function loadToday() {
         nameElement.textContent = `${greeting}, ${user.name || "athlete"}`;
     }
 
-    const cachedWorkouts = readSessionCache("mustmake_today_workouts");
+    const cachedWorkouts = readSessionCache(
+        cacheSuffix ? `mustmake_today_workouts${cacheSuffix}` : null
+    );
     if (Array.isArray(cachedWorkouts)) {
         displayTodayWorkouts(userContainer, cachedWorkouts);
     }
-    const cachedStreak = readSessionCache("mustmake_streak");
+    const cachedStreak = readSessionCache(
+        cacheSuffix ? `mustmake_streak${cacheSuffix}` : null
+    );
     const streakElement = document.getElementById("userStreak");
     if (streakElement && Number.isFinite(cachedStreak)) {
         streakElement.textContent = cachedStreak;
     }
 
-    const streakPromise = loadStreaks();
+    const streakPromise = loadStreaks(
+        cacheSuffix ? `mustmake_streak${cacheSuffix}` : null
+    );
     try {
         const todayPromise = fetch(`${window.API_URL}/api/workouts/today`, {
             headers: { "Authorization": `Bearer ${token}` }
@@ -180,7 +195,10 @@ async function loadToday() {
 
         const responseData = await response.json();
         const workouts = Array.isArray(responseData) ? responseData : [];
-        writeSessionCache("mustmake_today_workouts", workouts);
+        writeSessionCache(
+            cacheSuffix ? `mustmake_today_workouts${cacheSuffix}` : null,
+            workouts
+        );
         displayTodayWorkouts(userContainer, workouts);
     } catch (error) {
         console.error("Today's workouts error:", error);
@@ -209,7 +227,7 @@ function displayTodayWorkouts(container, workouts) {
     });
 }
 
-async function loadStreaks() {
+async function loadStreaks(cacheKey) {
     const streakElement = document.getElementById("userStreak");
     if (!streakElement) return;
 
@@ -231,7 +249,7 @@ async function loadStreaks() {
 
         const data = await response.json();
         const streak = Number(data.streak) || 0;
-        writeSessionCache("mustmake_streak", streak);
+        writeSessionCache(cacheKey, streak);
         streakElement.textContent = streak;
     } catch (error) {
         console.error("Streak error:", error);
@@ -423,17 +441,69 @@ async function saveWorkout(event) {
     }
 }
 
-async function loadHistory() {
+const historyWorkouts = [];
+let historyCursor = null;
+let historyLoading = false;
+
+function renderHistory(historyContainer) {
+    historyContainer.replaceChildren();
+
+    if (historyWorkouts.length === 0) {
+        historyContainer.innerHTML = `<p class="no-workout">No workouts recorded yet.</p>`;
+        return;
+    }
+
+    const grouped = new Map();
+    historyWorkouts.forEach(workout => {
+        const date = String(workout.date || "");
+        if (!grouped.has(date)) grouped.set(date, []);
+        grouped.get(date).push(workout);
+    });
+
+    [...grouped.keys()].forEach(date => {
+        const day = document.createElement("div");
+        day.className = "history-day";
+
+        let html = `<div class="history-date">${escapeHTML(formatDate(date))}</div>`;
+
+        grouped.get(date).forEach(workout => {
+            html += `
+                <div class="history-workout">
+                <div class="workout-name">${escapeHTML(workout.exercise)}</div>
+                    <div class="workout-details">${escapeHTML(workoutDetails(workout))}</div>
+                </div>
+            `;
+        });
+
+        day.innerHTML = html;
+        historyContainer.appendChild(day);
+    });
+
+    if (historyCursor) {
+        const loadMoreButton = document.createElement("button");
+        loadMoreButton.type = "button";
+        loadMoreButton.className = "main-button history-load-more";
+        loadMoreButton.textContent = "Load older workouts";
+        loadMoreButton.addEventListener("click", () => loadHistory(historyCursor));
+        historyContainer.appendChild(loadMoreButton);
+    }
+}
+
+async function loadHistory(cursor = null) {
     const historyContainer = document.getElementById("history");
-    if (!historyContainer) return;
+    if (!historyContainer || historyLoading) return;
 
     if (!getToken()) {
         window.location.href = "/login";
         return;
     }
 
+    historyLoading = true;
+    const query = new URLSearchParams({ limit: "25" });
+    if (cursor) query.set("cursor", cursor);
+
     try {
-        const response = await fetch(`${window.API_URL}/api/workouts/history`, {
+        const response = await fetch(`${window.API_URL}/api/workouts/history?${query}`, {
             headers: {
                 "Authorization": `Bearer ${getToken()}`
             }
@@ -444,47 +514,35 @@ async function loadHistory() {
             return;
         }
 
+        const data = await response.json();
         if (!response.ok) {
-            throw new Error("Could not load history");
+            throw new Error(data.message || `Could not load history (HTTP ${response.status}).`);
         }
 
-        const workouts = await response.json();
-
-        if (workouts.length === 0) {
-            historyContainer.innerHTML = `<p class="no-workout">No workouts recorded yet.</p>`;
-            return;
+        // Support the previous backend response while frontend/backend deploys
+        // are rolling out independently.
+        const page = Array.isArray(data)
+            ? { workouts: data, nextCursor: null }
+            : data;
+        if (!Array.isArray(page.workouts)) {
+            throw new Error("History response was invalid. Please update the backend and try again.");
         }
 
-        const grouped = new Map();
-        workouts.forEach(workout => {
-            const date = String(workout.date || "");
-            if (!grouped.has(date)) grouped.set(date, []);
-            grouped.get(date).push(workout);
-        });
-
-        historyContainer.innerHTML = "";
-
-        [...grouped.keys()].sort().reverse().forEach(date => {
-            const day = document.createElement("div");
-            day.className = "history-day";
-
-            let html = `<div class="history-date">${escapeHTML(formatDate(date))}</div>`;
-
-            grouped.get(date).forEach(workout => {
-                html += `
-                    <div class="history-workout">
-                    <div class="workout-name">${escapeHTML(workout.exercise)}</div>
-                        <div class="workout-details">${escapeHTML(workoutDetails(workout))}</div>
-                    </div>
-                `;
-            });
-
-            day.innerHTML = html;
-            historyContainer.appendChild(day);
-        });
+        historyWorkouts.push(...page.workouts);
+        historyCursor = page.nextCursor || null;
+        renderHistory(historyContainer);
     } catch (error) {
         console.error(error);
-        historyContainer.innerHTML = `<p class="no-workout">Could not load history.</p>`;
+        if (historyWorkouts.length === 0) {
+            historyContainer.innerHTML = `<p class="no-workout">Could not load history.</p>`;
+        } else {
+            const loadError = document.createElement("p");
+            loadError.className = "no-workout";
+            loadError.textContent = "Could not load older workouts.";
+            historyContainer.appendChild(loadError);
+        }
+    } finally {
+        historyLoading = false;
     }
 }
 

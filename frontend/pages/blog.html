@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/core/change_backend_url.js"></script>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.jpeg">
+    <title>Blog | MUSTMAKE</title>
+    <script src="/js/shared/theme.js"></script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .blog-hero {
+            text-align: center;
+            padding: 80px 0 60px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .blog-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blog-hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .blog-section {
+            margin: 60px 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: var(--glass-subtle);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-soft);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .use-cases-section {
+            background: var(--glass-subtle);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 60px 0;
+        }
+
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .use-case-card {
+            background: var(--glass-panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .use-case-card:nth-child(1) { animation-delay: 0.3s; }
+        .use-case-card:nth-child(2) { animation-delay: 0.4s; }
+        .use-case-card:nth-child(3) { animation-delay: 0.5s; }
+
+        .use-case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .use-case-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .use-case-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .use-case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .use-case-tag {
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tech-stack {
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tech-item {
+            background: var(--glass-panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px 30px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: transform 0.2s ease, background 0.2s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .tech-item:nth-child(1) { animation-delay: 0.2s; }
+        .tech-item:nth-child(2) { animation-delay: 0.3s; }
+        .tech-item:nth-child(3) { animation-delay: 0.4s; }
+        .tech-item:nth-child(4) { animation-delay: 0.5s; }
+        .tech-item:nth-child(5) { animation-delay: 0.6s; }
+        .tech-item:nth-child(6) { animation-delay: 0.7s; }
+        .tech-item:nth-child(7) { animation-delay: 0.8s; }
+        .tech-item:nth-child(8) { animation-delay: 0.9s; }
+
+        .tech-item:hover {
+            transform: translateY(-4px);
+            background: var(--glass-subtle);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 100%);
+            border-radius: 20px;
+            margin: 60px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .blog-hero {
+                padding: 60px 0 40px;
+            }
+
+            .blog-hero h1 {
+                font-size: 2rem;
+            }
+
+            .blog-hero p {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .use-case-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .use-cases-section {
+                padding: 30px;
+            }
+
+            .tech-grid {
+                gap: 12px;
+            }
+
+            .tech-item {
+                padding: 15px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .feature-card,
+            .use-case-card,
+            .tech-item {
+                animation: none;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="app-page">
+    <div id="navbar"></div>
+
+    <main class="container">
+        <section class="blog-hero">
+            <h1>Welcome to MUSTMAKE</h1>
+            <p>Your personal fitness companion for tracking workouts, building consistency, and achieving your goals. Discover how our platform empowers your fitness journey.</p>
+        </section>
+
+        <section class="blog-section">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <h3>Workout Tracking</h3>
+                    <p>Log your daily exercises, track repetitions, sets, and duration. Build a comprehensive workout history to monitor your progress over time.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3>Secure Authentication</h3>
+                    <p>Multiple authentication options including Google OAuth and OTP-based login. Your data is protected with industry-standard security measures.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <h3>Daily Streaks</h3>
+                    <p>Build consistency with our streak tracking system. Stay motivated by maintaining your daily workout streak and celebrating milestones.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 20V10M12 20V4M6 20v-6"/>
+                        </svg>
+                    </div>
+                    <h3>Progress Analytics</h3>
+                    <p>Visualize your fitness journey with detailed analytics. Track improvements, identify patterns, and make data-driven decisions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3>Community Features</h3>
+                    <p>Connect with fellow fitness enthusiasts, compete in challenges, and share your achievements. Stay motivated through friendly competition.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                    </div>
+                    <h3>Exercise Library</h3>
+                    <p>Access a comprehensive library of exercises with detailed instructions. From push-ups to squats, find the perfect workout for your goals.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="use-cases-section">
+            <h2 class="section-title">Use Cases</h2>
+            <div class="use-case-grid">
+                <div class="use-case-card">
+                    <h3>Personal Fitness Tracking</h3>
+                    <p>Perfect for individuals who want to maintain a consistent workout routine. Track your daily exercises, monitor your streak, and see your progress over time with detailed analytics.</p>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Individual</span>
+                        <span class="use-case-tag">Tracking</span>
+                        <span class="use-case-tag">Analytics</span>
+                    </div>
+                </div>
+
+                <div class="use-case-card">
+                    <h3>Fitness Communities</h3>
+                    <p>Ideal for fitness groups and communities that want to compete and motivate each other. Create competitions, compare progress, and celebrate achievements together.</p>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Community</span>
+                        <span class="use-case-tag">Competition</span>
+                        <span class="use-case-tag">Social</span>
+                    </div>
+                </div>
+
+                <div class="use-case-card">
+                    <h3>Professional Training</h3>
+                    <p>Suitable for personal trainers and coaches to monitor client progress. Assign workouts, track adherence, and provide data-driven feedback to help clients reach their goals.</p>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Professional</span>
+                        <span class="use-case-tag">Coaching</span>
+                        <span class="use-case-tag">Monitoring</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-stack">
+            <h2 class="section-title">Built With Modern Technology</h2>
+            <div class="tech-grid">
+                <div class="tech-item">HTML5</div>
+                <div class="tech-item">CSS3</div>
+                <div class="tech-item">JavaScript</div>
+                <div class="tech-item">Node.js</div>
+                <div class="tech-item">Express.js</div>
+                <div class="tech-item">MongoDB</div>
+                <div class="tech-item">Google OAuth</div>
+                <div class="tech-item">Vercel</div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Start Your Fitness Journey?</h2>
+            <p>Join thousands of users who are already tracking their workouts and building healthy habits with MUSTMAKE.</p>
+            <a href="/signup" class="main-button">Get Started Free</a>
+        </section>
+    </main>
+
+    <script src="/js/shared/navbar.js"></script>
+</body>
+</html>

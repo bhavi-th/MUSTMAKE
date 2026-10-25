@@ -8,6 +8,7 @@ const MEDIAPIPE_WASM =
 const POSE_MODEL =
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
 const MAX_REPETITIONS = 10000;
+const MAX_REVIEWED_VALUE = 150;
 const INFERENCE_INTERVAL_MS = 110;
 const CONNECTIONS = [
     [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
@@ -454,13 +455,13 @@ export function mountAiMonitor(root, exercise, snapshot = null) {
     function correctedCount() {
         const value = correction.value.trim();
         const parsed = Number(value);
-        const minimum = isPlank || isJumpCount ? 1 : 0;
-        const maximum = isPlank ? 86400 : MAX_REPETITIONS;
+        const minimum = 0;
+        const maximum = MAX_REVIEWED_VALUE;
         const valid = value !== "" && Number.isSafeInteger(parsed) &&
             parsed >= minimum && parsed <= maximum;
         correctionError.textContent = valid
             ? ""
-            : `Enter a whole number from ${minimum} to ${maximum}${isPlank ? " seconds" : isJumpCount ? " jumps" : ""}.`;
+            : `Range has to be between ${minimum} to ${maximum}${isPlank ? " seconds" : isJumpCount ? " jumps" : ""}.`;
         correction.setAttribute("aria-invalid", String(!valid));
         return valid ? parsed : null;
     }

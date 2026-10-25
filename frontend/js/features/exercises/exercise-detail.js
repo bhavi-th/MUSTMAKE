@@ -60,8 +60,17 @@
         `;
     }
 
-    function renderField(field) {
+    function renderField(field, exercise) {
         const id = `workout-${field.name}`;
+        const max = field.name === "reps"
+            ? 150
+            : field.name === "sets"
+                ? 10
+                : exercise.manualType === "duration" && field.name === "duration"
+                    ? 900
+                    : exercise.manualType === "distance-duration" && field.name === "amount"
+                        ? 50
+                        : null;
         return `
             <div class="exercise-form-field">
                 <label for="${escapeHTML(id)}">${escapeHTML(field.label)}</label>
@@ -70,6 +79,7 @@
                     name="${escapeHTML(field.name)}"
                     type="number"
                     min="${escapeHTML(field.min)}"
+                    ${max == null ? "" : `max="${max}"`}
                     step="${escapeHTML(field.step)}"
                     inputmode="decimal"
                     required
@@ -83,7 +93,7 @@
             <div class="exercise-mode-content">
                 <form id="manualWorkoutForm" class="exercise-workout-form">
                     <div class="exercise-form-grid">
-                        ${exercise.fields.map(renderField).join("")}
+                        ${exercise.fields.map(field => renderField(field, exercise)).join("")}
                     </div>
                     <p id="exerciseFormMessage" class="exercise-form-message" role="status" aria-live="polite"></p>
                     <button class="main-button exercise-done-button" type="submit">Done</button>
@@ -167,8 +177,8 @@
                             id="monitorCorrection"
                             name="${isPlank ? "reviewedDuration" : isJumpCount ? "reviewedJumps" : "reviewedReps"}"
                             type="number"
-                            min="${isPlank || isJumpCount ? "1" : "0"}"
-                            max="${isPlank ? "86400" : "10000"}"
+                            min="0"
+                            max="150"
                             step="1"
                             inputmode="numeric"
                             required

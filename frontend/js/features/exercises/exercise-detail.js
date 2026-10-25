@@ -169,7 +169,7 @@
                         </div>
                     </div>
 
-                    ${weightField ? `<div class="monitor-exercise-fields">${renderField(weightField)}</div>` : ""}
+                    ${weightField ? `<div class="monitor-exercise-fields">${renderField(weightField, exercise)}</div>` : ""}
 
                     <div class="exercise-form-field monitor-exercise-fields">
                         <label for="monitorCorrection">${correctionLabel}</label>
